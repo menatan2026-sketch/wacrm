@@ -119,7 +119,7 @@ function Scene({
     materials.headlights.emissiveIntensity += (on * 5 - materials.headlights.emissiveIntensity) * k;
     materials.taillights.emissiveIntensity += (on * 3 - materials.taillights.emissiveIntensity) * k;
     setHeadlightGlow(glow.current, (materials.headlights.emissiveIntensity / 5) * (1 - bd.photo * 0.7));
-    poseOpenables(handles.current, { doorL: +state.doors, doorR: +state.doors, hood: +state.hood, hatch: +state.hatch }, Math.min(dt, 0.1));
+    if (poseOpenables(handles.current, { doorL: +state.doors, doorR: +state.doors, hood: +state.hood, hatch: +state.hatch }, Math.min(dt, 0.1))) bd.shadowsDirty = true;
     const bu = backdrop.current?.uniforms;
     if (bu) {
       bu.uGlowStrength.value = state.env === "studio" ? 0.4 : 0.25;

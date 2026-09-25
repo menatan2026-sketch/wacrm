@@ -70,7 +70,7 @@ export function Showroom({ state, quality, envTex }: { state: BackdropState; qua
         metalness: 0,
         clearcoat: 0.35,
         clearcoatRoughness: 0.25,
-        envMapIntensity: 0.35,
+        envMapIntensity: 0.25,
       }),
     );
     for (const t of [floor.map, floor.roughnessMap, floor.normalMap]) t?.repeat.set(10, 10);
@@ -87,7 +87,7 @@ export function Showroom({ state, quality, envTex }: { state: BackdropState; qua
     const frame = fadeable(new THREE.MeshStandardMaterial({ color: "#101113", metalness: 0.8, roughness: 0.4 }));
     const edge = fadeable(new THREE.MeshPhysicalMaterial({ color: "#aeb1b6", metalness: 1, roughness: 0.28, envMapIntensity: 0.9 }));
     const resin = fadeable(
-      new THREE.MeshPhysicalMaterial({ color: "#0b0b0d", roughness: 0.22, metalness: 0.2, clearcoat: 1, clearcoatRoughness: 0.06, normalMap: ringNormal(), normalScale: new THREE.Vector2(0.25, 0.25), envMapIntensity: 0.8 }),
+      new THREE.MeshPhysicalMaterial({ color: "#070708", roughness: 0.3, metalness: 0.2, clearcoat: 1, clearcoatRoughness: 0.12, normalMap: ringNormal(), normalScale: new THREE.Vector2(0.25, 0.25), envMapIntensity: 0.25 }),
     );
     const halo = fadeable(new THREE.MeshBasicMaterial({ color: new THREE.Color("#ffd6a0").multiplyScalar(2.5), toneMapped: false }));
     const cove = fadeable(new THREE.MeshBasicMaterial({ color: new THREE.Color("#ffe2bd").multiplyScalar(1.2), toneMapped: false }));
@@ -129,19 +129,19 @@ export function Showroom({ state, quality, envTex }: { state: BackdropState; qua
             blur={[260, 90]}
             resolution={1024}
             mixBlur={1}
-            mixStrength={5}
-            mixContrast={1}
-            roughness={0.35}
+            mixStrength={3.2}
+            mixContrast={1.1}
+            roughness={0.55}
             depthScale={0.8}
             minDepthThreshold={0.3}
             maxDepthThreshold={1.2}
-            color="#0c0c0e"
-            metalness={0.3}
+            color="#050506"
+            metalness={0.5}
             mirror={0}
             normalMap={m.resin.normalMap ?? undefined}
             normalScale={new THREE.Vector2(0.15, 0.15)}
             envMap={envTex ?? undefined}
-            envMapIntensity={0.6}
+            envMapIntensity={0.12}
             ref={(mat: THREE.Material | null) => {
               if (mat && !all.includes(mat)) all.push(mat);
             }}

@@ -49,7 +49,7 @@ function useEngineMaterials() {
   return useMemo(() => {
     const maps = engineMaps();
     const carbon = carbonMaps();
-    const cast = new THREE.MeshPhysicalMaterial({ color: "#8a8c90", metalness: 0.9, roughness: 0.55, normalMap: maps?.cast ?? null, normalScale: new THREE.Vector2(0.8, 0.8) });
+    const cast = new THREE.MeshPhysicalMaterial({ color: "#a4a6aa", metalness: 0.75, roughness: 0.5, normalMap: maps?.cast ?? null, normalScale: new THREE.Vector2(0.8, 0.8) });
     const polished = new THREE.MeshPhysicalMaterial({ color: "#dfe2e6", metalness: 1, roughness: 0.12 });
     const carbonMat = new THREE.MeshPhysicalMaterial({
       color: "#ffffff",
@@ -214,6 +214,9 @@ export function EngineAssembly({ materials, bay }: { materials: VehicleMaterials
       <mesh geometry={geo.capGeo} position={[0.62, 0.18, 0.14]} material={m.cap} />
       <mesh geometry={geo.capGeo} position={[-0.18, 0.47, -0.02]} material={m.cap} />
 
+      {/* Display lighting: a warm key over the engine plus LED strips. */}
+      <pointLight position={[0, 0.78, 0.05]} color="#ffdcb0" intensity={2.2} distance={1.6} decay={2} />
+      <pointLight position={[0, 0.5, -0.2]} color="#ffe9cc" intensity={0.8} distance={1.1} decay={2} />
       {/* Warm LED strips along the bay walls. */}
       {[1, -1].map((s) => (
         <mesh key={s} position={[s * 0.8, 0.5, 0]} rotation-y={Math.PI / 2} material={m.led}>

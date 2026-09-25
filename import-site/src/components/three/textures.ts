@@ -566,7 +566,7 @@ export function concreteMaps() {
       const r = 0.2 + (1 - cloud) * 0.28 + speck * 0.35 + joint * 0.5;
       rough[i * 4] = rough[i * 4 + 1] = rough[i * 4 + 2] = Math.min(255, r * 255);
       rough[i * 4 + 3] = 255;
-      const base = 64 + cloud * 34 + trowel * 12 + speck * 30 - joint * 40;
+      const base = 48 + cloud * 30 + trowel * 10 + speck * 26 - joint * 34;
       return [base, base, base * 1.02];
     }, n, n);
     return {

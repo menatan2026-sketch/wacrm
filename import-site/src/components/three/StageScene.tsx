@@ -109,6 +109,7 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
 
   const live = useRef<Pose>({ ...BASE_POSE, dist: 10.5, az: 1.15, envGain: 0 });
   const wheelSpin = useRef(0);
+  const lastSteer = useRef(0);
   const lastCarZ = useRef(0);
   const spinFocus = useRef(0);
   const time = useRef(0);
@@ -290,7 +291,7 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
     // Hinged parts: the story's choreography, or the visitor's own choice
     // while the configurator is on screen.
     const own = director.chapter === "know";
-    poseOpenables(
+    const moving = poseOpenables(
       handles.current,
       {
         doorL: Math.max(cur.doors, own && cfg.doors ? 1 : 0),
@@ -301,6 +302,8 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
       snap ? 1 : Math.min(rawDt, 0.1),
       snap,
     );
+    if (moving || Math.abs(cur.steer - lastSteer.current) > 1e-4) backdrop3.shadowsDirty = true;
+    lastSteer.current = cur.steer;
 
     updateVehicleMaterials(materials, cfg, 1 - Math.exp(-dt * 4));
     materials.headlights.emissiveIntensity = cur.headlights * 5;

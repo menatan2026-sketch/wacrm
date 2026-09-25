@@ -140,6 +140,8 @@ export class BackdropState {
   studioStrips = 1;
   /** Set when anything the env cube depends on changed. */
   envDirty = true;
+  /** Set while hinged parts move, so the (manually updated) shadow map refreshes. */
+  shadowsDirty = false;
 }
 
 const DEFAULT_SUN = new THREE.Vector3(-0.45, 0.75, 0.5).normalize();
@@ -347,8 +349,9 @@ export function SunAndShadows({
     // Re-render the shadow map only when something that affects it moved.
     const r = a ? a.rotation.y : 0;
     const key = `${p.x.toFixed(3)}|${p.z.toFixed(3)}|${r.toFixed(3)}|${state.sunDir.x.toFixed(3)}|${state.sunDir.y.toFixed(3)}|${state.sunDir.z.toFixed(3)}`;
-    if (key !== last.current.key) {
+    if (key !== last.current.key || state.shadowsDirty) {
       last.current.key = key;
+      state.shadowsDirty = false;
       gl.shadowMap.needsUpdate = true;
     }
   });

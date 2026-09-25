@@ -50,17 +50,33 @@ by id, so swapping the car is a data change:
 1. Put a Draco- or Meshopt-compressed GLB in `public/models/` (bump the
    file name when replacing — assets are cached immutably).
 2. Add an entry: `url`, normalisation (`scale`, `offset`, `rotationY` so
-   the nose points +Z and wheels sit on y = 0), and a `parts` map from
-   our material slots (paint, glass, rims, lights, wheels…) to mesh/node
-   names in the file. `npx @gltf-transform/cli inspect model.glb` lists them.
-3. Optionally recolour badges via `materialOverrides` and adjust the
-   inspection `anchors`.
-4. Point `HERO_MODEL_ID` at it (homepage) and/or set `modelId` on a
+   the nose points +Z and wheels sit on y = 0) and:
+   - `materialSlots` — GLB material name → one of our configurable
+     slots (paint, accentPaint, glass, rims, leather, seatInsert, carpet,
+     dashboard, trim, tireSide, caliper…). The slot material adopts the
+     file's own baked AO / normal maps; `nodeSlots` overrides single parts.
+   - `uvMetres` — measured UV density per slot (world edge length ÷ UV
+     edge length), so procedural leather, quilting, carbon and walnut land
+     at true scale. Meshes without usable UVs get a map-free twin.
+   - `openables` — hinged parts (doors, bonnet, hatch): node, hinge axis
+     and angle (+ optional swing for butterfly doors). The node's pivot
+     must sit on the hinge.
+   - `anchors` (inspection close-ups and hotspots), `cabin` (seat camera),
+     optional `engineBay` / `frunk` for the procedural display engine and
+     luggage tub, `showcase` copy for the configurator.
+   `npx @gltf-transform/cli inspect model.glb` lists names.
+3. Point `HERO_MODEL_ID` at it (homepage) and/or set `modelId` on a
    vehicle record (detail page viewer).
 
-The bundled studio model is "Ferrari 458 Italia" by vicent091036
-(CC BY 4.0), credited in the footer. Its brand-coloured badge materials
-are neutralised through `materialOverrides`.
+Bundled models (credited in the footer):
+
+- **Studio GT** (homepage) — "Car Concept" by Eric Chadwick / Darmstadt
+  Graphics Group after a CC0 model by Unity Fan, CC BY 4.0, from the
+  Khronos glTF sample assets. Vendor logos were removed from its
+  textures, the parcel shelf carved open over the engine bay, geometry
+  Draco- and textures WebP-compressed (11.7 MB → 2 MB).
+- **Ferrari 458 Italia** (detail viewer) by vicent091036, CC BY 4.0. Its
+  brand-coloured badge materials are neutralised via `materialOverrides`.
 
 ## Vehicle imagery
 
@@ -137,11 +153,29 @@ the repository implementations.
   brightest texels, with soft shadows onto an invisible catcher.
   Panoramas are clamped on load (NaN/Inf-safe; per-backdrop highlight
   ceiling). A new backdrop fades in only once loaded.
+- Built 3D sets (`SceneSets.tsx`) sit over two of them: the **delivery
+  hall** (polished concrete with saw-cut joints, a turntable that is a
+  live mirror on the high tier, fluted walls with light blades, ceiling
+  softbox) and the **port at dawn** (asphalt with a painted delivery bay,
+  instanced corrugated containers, cranes, light masts, golden haze).
+  Sets fade with stochastic alpha (no sorting fights with the car's
+  glass) and their light sources are mirrored into the reflection cube.
 - Reflections come from one cube map (`DynamicEnvironment.tsx`): the
   weighted HDRIs plus procedural light formers (studio strips, dusk,
   night…), re-rendered only when something changes.
-- Materials: clear-coat paint with a metallic-flake normal map, brushed
-  metal, grained leather/rubber and a carbon weave (`textures.ts`).
+- Materials (`vehicle-materials.ts`, `textures.ts`): clear-coat paint
+  with metallic flakes; full-grain leather and perforated diamond quilting
+  whose hide and thread colours are live shader uniforms; Alcantara dash
+  with a digital cluster; loop-pile carpet; honeycomb intake mesh;
+  carbon / brushed alloy / piano black / open-pore walnut trim; tyres
+  keep the model's tread and sidewall relief. The display engine
+  (`EngineAssembly.tsx`) is built from primitives: sand-cast block,
+  crackle cam covers in the caliper colour, carbon plenum, heat-tinted
+  titanium headers, gold heat-shield foil and warm bay lighting.
+- Interaction: doors, bonnet and rear clamshell open from the configurator
+  or by clicking the car (a click, not a drag); the story opens them too
+  (cabin and engine close-ups). The front wheels steer for the classic
+  parked stance, and there is a seat-height cabin camera.
 - Finishing (`Effects.tsx`): ACES tone mapping, bloom on true highlights,
   vignette; N8AO ambient occlusion on the high tier, SMAA on medium.
 - The globe is the same scene zoomed out ~150×: the car literally sits

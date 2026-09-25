@@ -45,8 +45,11 @@ export function Cursor() {
       if (el?.dataset.cursor) return el.dataset.cursor;
       if (document.body.dataset.cursor) return document.body.dataset.cursor;
       if (document.body.dataset.dragging) return "drag";
-      // Over the 3D stage during the configurator chapter → drag.
-      if (target?.closest("[data-stage-drag]") && document.documentElement.dataset.stageChapter === "know") return "drag";
+      // Over the 3D stage during the configurator chapter: a door / bonnet /
+      // hatch under the pointer opens on click, anywhere else drags.
+      if (target?.closest("[data-stage-drag]") && document.documentElement.dataset.stageChapter === "know") {
+        return document.body.dataset.hoverPart ? "open" : "drag";
+      }
       if (target?.closest("a, button, [role='button'], label, select, input[type='checkbox'], input[type='radio']")) return "link";
       if (target?.closest("input, textarea")) return "text";
       return "";

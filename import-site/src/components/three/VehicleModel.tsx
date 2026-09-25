@@ -448,8 +448,10 @@ const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 
  * weighty, damped pace, with the swing easing in after the lift.
  */
 export function poseOpenables(h: VehicleHandles, targets: Partial<Record<OpenableId, number>>, dt: number, snap = false) {
+  let moving = false;
   for (const [id, o] of Object.entries(h.openables) as [OpenableId, OpenableHandle][]) {
     const want = targets[id] ?? 0;
+    if (o.value !== want) moving = true;
     if (snap) o.value = want;
     else {
       const step = dt / 1.1;
@@ -459,4 +461,5 @@ export function poseOpenables(h: VehicleHandles, targets: Partial<Record<Openabl
     o.node.quaternion.copy(o.closed).multiply(qa.setFromAxisAngle(o.axis, o.angle * t));
     if (o.swingAxis) o.node.quaternion.multiply(qb.setFromAxisAngle(o.swingAxis, o.swingAngle * ease(Math.max(0, t * 1.4 - 0.4))));
   }
+  return moving;
 }
