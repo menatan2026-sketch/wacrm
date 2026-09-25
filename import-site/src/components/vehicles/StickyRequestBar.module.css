@@ -1,0 +1,49 @@
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  background: rgba(5, 5, 6, 0.86);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--line);
+  transform: translateY(100%);
+  transition: transform 0.7s var(--ease-out);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bar[data-show="true"] {
+  transform: none;
+}
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 68px;
+}
+.text {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  min-width: 0;
+}
+.title {
+  font-stretch: 115%;
+  font-weight: 540;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.price {
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .title {
+    display: none;
+  }
+  .inner :global(.btn) {
+    padding: 0 14px;
+  }
+}

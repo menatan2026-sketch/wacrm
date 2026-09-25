@@ -1,0 +1,51 @@
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.query {
+  max-width: 1180px;
+  margin-bottom: clamp(80px, 11vw, 150px);
+}
+
+.railHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid var(--line);
+}
+
+.rail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(36px, 4vw, 64px) clamp(20px, 2.4vw, 40px);
+}
+
+@media (max-width: 1080px) {
+  .rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Phones: a swipeable rail rather than a long stack. */
+@media (max-width: 700px) {
+  .rail {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+  .rail > * {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+}

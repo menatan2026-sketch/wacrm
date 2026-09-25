@@ -1,0 +1,84 @@
+/*
+  Shared scaffolding for 3D chapters. Each chapter is a tall section
+  whose content sticks to the viewport while the WebGL stage behind it
+  plays; `--p` (0→1 through the section) is written by the director
+  every frame, so transitions here stay in lockstep with the camera.
+*/
+
+.chapter {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.interactive {
+  pointer-events: auto;
+}
+
+.index {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.index::before {
+  content: "";
+  width: 36px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* Opaque DOM section that the stage dissolves into. */
+.plate {
+  position: relative;
+  z-index: 2;
+  background: var(--bg);
+}
+.plate::before,
+.plate::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 28vh;
+  pointer-events: none;
+}
+.plate::before {
+  bottom: 100%;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+}
+.plate::after {
+  top: 100%;
+  background: linear-gradient(to top, transparent, var(--bg));
+}
+
+.sectionPad {
+  padding-block: clamp(96px, 14vh, 180px);
+}
+
+.sectionHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: end;
+  gap: 32px 64px;
+  margin-bottom: clamp(48px, 7vw, 96px);
+}
+
+@media (max-width: 900px) {
+  .sectionHead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

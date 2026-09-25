@@ -1,0 +1,33 @@
+.final {
+  height: 320vh;
+}
+.frame {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: clamp(20px, 3vh, 36px);
+}
+.line1 {
+  opacity: clamp(0, calc((var(--p, 0) - 0.7) * 9), 1);
+  transform: translate3d(0, calc(clamp(0, (0.84 - var(--p, 0)) * 6, 1) * 40px), 0);
+  filter: blur(calc(clamp(0, (0.8 - var(--p, 0)) * 60, 12) * 1px));
+}
+.line2 {
+  color: var(--accent);
+  opacity: clamp(0, calc((var(--p, 0) - 0.84) * 10), 1);
+  transform: translate3d(0, calc(clamp(0, (0.92 - var(--p, 0)) * 8, 1) * 24px), 0);
+}
+.ctas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: clamp(0, calc((var(--p, 0) - 0.9) * 12), 1);
+  pointer-events: none;
+}
+.final .ctas {
+  pointer-events: auto;
+}

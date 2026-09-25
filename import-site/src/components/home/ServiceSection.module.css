@@ -1,0 +1,136 @@
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.index {
+  border-top: 1px solid var(--line);
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  grid-template-rows: auto 0fr;
+  column-gap: 24px;
+  align-items: baseline;
+  padding: clamp(20px, 2.6vw, 34px) 0;
+  border-bottom: 1px solid var(--line);
+  outline: none;
+  transition:
+    grid-template-rows 0.7s var(--ease-out),
+    padding 0.7s var(--ease-out);
+}
+.row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.9s var(--ease-out);
+}
+.row:hover,
+.row:focus-visible {
+  grid-template-rows: auto 1fr;
+}
+.row:hover::before,
+.row:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  color: var(--text-4);
+  transition: color 0.4s;
+}
+.title {
+  font-stretch: 125%;
+  font-weight: 540;
+  font-size: clamp(1.5rem, 3.6vw, 3.6rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  transition:
+    color 0.5s,
+    transform 0.8s var(--ease-out);
+}
+.row:hover .title,
+.row:focus-visible .title {
+  color: var(--text);
+  transform: translateX(12px);
+}
+.row:hover .num,
+.row:focus-visible .num {
+  color: var(--accent);
+}
+.step {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.more {
+  grid-column: 2 / 4;
+  overflow: hidden;
+  min-height: 0;
+}
+.summary {
+  padding-top: 16px;
+  padding-left: 12px;
+  max-width: 56ch;
+  color: var(--text-2);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 0.6s var(--ease-out);
+}
+.row:hover .summary,
+.row:focus-visible .summary {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.1s;
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .row {
+    grid-template-columns: 36px minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    row-gap: 8px;
+  }
+  .step {
+    grid-column: 2;
+  }
+  .more {
+    grid-column: 2;
+  }
+  .summary {
+    padding: 4px 0 0;
+    opacity: 1;
+    transform: none;
+    font-size: 0.875rem;
+  }
+  .row:hover .title {
+    transform: none;
+  }
+}

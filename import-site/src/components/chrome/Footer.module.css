@@ -1,0 +1,126 @@
+.footer {
+  position: relative;
+  z-index: 2;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  padding-top: clamp(64px, 9vw, 120px);
+  overflow: hidden;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1.2fr 1fr;
+  gap: 48px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.statement {
+  color: var(--text-2);
+  max-width: 34ch;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-2);
+  transition: color 0.3s;
+}
+.link svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+.link:hover {
+  color: var(--text);
+}
+
+.address {
+  color: var(--text-2);
+}
+
+.wordmark {
+  margin-top: clamp(56px, 8vw, 110px);
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: clamp(4rem, 19vw, 21rem);
+  line-height: 0.78;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(241, 240, 236, 0.14);
+  white-space: nowrap;
+  user-select: none;
+  text-align: center;
+  mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
+}
+
+.bottom {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px 32px;
+  align-items: center;
+  padding-top: 28px;
+  padding-bottom: 36px;
+  border-top: 1px solid var(--line);
+}
+
+.legal {
+  display: flex;
+  gap: 24px;
+  justify-self: end;
+}
+.legal a:hover {
+  color: var(--text);
+}
+
+.disclaimer {
+  grid-column: 1 / -1;
+  max-width: 110ch;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--text-4);
+  line-height: 1.7;
+}
+.disclaimer a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bottom {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .legal {
+    justify-self: start;
+    flex-wrap: wrap;
+  }
+}

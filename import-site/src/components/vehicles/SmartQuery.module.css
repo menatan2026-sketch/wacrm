@@ -1,0 +1,131 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.example {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 0.3s;
+}
+.example:hover {
+  color: var(--text);
+}
+
+.field {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--line-strong);
+  transition: border-color 0.4s;
+}
+.field:focus-within {
+  border-color: var(--text-2);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 10px 0 22px;
+  font-stretch: 112%;
+  font-weight: 450;
+  font-size: clamp(1.25rem, 2.3vw, 2.2rem);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+.input::placeholder {
+  color: var(--text-4);
+}
+.root[data-compact="true"] .input {
+  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+}
+
+.go {
+  align-self: flex-end;
+  margin-bottom: 18px;
+  margin-left: 16px;
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 36px;
+  flex-wrap: wrap;
+}
+.chips ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chips li {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  font-size: 0.8125rem;
+  animation: chipIn 0.6s var(--ease-out) both;
+  animation-delay: calc(var(--i) * 40ms);
+}
+.chipKey {
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  border-right: 1px solid var(--line);
+}
+.chipVal {
+  padding: 0 12px;
+  color: var(--text);
+}
+
+@keyframes chipIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 640px) {
+  .field {
+    flex-direction: column;
+  }
+  .go {
+    margin: 0 0 18px;
+    align-self: stretch;
+  }
+}

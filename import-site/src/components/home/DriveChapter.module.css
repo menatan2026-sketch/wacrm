@@ -1,0 +1,42 @@
+.drive {
+  height: 230vh;
+}
+.frame {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: calc(var(--header-h) + 36px);
+  padding-bottom: clamp(28px, 5vh, 56px);
+  opacity: clamp(0, min(calc(var(--enter, 0) * 2.4 - 1.2), calc((1 - var(--p, 0)) * 8)), 1);
+}
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3.4vh, 40px);
+  transform: translate3d(0, calc((1 - var(--enter, 0)) * 80px), 0);
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.ctas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+@media (max-width: 720px) {
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ctas {
+    flex-direction: column;
+  }
+  .ctas :global(.btn) {
+    width: 100%;
+  }
+}
