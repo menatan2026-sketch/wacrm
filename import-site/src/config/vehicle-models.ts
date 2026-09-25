@@ -223,8 +223,8 @@ export const vehicleModels: Record<string, VehicleModelDefinition> = {
     engineBay: { position: [0, 0.2, -1.63], scale: 1 },
     frunk: { position: [0, 0.16, 2.06], size: [1.08, 0.44, 0.5] },
     // Under the roof, over both rows (the glass roof is lined from inside).
-    starlight: { center: [0, 1.095, -0.16], size: [1.22, 1.42], sag: 0.035, count: 1600 },
-    starlightView: { eye: [0, 0.8, -0.95], target: [0, 1.08, 0.2] },
+    starlight: { center: [0, 1.095, -0.16], size: [1.22, 1.42], sag: 0.035, count: 2400 },
+    starlightView: { eye: [0, 0.76, -0.78], target: [0, 1.14, -0.12] },
     showcase: {
       name: "Studio GT",
       subtitle: "Concept · 2+2 coupé",

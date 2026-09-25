@@ -62,7 +62,7 @@ const starFragment = /* glsl */ `
     float core = smoothstep(0.5, 0.0, r);
     float a = core * core;
     if (a < 0.01) discard;
-    gl_FragColor = vec4(vColor * vGlow * a * 2.6, 1.0);
+    gl_FragColor = vec4(vColor * vGlow * a * 3.4, 1.0);
   }`;
 
 const streakVertex = /* glsl */ `
