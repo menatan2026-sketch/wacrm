@@ -110,3 +110,27 @@ export const Shield = (p: P) => (
     <path d="m9 12 2.2 2.2L15.5 10" />
   </svg>
 );
+/** Car door rising on its hinge. */
+export const Door = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 19h12l4-6V9H9L4 14v5ZM9 9 14 3M12 15h2" />
+  </svg>
+);
+/** Front bonnet lifted. */
+export const Hood = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M3 17h18M5 17l2-4h10l2 4M7 13 15 5l3 1-5 7" />
+  </svg>
+);
+/** Rear hatch / engine cover. */
+export const Hatch = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M3 17h18M5 17l2-4h10l2 4M17 13 9 5 6 6l5 7" />
+  </svg>
+);
+/** Driver's seat — the cabin camera. */
+export const Seat = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M8 4h4l-1 9h7l-1 4H7L6 13l2-9ZM9 17v3M15 17v3" />
+  </svg>
+);

@@ -54,6 +54,57 @@
   border-bottom: 1px solid var(--line);
 }
 
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: -6px;
+  border-bottom: 1px solid var(--line);
+}
+.tabs button {
+  position: relative;
+  padding: 0 0 12px;
+  font-size: 0.6875rem;
+  font-stretch: 112%;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3, rgba(255, 255, 255, 0.45));
+  transition: color 0.3s;
+}
+.tabs button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--text);
+  transform: scaleX(0);
+  transition: transform 0.5s var(--ease-out);
+}
+.tabs button:hover {
+  color: var(--text-2);
+}
+.tabs button[aria-selected="true"] {
+  color: var(--text);
+}
+.tabs button[aria-selected="true"]::after {
+  transform: none;
+}
+.tabPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 236px;
+  animation: tabIn 0.55s var(--ease-out);
+}
+@keyframes tabIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+}
+
 .group {
   border: 0;
   margin: 0;
@@ -105,6 +156,18 @@
 }
 .swatch:hover {
   transform: scale(1.08);
+}
+.small {
+  width: 24px;
+  height: 24px;
+}
+/* Hide swatch: leather colour with its stitching as a dashed ring. */
+.hide {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.28), transparent 50%),
+    var(--c);
+  outline: 1px dashed var(--c2);
+  outline-offset: -6px;
 }
 .swatch[aria-pressed="true"]::after {
   opacity: 1;
@@ -177,6 +240,25 @@
 }
 .tool[aria-pressed="true"] svg {
   color: var(--accent);
+}
+.tool[data-hot="true"] {
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.wide {
+  width: 100%;
+}
+.tip {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.build {
+  max-width: 22ch;
+  text-align: right;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-2);
 }
 
 .spec {
@@ -290,8 +372,11 @@
   .group legend {
     margin-bottom: 8px;
   }
-  .group:nth-of-type(2),
-  .group:nth-of-type(4) {
+  .tabPanel {
+    min-height: 0;
+    gap: 12px;
+  }
+  .tip {
     display: none;
   }
   .segmented {

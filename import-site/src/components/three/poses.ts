@@ -8,7 +8,7 @@
  * find end = verify start), which is what makes the story read as one
  * continuous shot.
  */
-import type { ChapterId } from "./director";
+import type { ChapterId, StageView } from "./director";
 import type { BackdropId } from "@/config/environments";
 import type { PaletteId } from "./DynamicEnvironment";
 
@@ -52,6 +52,12 @@ export interface Pose {
   fade: number;
   fogNear: number;
   fogFar: number;
+  /** Hinged parts the story opens (0 closed → 1 open). */
+  doors: number;
+  hood: number;
+  hatch: number;
+  /** Front-wheel steer, radians. */
+  steer: number;
 }
 
 type NumericKey = { [K in keyof Pose]: Pose[K] extends number ? K : never }[keyof Pose];
@@ -92,6 +98,10 @@ export const BASE_POSE: Pose = {
   fade: 0,
   fogNear: 18,
   fogFar: 60,
+  doors: 0,
+  hood: 0,
+  hatch: 0,
+  steer: 0,
 };
 
 export const NUMERIC_KEYS = (Object.keys(BASE_POSE) as (keyof Pose)[]).filter(
@@ -144,21 +154,45 @@ const GLOBE: Partial<Pose> = {
   fogFar: 120,
 };
 
+type Vec3 = [number, number, number];
+
 export interface PoseContext {
   tall: boolean;
   /** Configurator overrides (know chapter). */
   env: "studio" | "dusk" | "city" | "night";
   lights: boolean;
-  view: "free" | "front" | "side" | "rear" | "top";
+  view: StageView;
+  /** Car-space anchors of the hero model (inspection close-ups). */
+  anchors: Record<"frontWheel" | "headlight" | "cockpit" | "vin" | "engine" | "hood", Vec3>;
+  /** Cabin camera (car space) and the car's current yaw, for the interior view. */
+  cabin?: { eye: Vec3; target: Vec3 };
+  yaw: number;
 }
+
+/** Orbit parameters that put the camera at `eye` looking at `target`. */
+function lookFrom(eye: Vec3, target: Vec3, yaw: number): Partial<Pose> {
+  const c = Math.cos(yaw);
+  const s = Math.sin(yaw);
+  const rot = ([x, y, z]: Vec3): Vec3 => [x * c + z * s, y, -x * s + z * c];
+  const e = rot(eye);
+  const t = rot(target);
+  const dx = e[0] - t[0];
+  const dy = e[1] - t[1];
+  const dz = e[2] - t[2];
+  const dist = Math.hypot(dx, dy, dz);
+  return { tx: t[0], ty: t[1], tz: t[2], dist, el: Math.asin(dy / dist), az: Math.atan2(dx, dz) };
+}
+
+/** Camera target on an anchor, for the inspection close-ups. */
+const at = (a: Vec3): Partial<Pose> => ({ tx: a[0], ty: a[1], tz: a[2] });
 
 export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Pose {
   let pose: Pose;
   switch (chapter) {
     case "hero":
       pose = track(p, [
-        [0, { az: 0.82, el: 0.1, dist: 9.6, shiftX: -0.2, shiftY: 0.2, ty: 0.5, envGain: 1.3, glow: 1 }],
-        [1, { az: 0.42, el: 0.06, dist: 7.6, shiftX: 0.1, ty: 0.5 }],
+        [0, { az: 0.82, el: 0.1, dist: 9.6, shiftX: -0.2, shiftY: 0.2, ty: 0.5, envGain: 1.3, glow: 1, steer: 0.24 }],
+        [1, { az: 0.42, el: 0.06, dist: 7.6, shiftX: 0.1, ty: 0.5, steer: 0 }],
       ]);
       break;
 
@@ -181,7 +215,17 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
         [0.5, { az: 1.5, el: 0.05, dist: 8.6 }],
         [1, { az: 2.45, el: 0.13, dist: 8.2 }],
       ]);
-      if (ctx.view !== "free") {
+      if (ctx.view === "cabin" && ctx.cabin) {
+        Object.assign(pose, lookFrom(ctx.cabin.eye, ctx.cabin.target, ctx.yaw), { fov: 58, shiftX: 0.12, shiftY: 0, dust: 0 });
+      } else if (ctx.view === "engine" || ctx.view === "frunk") {
+        // Frame the opened bay from high on the side (the rear clamshell
+        // hinges at the tail, so the engine reads from the side / front).
+        const a = ctx.view === "engine" ? ctx.anchors.engine : ctx.anchors.hood;
+        const [ax, ay, az] = a;
+        const c = Math.cos(ctx.yaw);
+        const sn = Math.sin(ctx.yaw);
+        Object.assign(pose, { tx: ax * c + az * sn, ty: ay, tz: -ax * sn + az * c, dist: 4.4, el: 0.78, az: ctx.yaw + (ctx.view === "engine" ? 1.25 : 0.55), shiftY: -0.04 });
+      } else if (ctx.view !== "free" && ctx.view !== "cabin") {
         const v = { front: [0.001, 0.05, 8], side: [Math.PI / 2, 0.04, 8.6], rear: [Math.PI - 0.001, 0.08, 8], top: [0.6, 1.25, 9.5] }[ctx.view];
         pose.az = v[0];
         pose.el = v[1];
@@ -204,23 +248,30 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
       ]);
       break;
 
-    case "verify":
+    case "verify": {
+      const A = ctx.anchors;
       pose = track(p, [
         [0, { ...GLOBE, shiftX: -0.2, globeDraw: 1, globeSpin: 0.45 }],
-        [0.2, { zoom: 0, az: 1.05, el: 0.04, dist: 3.4, tx: 0.82, ty: 0.38, tz: 1.3, shiftX: -0.16, palette: "inspect", backdrop: "studio", envGain: 1, glow: 0.5, floor: 1, dust: 0.6, fogNear: 18, fogFar: 60, globeDraw: 1 }],
+        // Mechanical: front wheel turned out so tread, disc and caliper read.
+        [0.2, { zoom: 0, az: 1.05, el: 0.04, dist: 3.4, ...at(A.frontWheel), shiftX: -0.16, palette: "inspect", backdrop: "studio", envGain: 1, glow: 0.5, floor: 1, dust: 0.6, fogNear: 18, fogFar: 60, globeDraw: 1, steer: 0.42 }],
         [0.3, { az: 1.25, dist: 3.0 }],
-        [0.38, { az: 0.5, el: 0.16, dist: 3.3, tx: 0.55, ty: 0.66, tz: 1.75 }],
+        // Paintwork: along the front wing to the headlight.
+        [0.38, { az: 0.5, el: 0.16, dist: 3.3, ...at(A.headlight), steer: 0 }],
         [0.46, { az: 0.62, dist: 3.1 }],
-        [0.54, { az: 1.1, el: 0.62, dist: 3.1, tx: 0.2, ty: 0.9, tz: 0.15 }],
+        // Mileage: doors rise, the camera looks down into the cabin.
+        [0.54, { az: 1.1, el: 0.62, dist: 3.1, ...at(A.cockpit), doors: 1 }],
         [0.62, { az: 1.25, dist: 2.9 }],
-        [0.7, { az: 0.95, el: 0.42, dist: 3.1, tx: 0.42, ty: 0.86, tz: 0.85, shiftX: -0.16 }],
+        // Documents: VIN plate at the base of the windscreen.
+        [0.7, { az: 0.95, el: 0.42, dist: 3.1, ...at(A.vin), shiftX: -0.16, doors: 0 }],
         [0.77, { az: 1.1, dist: 2.9 }],
-        [0.85, { az: 2.7, el: 0.48, dist: 3.8, tx: 0, ty: 0.95, tz: -1.35, shiftX: -0.16 }],
-        [0.9, { az: 2.55, dist: 3.6, scanner: -1 }],
+        // Service history: the rear clamshell rises over the engine.
+        [0.85, { az: 1.35, el: 0.82, dist: 3.9, ...at(A.engine), shiftX: -0.16, hatch: 1 }],
+        [0.9, { az: 1.55, dist: 3.6, scanner: -1 }],
         [0.92, { scanner: 0 }],
-        [1, { az: 2.1, el: 0.16, dist: 8.8, tx: 0, ty: 0.5, tz: 0, shiftX: 0, scanner: 1 }],
+        [1, { az: 2.1, el: 0.16, dist: 8.8, tx: 0, ty: 0.5, tz: 0, shiftX: 0, scanner: 1, hatch: 0 }],
       ]);
       break;
+    }
 
     case "bring": {
       // Eight journey steps across the chapter.
@@ -249,7 +300,7 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
 
     case "drive":
       pose = track(p, [
-        [0, { az: 0.95, el: 0.05, dist: 8.6, shiftX: -0.2, shiftY: 0.2, palette: "dusk", backdrop: "sunrise", headlights: 1, taillights: 0.7, horizon: 1, glow: 0.3, dust: 0.6, plate: 1 }],
+        [0, { az: 0.95, el: 0.05, dist: 8.6, shiftX: -0.2, shiftY: 0.2, palette: "dusk", backdrop: "sunrise", headlights: 1, taillights: 0.7, horizon: 1, glow: 0.3, dust: 0.6, plate: 1, steer: 0.26 }],
         [1, { az: 0.38, el: 0.07, dist: 6.9 }],
       ]);
       break;

@@ -24,14 +24,13 @@ import { repositories } from "@/lib/repositories";
  */
 export default async function Home() {
   const { vehicles, content } = repositories;
-  const [featured, all, markets, steps, services, testimonials, studioCar] = await Promise.all([
+  const [featured, all, markets, steps, services, testimonials] = await Promise.all([
     vehicles.featured(6),
     vehicles.list(),
     content.markets(),
     content.journey(),
     content.services(),
     content.testimonials(),
-    vehicles.getBySlug("2015-ferrari-458-italia"),
   ]);
   const counts = all.reduce<Record<string, number>>((acc, v) => {
     if (v.status === "available") acc[v.location.countryCode] = (acc[v.location.countryCode] ?? 0) + 1;
@@ -42,7 +41,7 @@ export default async function Home() {
     <>
       <HomeStage />
       <HeroScene />
-      <KnowChapter vehicle={studioCar} />
+      <KnowChapter />
       <DiscoverySection vehicles={featured} />
       <WorldMap markets={markets} counts={counts} />
       <VerifyChapter />

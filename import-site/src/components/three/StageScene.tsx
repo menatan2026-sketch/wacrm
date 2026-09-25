@@ -13,9 +13,11 @@ import {
   BackdropState,
   SunAndShadows,
   useBackdropDriver,
+  setWeight,
   useBackdropTextures,
 } from "./Backdrops";
-import { director, getStageConfig, hudAnchors } from "./director";
+import { director, getStageConfig, hudAnchors, setStageConfig } from "./director";
+import { PortTerminal, Showroom, ShowroomEnvLights } from "./SceneSets";
 import { DynamicEnvironment, PaletteTarget } from "./DynamicEnvironment";
 import { Globe, GLOBE_ALIGN, latLngToVec3, type GlobeState } from "./Globe";
 import { BASE_POSE, chapterPose, NUMERIC_KEYS, type Pose } from "./poses";
@@ -35,8 +37,8 @@ import {
   type FloorFadeHandle,
   type LineFrameHandle,
 } from "./StageFx";
-import { createVehicleMaterials, findPaint, findWheel, lerpPaint, lerpWheel } from "./vehicle-materials";
-import { VehicleModel, type VehicleHandles } from "./VehicleModel";
+import { createVehicleMaterials, updateVehicleMaterials } from "./vehicle-materials";
+import { createVehicleHandles, poseOpenables, poseWheels, VehicleModel, type OpenableId, type VehicleHandles } from "./VehicleModel";
 
 const K_MIN = 1 / 150;
 const GLOBE_RADIUS_LOCAL = 2.5 / K_MIN;
@@ -46,6 +48,8 @@ const INSTANT = new Set<keyof Pose>(["scanner", "gate"]);
 /** Scalars that settle a bit faster than the camera. */
 const FAST = new Set<keyof Pose>(["container", "containerOpacity", "plate", "fade", "headlights", "taillights", "speed", "ring"]);
 
+const FOG_DARK = new THREE.Color("#030304");
+const FOG_DAWN = new THREE.Color("#9d8b76");
 const tmpV = new THREE.Vector3();
 const tmpT = new THREE.Vector3();
 const tmpN = new THREE.Vector3();
@@ -61,7 +65,7 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
   const model = getVehicleModel(HERO_MODEL_ID)!;
 
   const materials = useMemo(() => createVehicleMaterials(), []);
-  const handles = useRef<VehicleHandles>({ wheels: [], plate: null });
+  const handles = useRef<VehicleHandles>(createVehicleHandles());
   const palette = useMemo(() => new PaletteTarget("studio"), []);
   const globeState = useMemo<GlobeState>(() => ({ opacity: 0, draw: 0, spin: 0, focus: null }), []);
 
@@ -150,6 +154,16 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
   useBackdropDriver(backdrop3, loadedBackdrops, snap ? 60 : 2.2);
   useEffect(() => {
     scene.userData.backdrop = backdrop3;
+    // QA / deep links: ?cfg=doors:1,hood:1,view:cabin,interior:rosso
+    const raw = new URLSearchParams(window.location.search).get("cfg");
+    if (raw) {
+      const patch: Record<string, string | boolean> = {};
+      for (const pair of raw.split(",")) {
+        const [k, v] = pair.split(":");
+        if (k) patch[k] = v === "1" ? true : v === "0" ? false : v;
+      }
+      setStageConfig(patch as never);
+    }
   }, [scene, backdrop3]);
 
   useFrame((state, rawDt) => {
@@ -162,6 +176,9 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
       env: cfg.env,
       lights: cfg.lights,
       view: cfg.view,
+      anchors: model.anchors,
+      cabin: model.cabin,
+      yaw: live.current.carYaw + (director.chapter === "know" ? director.drag.yaw : 0),
     });
 
     // Intro: the car resolves out of darkness once the model is ready.
@@ -239,8 +256,11 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
       bu.uHorizonStrength.value = cur.horizon;
       bu.uGlow.value.set(cur.palette === "dusk" ? "#4a2a22" : cur.palette === "transit" || cur.palette === "night" ? "#18213a" : "#454a53");
     }
-    fog.near = cur.fogNear;
-    fog.far = cur.fogFar;
+    // Dawn haze over the port; the hall stays clean.
+    const portW = setWeight(backdrop3, "port");
+    fog.near = THREE.MathUtils.lerp(cur.fogNear, 55, portW);
+    fog.far = THREE.MathUtils.lerp(cur.fogFar, 300, portW);
+    fog.color.copy(FOG_DARK).lerp(FOG_DAWN, portW);
 
     /* Floor */
     const floorVis = cur.floor * (1 - z) * (1 - photo);
@@ -265,10 +285,24 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
     const dz = cur.carZ - lastCarZ.current;
     lastCarZ.current = cur.carZ;
     wheelSpin.current += dz / 0.34;
-    for (const w of handles.current.wheels) w.rotation.x = wheelSpin.current;
+    poseWheels(handles.current, wheelSpin.current, cur.steer);
 
-    lerpPaint(materials.paint, findPaint(cfg.paint), 1 - Math.exp(-dt * 4));
-    lerpWheel(materials.rims, findWheel(cfg.wheel), 1 - Math.exp(-dt * 4));
+    // Hinged parts: the story's choreography, or the visitor's own choice
+    // while the configurator is on screen.
+    const own = director.chapter === "know";
+    poseOpenables(
+      handles.current,
+      {
+        doorL: Math.max(cur.doors, own && cfg.doors ? 1 : 0),
+        doorR: Math.max(cur.doors, own && cfg.doors ? 1 : 0),
+        hood: Math.max(cur.hood, own && cfg.hood ? 1 : 0),
+        hatch: Math.max(cur.hatch, own && cfg.hatch ? 1 : 0),
+      },
+      snap ? 1 : Math.min(rawDt, 0.1),
+      snap,
+    );
+
+    updateVehicleMaterials(materials, cfg, 1 - Math.exp(-dt * 4));
     materials.headlights.emissiveIntensity = cur.headlights * 5;
     materials.taillights.emissiveIntensity = cur.taillights * 3.5;
     // Beams read in the dark; in daylight only the lamps themselves glow.
@@ -281,7 +315,8 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
     if (plate) {
       plate.visible = cur.plate > 0.02;
       plate.scale.setScalar(0.6 + 0.4 * cur.plate);
-      (plate.material as THREE.MeshStandardMaterial).opacity = cur.plate;
+      const pm = (plate as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+      if (pm) pm.opacity = cur.plate;
     }
 
     /* Effects */
@@ -353,6 +388,21 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
 
   const reflector = quality === "high";
 
+  // Clicking a door / hood / hatch in the configurator toggles it.
+  const togglePart = useCallback((id: OpenableId) => {
+    if (director.chapter !== "know") return;
+    const c = getStageConfig();
+    if (id === "doorL" || id === "doorR") setStageConfig({ doors: !c.doors });
+    else setStageConfig({ [id]: !c[id] });
+  }, []);
+  const hoverPart = useCallback((id: OpenableId | null) => {
+    const next = director.chapter === "know" ? id : null;
+    if (director.hoverPart === next) return;
+    director.hoverPart = next;
+    if (next) document.body.dataset.hoverPart = next;
+    else delete document.body.dataset.hoverPart;
+  }, []);
+
   return (
     <>
       <DynamicEnvironment
@@ -363,7 +413,10 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
         dirty={backdrop3}
       >
         <BackdropEnvSpheres state={backdrop3} loaded={loadedBackdrops} />
+        <ShowroomEnvLights state={backdrop3} />
       </DynamicEnvironment>
+      <Showroom state={backdrop3} quality={quality} envTex={envTex} />
+      <PortTerminal state={backdrop3} envTex={envTex} />
       <Backdrop ref={backdrop} />
       <BackdropSkyboxes state={backdrop3} loaded={loadedBackdrops} />
       <SunAndShadows state={backdrop3} anchor={car} gain={sunGain} enabled={quality !== "low"} mapSize={quality === "high" ? 2048 : 1024} />
@@ -371,7 +424,7 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
       <group ref={world}>
         <group ref={car}>
           <Suspense fallback={null}>
-            <VehicleModel model={model} materials={materials} handles={handles} />
+            <VehicleModel model={model} materials={materials} handles={handles} onPartClick={togglePart} onPartHover={hoverPart} />
             <LoadedSignal />
           </Suspense>
           <HeadlightGlow ref={glow} positions={headlightPositions} />
@@ -447,7 +500,7 @@ function LoadedSignal() {
   useEffect(() => {
     director.loadedAt = clock.elapsedTime;
     document.documentElement.dataset.stage = "ready";
-    if (window.location.search.includes("debug")) Object.assign(window, { __scene: scene, __camera: camera, __THREE: THREE });
+    if (window.location.search.includes("debug")) Object.assign(window, { __scene: scene, __camera: camera, __THREE: THREE, __stage: setStageConfig });
   }, [clock, scene, camera]);
   return null;
 }

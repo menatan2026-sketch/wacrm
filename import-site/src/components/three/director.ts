@@ -17,13 +17,23 @@ export const CHAPTERS: ChapterId[] = ["hero", "know", "find", "verify", "bring",
 
 export type QualityTier = "high" | "medium" | "low";
 
+/** Camera presets; "engine" / "frunk" frame an opened bay. */
+export type StageView = "free" | "front" | "side" | "rear" | "top" | "cabin" | "engine" | "frunk";
+
 export interface StageConfig {
   paint: string;
   wheel: string;
+  interior: string;
+  trim: string;
+  caliper: string;
   env: EnvironmentId;
   lights: boolean;
+  /** Hinged parts opened from the configurator (or by clicking the car). */
+  doors: boolean;
+  hood: boolean;
+  hatch: boolean;
   /** Camera preset requested from the configurator UI (consumed by the rig). */
-  view: "free" | "front" | "side" | "rear" | "top";
+  view: StageView;
   market: string | null;
   inspection: number;
 }
@@ -42,14 +52,22 @@ export const director = {
   reducedMotion: false,
   /** Seconds since the car model finished loading (for the reveal). */
   loadedAt: -1,
+  /** Hinged part under the pointer (drives the cursor label). */
+  hoverPart: null as string | null,
 };
 
 const listeners = new Set<() => void>();
 let config: StageConfig = {
   paint: "graphite",
   wheel: "satin-black",
+  interior: "cuoio",
+  trim: "carbon",
+  caliper: "graphite",
   env: "studio",
   lights: false,
+  doors: false,
+  hood: false,
+  hatch: false,
   view: "free",
   market: null,
   inspection: 0,

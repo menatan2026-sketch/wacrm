@@ -17,6 +17,9 @@
 
 export type BackdropId = "studio" | "sunrise" | "night" | "city";
 
+/** Built 3D sets layered over (or replacing) the photograph. */
+export type SetId = "showroom" | "port";
+
 export interface BackdropDef {
   id: BackdropId;
   url: string;
@@ -35,6 +38,12 @@ export interface BackdropDef {
   studioStrips: number;
   /** Highlight ceiling for the panorama (tames softboxes that would bloom). */
   maxRadiance?: number;
+  /** A 3D set built around the car (the photo then only lights / fills the sky). */
+  set?: SetId;
+  /** Hide the photographed backdrop entirely (the set encloses the car). */
+  hideSkybox?: boolean;
+  /** Key-light direction override (else found from the panorama). */
+  sunDir?: [number, number, number];
 }
 
 export const backdrops: Record<BackdropId, BackdropDef> = {
@@ -48,11 +57,15 @@ export const backdrops: Record<BackdropId, BackdropDef> = {
     groundRadius: 28,
     rotationY: Math.PI,
     background: 0.24,
-    lighting: 1.1,
+    lighting: 0.6,
     sun: { color: "#fff6ec", intensity: 1 },
     shadowOpacity: 0.6,
-    studioStrips: 0.22,
+    studioStrips: 0.18,
     maxRadiance: 16,
+    // The delivery hall: the studio photo only fills the reflections.
+    set: "showroom",
+    hideSkybox: true,
+    sunDir: [-0.18, 1, 0.12],
   },
   sunrise: {
     id: "sunrise",
@@ -66,6 +79,8 @@ export const backdrops: Record<BackdropId, BackdropDef> = {
     sun: { color: "#ffd2a1", intensity: 3.6 },
     shadowOpacity: 0.72,
     studioStrips: 0.2,
+    // Arrival at the port: asphalt, containers and cranes under the dawn sky.
+    set: "port",
   },
   city: {
     id: "city",

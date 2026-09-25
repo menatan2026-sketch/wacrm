@@ -41,6 +41,7 @@ export default async function RequestPage(props: PageProps<"/request">) {
             make: one("make"),
             model: one("model"),
             color: one("color"),
+            message: one("message"),
             budget: budget ? `₪${Number(budget).toLocaleString("en-US")}` : undefined,
           }}
         />

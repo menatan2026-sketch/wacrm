@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { GroundedSkybox } from "three/examples/jsm/objects/GroundedSkybox.js";
 import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
 import { UltraHDRLoader } from "three/examples/jsm/loaders/UltraHDRLoader.js";
-import { BACKDROP_IDS, backdrops, type BackdropDef, type BackdropId } from "@/config/environments";
+import { BACKDROP_IDS, backdrops, type BackdropDef, type BackdropId, type SetId } from "@/config/environments";
 
 /* ── Loading (module-level cache, shared by every canvas) ─────────── */
 
@@ -184,7 +184,8 @@ export function useBackdropDriver(state: BackdropState, loaded: Partial<Record<B
       const b = loaded[id];
       if (!w || !b) continue;
       const def = backdrops[id];
-      tmpDir.addScaledVector(b.sunLocal.clone().applyAxisAngle(THREE.Object3D.DEFAULT_UP, def.rotationY), w);
+      const dir = def.sunDir ? new THREE.Vector3(...def.sunDir).normalize() : b.sunLocal.clone().applyAxisAngle(THREE.Object3D.DEFAULT_UP, def.rotationY);
+      tmpDir.addScaledVector(dir, w);
       tmpCol.add(new THREE.Color(def.sun.color).multiplyScalar(w));
       intensity += def.sun.intensity * w;
       shadow += def.shadowOpacity * w;
@@ -197,6 +198,13 @@ export function useBackdropDriver(state: BackdropState, loaded: Partial<Record<B
     state.studioStrips = strips;
     if (changed) state.envDirty = true;
   });
+}
+
+/** How present a built set is (0–1): the weight of every backdrop that uses it. */
+export function setWeight(state: BackdropState, set: SetId) {
+  let w = 0;
+  for (const id of BACKDROP_IDS) if (backdrops[id].set === set) w += state.weights[id];
+  return Math.min(1, w * state.visibility);
 }
 
 /* ── Visible grounded skyboxes ────────────────────────────────────── */
@@ -224,7 +232,7 @@ function Skybox({ def, loaded, state }: { def: BackdropDef; loaded: LoadedBackdr
   );
 
   useFrame(() => {
-    const o = state.weights[def.id] * state.visibility;
+    const o = def.hideSkybox ? 0 : state.weights[def.id] * state.visibility;
     mesh.visible = o > 0.002;
     const mat = mesh.material as THREE.MeshBasicMaterial;
     mat.opacity = Math.min(1, o);
