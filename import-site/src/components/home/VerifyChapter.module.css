@@ -1,0 +1,239 @@
+.verify {
+  height: 420vh;
+}
+
+.tags {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tag {
+  --vis: 0;
+  --win: clamp(0, min(calc((var(--p, 0) - var(--a)) * 30), calc((var(--b) - var(--p, 0)) * 30)), 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: calc(var(--win) * var(--vis));
+  will-change: transform;
+}
+
+.target {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  transform: scale(calc(0.5 + var(--win) * 0.5));
+}
+.target::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.leader {
+  position: absolute;
+  top: 0;
+  left: 13px;
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), rgba(217, 187, 146, 0.2));
+  transform-origin: left;
+  transform: scaleX(var(--win));
+}
+.tag[data-side="left"] .leader {
+  left: auto;
+  right: 13px;
+  transform-origin: right;
+  background: linear-gradient(270deg, var(--accent), rgba(217, 187, 146, 0.2));
+}
+
+.card {
+  position: absolute;
+  top: -40px;
+  left: 142px;
+  width: 260px;
+  padding: 16px 18px;
+  background: rgba(6, 6, 8, 0.78);
+  border: 1px solid var(--line-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transform: translate3d(calc((1 - var(--win)) * 16px), 0, 0);
+}
+.tag[data-side="left"] .card {
+  left: auto;
+  right: 142px;
+  transform: translate3d(calc((1 - var(--win)) * -16px), 0, 0);
+}
+.tagIndex {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  color: var(--text-4);
+}
+.tagTitle {
+  font-stretch: 115%;
+  font-weight: 560;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.reading {
+  font-size: 0.8125rem;
+  color: var(--text-2);
+}
+.status {
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--verified);
+}
+.status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status[data-status="Reported"] {
+  color: var(--reported);
+}
+.status[data-status="Inspected"] {
+  color: var(--verified);
+}
+
+.frame {
+  position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  padding-top: calc(var(--header-h) + 36px);
+  padding-bottom: clamp(28px, 5vh, 56px);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  opacity: clamp(0, min(calc(var(--p, 0) * 14 - 0.6), calc((0.24 - var(--p, 0)) * 12)), 1);
+  transform: translate3d(0, calc(var(--p, 0) * -120px), 0);
+}
+
+.checklist {
+  position: absolute;
+  left: var(--gutter);
+  bottom: clamp(28px, 5vh, 56px);
+  width: 330px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px;
+  background: rgba(6, 6, 8, 0.66);
+  border: 1px solid var(--line);
+  opacity: clamp(0, min(calc((var(--p, 0) - 0.16) * 10), calc((1 - var(--p, 0)) * 10)), 1);
+}
+.checklist ol {
+  display: flex;
+  flex-direction: column;
+}
+.checklist li {
+  --on: clamp(0, calc((var(--p, 0) - var(--t)) * 40), 1);
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 2px 12px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.875rem;
+  color: rgba(241, 240, 236, calc(0.4 + var(--on) * 0.6));
+}
+.box {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--line-strong);
+  position: relative;
+}
+.box::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 5px;
+  height: 9px;
+  border: solid var(--verified);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg) scale(var(--on));
+  opacity: var(--on);
+}
+.source {
+  grid-column: 2;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-4);
+}
+.note {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .frame {
+    flex-direction: column;
+    padding-top: calc(var(--header-h) + 12px);
+  }
+  .head h2 {
+    font-size: clamp(2.2rem, 11vw, 3.4rem);
+  }
+  .checklist {
+    position: static;
+    align-self: stretch;
+    width: auto;
+    margin-top: auto;
+    padding: 14px 16px;
+    gap: 8px;
+  }
+  .checklist ol {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 14px;
+  }
+  .checklist li {
+    font-size: 0.75rem;
+    padding: 6px 0;
+  }
+  .source,
+  .note {
+    display: none;
+  }
+  /* Phones: pin the reading card to a fixed band, independent of the anchor. */
+  .card {
+    width: auto;
+    left: calc(var(--gutter) - var(--x, 0) * 1px);
+    right: auto;
+    width: calc(100vw - var(--gutter) * 2);
+    top: calc(14svh - var(--y, 0) * 1px + 72px);
+    padding: 12px 14px;
+  }
+  .tag[data-side="left"] .card {
+    right: auto;
+    left: calc(var(--gutter) - var(--x, 0) * 1px);
+  }
+  .leader {
+    display: none;
+  }
+}

@@ -1,0 +1,147 @@
+.field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.hint {
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--text-4);
+}
+
+.control {
+  width: 100%;
+  height: 48px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  border-radius: 0;
+  outline: none;
+  font-size: 1.0625rem;
+  color: var(--text);
+  transition: border-color 0.35s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.control:focus {
+  border-color: var(--text);
+}
+.control::placeholder {
+  color: var(--text-4);
+}
+.control[aria-invalid="true"] {
+  border-color: #e38c7c;
+}
+
+select.control {
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4.5 6 8l4-3.5' fill='none' stroke='%23a9a8a4' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  cursor: pointer;
+}
+select.control option {
+  background: #0d0d10;
+  color: var(--text);
+}
+
+textarea.control {
+  height: auto;
+  min-height: 120px;
+  padding: 12px 0;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.prefix {
+  position: absolute;
+  left: 0;
+  bottom: 13px;
+  color: var(--text-3);
+  font-size: 1.0625rem;
+}
+.withPrefix .control {
+  padding-left: 48px;
+}
+
+.error {
+  font-size: 0.75rem;
+  color: #e9a092;
+}
+
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.segmented button {
+  height: 40px;
+  padding: 0 14px;
+  font-size: 0.8125rem;
+  color: var(--text-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition:
+    color 0.3s,
+    background-color 0.3s,
+    box-shadow 0.3s;
+}
+.segmented button:hover {
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+.segmented button[aria-pressed="true"] {
+  background: var(--text);
+  color: #0a0a0b;
+  box-shadow: none;
+}
+
+.check {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  font-size: 0.875rem;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.check input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+}
+.check input::after {
+  content: "";
+  width: 5px;
+  height: 9px;
+  border: solid #0a0a0b;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg) translate(-1px, -1px) scale(0);
+  transition: transform 0.25s var(--ease-out);
+}
+.check input:checked {
+  background: var(--text);
+  border-color: var(--text);
+}
+.check input:checked::after {
+  transform: rotate(45deg) translate(-1px, -1px) scale(1);
+}

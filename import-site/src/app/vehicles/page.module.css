@@ -1,0 +1,3 @@
+.page {
+  padding-bottom: clamp(96px, 14vh, 180px);
+}

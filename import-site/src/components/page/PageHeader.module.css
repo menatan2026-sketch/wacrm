@@ -1,0 +1,27 @@
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-top: calc(var(--header-h) + clamp(56px, 10vh, 120px));
+  padding-bottom: clamp(48px, 7vw, 96px);
+}
+.index {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.index::before {
+  content: "";
+  width: 36px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+.lede {
+  max-width: 52ch;
+}

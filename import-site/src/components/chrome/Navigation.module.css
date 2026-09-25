@@ -1,0 +1,228 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: var(--header-h);
+  transition:
+    transform 0.8s var(--ease-out),
+    background-color 0.6s var(--ease-out),
+    backdrop-filter 0.6s var(--ease-out);
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1s var(--ease-out);
+}
+
+.header[data-scrolled="true"] {
+  background: rgba(5, 5, 6, 0.62);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+.header[data-scrolled="true"]::after {
+  transform: scaleX(1);
+}
+.header[data-hidden="true"] {
+  transform: translateY(-100%);
+}
+.header[data-open="true"] {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.inner {
+  height: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  justify-self: start;
+  display: inline-flex;
+  padding: 8px 0;
+}
+
+.nav ul {
+  display: flex;
+  gap: clamp(18px, 2.2vw, 40px);
+}
+
+.navLink {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  padding: 8px 0;
+  overflow: hidden;
+  transition: color 0.4s var(--ease-out);
+}
+
+/* Rolling text on hover */
+.navLink span {
+  display: inline-block;
+  transition: transform 0.6s var(--ease-out);
+}
+.navLink span::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  color: var(--text);
+}
+.navLink:hover span {
+  transform: translateY(-100%);
+}
+.navLink[aria-current="page"] {
+  color: var(--text);
+}
+
+.actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.burger {
+  display: none;
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+.burger span {
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  height: 1px;
+  background: var(--text);
+  transition:
+    transform 0.6s var(--ease-out),
+    top 0.6s var(--ease-out);
+}
+.burger span:first-child {
+  top: 18px;
+}
+.burger span:last-child {
+  top: 25px;
+}
+.burger[aria-expanded="true"] span:first-child {
+  top: 22px;
+  transform: rotate(45deg);
+}
+.burger[aria-expanded="true"] span:last-child {
+  top: 22px;
+  transform: rotate(-45deg);
+}
+
+/* ── Fullscreen menu ─────────────────────────────────────────────── */
+
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: #050506;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.9s var(--ease-in-out);
+  visibility: hidden;
+}
+.menu[data-open="true"] {
+  clip-path: inset(0 0 0 0);
+  visibility: visible;
+}
+.menu:not([data-open="true"]) {
+  transition:
+    clip-path 0.7s var(--ease-in-out),
+    visibility 0s linear 0.7s;
+}
+
+.menuInner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--header-h) + 28px) var(--gutter) max(28px, env(safe-area-inset-bottom));
+  gap: 24px;
+}
+
+.menuList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.menuList li {
+  overflow: hidden;
+}
+.menuList a {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  font-stretch: 125%;
+  font-weight: 540;
+  font-size: clamp(2.2rem, 10vw, 4rem);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1.05;
+  transform: translateY(110%);
+  transition: transform 0.9s var(--ease-out);
+  transition-delay: calc(0.18s + var(--i) * 0.055s);
+}
+.menu[data-open="true"] .menuList a {
+  transform: none;
+}
+.menuIndex {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  color: var(--text-3);
+  font-weight: 400;
+  transform: translateY(-1.2em);
+}
+
+.menuFoot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out) 0.5s;
+}
+.menu[data-open="true"] .menuFoot {
+  opacity: 1;
+}
+
+@media (max-width: 1080px) {
+  .nav {
+    display: none;
+  }
+  .inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .burger {
+    display: block;
+  }
+}
+
+@media (max-width: 560px) {
+  .cta {
+    display: none !important;
+  }
+}
