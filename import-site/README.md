@@ -130,9 +130,20 @@ the repository implementations.
   same value.
 - `poses.ts` maps each chapter's progress to a camera/lighting/effects
   pose; `StageScene.tsx` damps the live scene toward it.
-- The studio lighting is procedural (`DynamicEnvironment.tsx`): light
-  formers rendered into a cube map, re-rendered only while the palette
-  changes (studio → inspection → transit → dusk → night).
+- Backdrops are real HDRI photographs (`config/environments.ts`, CC0 from
+  Poly Haven): studio, golden-hour field, city arcade, night. Each is
+  projected as a grounded skybox so the car stands *in* the photo, lights
+  the reflections, and drives a sun light found from the panorama's
+  brightest texels, with soft shadows onto an invisible catcher.
+  Panoramas are clamped on load (NaN/Inf-safe; per-backdrop highlight
+  ceiling). A new backdrop fades in only once loaded.
+- Reflections come from one cube map (`DynamicEnvironment.tsx`): the
+  weighted HDRIs plus procedural light formers (studio strips, dusk,
+  night…), re-rendered only when something changes.
+- Materials: clear-coat paint with a metallic-flake normal map, brushed
+  metal, grained leather/rubber and a carbon weave (`textures.ts`).
+- Finishing (`Effects.tsx`): ACES tone mapping, bloom on true highlights,
+  vignette; N8AO ambient occlusion on the high tier, SMAA on medium.
 - The globe is the same scene zoomed out ~150×: the car literally sits
   on Israel as the planet unfolds beneath it.
 - When no 3D chapter is on screen, the canvas stops rendering.

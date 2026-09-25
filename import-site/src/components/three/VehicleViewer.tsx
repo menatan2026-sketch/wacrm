@@ -6,6 +6,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import {
+  environmentBackdrop,
   environmentOptions,
   getVehicleModel,
   paintOptions,
@@ -13,7 +14,9 @@ import {
   type EnvironmentId,
 } from "@/config/vehicle-models";
 import { Light, Plus, Rotate } from "@/components/ui/icons";
+import { BackdropEnvSpheres, BackdropSkyboxes, BackdropState, SunAndShadows, useBackdropDriver, useBackdropTextures } from "./Backdrops";
 import { DynamicEnvironment, PaletteTarget } from "./DynamicEnvironment";
+import { Effects } from "./Effects";
 import { Backdrop, FloorFade, FloorGlow, HeadlightGlow, setHeadlightGlow, type BackdropHandle } from "./StageFx";
 import { createVehicleMaterials, findPaint, findWheel, lerpPaint, lerpWheel } from "./vehicle-materials";
 import { VehicleModel, type VehicleHandles } from "./VehicleModel";
@@ -48,6 +51,10 @@ function Scene({ modelId, state, onReady }: { modelId: string; state: ViewerStat
   const onTex = useCallback((t: THREE.Texture) => setEnvTex(t), []);
   const { camera } = useThree();
   const flying = useRef<THREE.Vector3 | null>(null);
+  const car = useRef<THREE.Group>(null!);
+  const bd = useMemo(() => new BackdropState(), []);
+  const loaded = useBackdropTextures([environmentBackdrop[state.env]], ["studio", "sunrise", "city", "night"]);
+  useBackdropDriver(bd, loaded);
 
   useEffect(() => {
     if (!envTex) return;
@@ -73,7 +80,9 @@ function Scene({ modelId, state, onReady }: { modelId: string; state: ViewerStat
 
   useFrame((_, dt) => {
     const k = 1 - Math.exp(-dt * 3);
+    bd.target = environmentBackdrop[state.env];
     palette.set(state.env === "dusk" ? "dusk" : state.env === "night" ? "night" : "studio");
+    for (const k2 of Object.keys(palette.intensity) as (keyof typeof palette.intensity)[]) palette.intensity[k2] *= bd.studioStrips;
     lerpPaint(materials.paint, findPaint(state.paint), k);
     lerpWheel(materials.rims, findWheel(state.wheel), k);
     const on = state.lights ? 1 : 0;
@@ -97,20 +106,20 @@ function Scene({ modelId, state, onReady }: { modelId: string; state: ViewerStat
 
   return (
     <>
-      <DynamicEnvironment target={palette} onTexture={onTex} />
+      <DynamicEnvironment target={palette} onTexture={onTex} dirty={bd}>
+        <BackdropEnvSpheres state={bd} loaded={loaded} />
+      </DynamicEnvironment>
       <Backdrop ref={backdrop} />
-      <directionalLight position={[-5, 7, 6]} intensity={1} />
-      <Suspense fallback={null}>
-        <VehicleModel model={model} materials={materials} handles={handles} />
-        <Ready onReady={onReady} />
-      </Suspense>
+      <BackdropSkyboxes state={bd} loaded={loaded} />
+      <SunAndShadows state={bd} anchor={car} />
+      <group ref={car}>
+        <Suspense fallback={null}>
+          <VehicleModel model={model} materials={materials} handles={handles} />
+          <Ready onReady={onReady} />
+        </Suspense>
+      </group>
       <HeadlightGlow ref={glow} positions={[[hx, hy, hz], [-hx, hy, hz]]} />
-      <mesh rotation-x={-Math.PI / 2} position-y={-0.001}>
-        <planeGeometry args={[80, 80]} />
-        <meshStandardMaterial color="#060607" roughness={0.4} metalness={0.5} envMap={envTex} envMapIntensity={0.06} />
-      </mesh>
-      <FloorGlow />
-      <FloorFade />
+      <ProceduralFloor state={bd} envTex={envTex} />
       <OrbitControls
         ref={controls as never}
         makeDefault
@@ -129,6 +138,24 @@ function Scene({ modelId, state, onReady }: { modelId: string; state: ViewerStat
         }}
       />
     </>
+  );
+}
+
+/** Dark studio floor, shown only while no photographic backdrop is up. */
+function ProceduralFloor({ state, envTex }: { state: BackdropState; envTex: THREE.Texture | null }) {
+  const group = useRef<THREE.Group>(null!);
+  useFrame(() => {
+    group.current.visible = state.photo < 0.98;
+  });
+  return (
+    <group ref={group}>
+      <mesh rotation-x={-Math.PI / 2} position-y={-0.001}>
+        <planeGeometry args={[80, 80]} />
+        <meshStandardMaterial color="#060607" roughness={0.4} metalness={0.5} envMap={envTex} envMapIntensity={0.06} />
+      </mesh>
+      <FloorGlow />
+      <FloorFade />
+    </group>
   );
 }
 
@@ -163,6 +190,7 @@ export default function VehicleViewer({ modelId, initialPaint }: { modelId: stri
     <div ref={wrap} className={s.viewer} data-ready={ready} data-cursor="drag">
       <Canvas
         className={s.canvas}
+        shadows
         dpr={[1, 2]}
         camera={{ fov: 30, position: [3.6, 1.2, 5.6], near: 0.05, far: 300 }}
         gl={{ antialias: true, powerPreference: "high-performance" }}
@@ -172,6 +200,7 @@ export default function VehicleViewer({ modelId, initialPaint }: { modelId: stri
         }}
       >
         <Scene modelId={modelId} state={state} onReady={onReady} />
+        <Effects quality="medium" />
       </Canvas>
 
       {!ready && <div className={s.loading}>Preparing studio…</div>}

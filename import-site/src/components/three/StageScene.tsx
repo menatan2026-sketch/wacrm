@@ -7,6 +7,14 @@ import * as THREE from "three";
 import { getVehicleModel, HERO_MODEL_ID } from "@/config/vehicle-models";
 import { markets } from "@/data/markets";
 import { sceneAnchors } from "./anchors";
+import {
+  BackdropEnvSpheres,
+  BackdropSkyboxes,
+  BackdropState,
+  SunAndShadows,
+  useBackdropDriver,
+  useBackdropTextures,
+} from "./Backdrops";
 import { director, getStageConfig, hudAnchors } from "./director";
 import { DynamicEnvironment, PaletteTarget } from "./DynamicEnvironment";
 import { Globe, GLOBE_ALIGN, latLngToVec3, type GlobeState } from "./Globe";
@@ -69,7 +77,9 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
   const scanner = useRef<THREE.Mesh>(null!);
   const glow = useRef<THREE.Group>(null!);
   const spot = useRef<THREE.SpotLight>(null!);
-  const key = useRef<THREE.DirectionalLight>(null!);
+  const backdrop3 = useMemo(() => new BackdropState(), []);
+  const loadedBackdrops = useBackdropTextures(["studio"], quality === "low" ? ["sunrise"] : ["sunrise", "city", "night"]);
+  const sunGain = useRef(1);
   const spotTarget = useMemo(() => {
     const o = new THREE.Object3D();
     o.position.set(0, 0, 14);
@@ -137,6 +147,10 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
 
   // QA flag: ?snap settles every pose instantly (for screenshots on slow GPUs).
   const snap = useMemo(() => typeof window !== "undefined" && window.location.search.includes("snap"), []);
+  useBackdropDriver(backdrop3, loadedBackdrops, snap ? 60 : 2.2);
+  useEffect(() => {
+    scene.userData.backdrop = backdrop3;
+  }, [scene, backdrop3]);
 
   useFrame((state, rawDt) => {
     const dt = snap ? 1 : Math.min(rawDt, 1 / 20);
@@ -174,6 +188,7 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
       else (cur[k] as number) = damp(cur[k] as number, target[k] as number, FAST.has(k) ? base * 2.2 : base, dt);
     }
     cur.palette = target.palette;
+    cur.backdrop = target.backdrop;
 
     /* Camera */
     const persp = camera as THREE.PerspectiveCamera;
@@ -208,9 +223,16 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
     spinFocus.current = damp(spinFocus.current, spinTarget, 2, dt);
     globeState.spin = spinFocus.current;
 
+    /* Photographic backdrop: fades out toward the globe and on the night road */
+    backdrop3.target = cur.backdrop;
+    backdrop3.visibility = (1 - z) * (1 - Math.min(1, cur.road));
+    const photo = backdrop3.photo;
+
     /* Environment + backdrop */
     palette.set(cur.palette);
-    for (const s of Object.keys(palette.intensity) as (keyof typeof palette.intensity)[]) palette.intensity[s] *= cur.envGain;
+    for (const s of Object.keys(palette.intensity) as (keyof typeof palette.intensity)[]) {
+      palette.intensity[s] *= cur.envGain * backdrop3.studioStrips;
+    }
     const bu = backdrop.current?.uniforms;
     if (bu) {
       bu.uGlowStrength.value = cur.glow;
@@ -221,7 +243,7 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
     fog.far = cur.fogFar;
 
     /* Floor */
-    const floorVis = cur.floor * (1 - z);
+    const floorVis = cur.floor * (1 - z) * (1 - photo);
     if (floor.current) floor.current.visible = floorVis > 0.01;
     if (floorGlow.current) {
       floorGlow.current.visible = floorVis > 0.01;
@@ -249,10 +271,11 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
     lerpWheel(materials.rims, findWheel(cfg.wheel), 1 - Math.exp(-dt * 4));
     materials.headlights.emissiveIntensity = cur.headlights * 5;
     materials.taillights.emissiveIntensity = cur.taillights * 3.5;
-    setHeadlightGlow(glow.current, cur.headlights * (1 - z));
+    // Beams read in the dark; in daylight only the lamps themselves glow.
+    setHeadlightGlow(glow.current, cur.headlights * (1 - z) * (1 - 0.75 * photo * (cur.palette === "night" ? 0 : 1)));
     if (spot.current) spot.current.intensity = cur.headlights * 60 * (1 - z);
-    // A soft key light so tyres, trim and cabin read — paint is lit by the env.
-    if (key.current) key.current.intensity = 1.1 * cur.envGain * (1 - z) * (cur.palette === "night" ? 0.35 : 1);
+    // Key/sun light follows the backdrop; dimmed with the story's exposure.
+    sunGain.current = Math.min(1.2, cur.envGain) * (1 - z) * (cur.palette === "night" && photo < 0.5 ? 0.35 : 1);
 
     const plate = handles.current.plate;
     if (plate) {
@@ -291,6 +314,7 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
     if (floorFade.current) {
       floorFade.current.uniforms.uInner.value = 3.5 + cur.road * 6;
       floorFade.current.uniforms.uOuter.value = 15 + cur.road * 30;
+      floorFade.current.uniforms.uStrength.value = 1 - photo;
     }
     onFade?.(cur.fade);
 
@@ -336,9 +360,13 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
         resolution={quality === "low" ? 128 : 256}
         throttle={quality === "low" ? 3 : 1}
         onTexture={onEnvTexture}
-      />
+        dirty={backdrop3}
+      >
+        <BackdropEnvSpheres state={backdrop3} loaded={loadedBackdrops} />
+      </DynamicEnvironment>
       <Backdrop ref={backdrop} />
-      <directionalLight ref={key} position={[-5, 7, 6]} intensity={0} color="#f3f1ec" />
+      <BackdropSkyboxes state={backdrop3} loaded={loadedBackdrops} />
+      <SunAndShadows state={backdrop3} anchor={car} gain={sunGain} enabled={quality !== "low"} mapSize={quality === "high" ? 2048 : 1024} />
 
       <group ref={world}>
         <group ref={car}>
@@ -415,11 +443,12 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
 function LoadedSignal() {
   const clock = useThree((s) => s.clock);
   const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
   useEffect(() => {
     director.loadedAt = clock.elapsedTime;
     document.documentElement.dataset.stage = "ready";
-    if (window.location.search.includes("debug")) (window as unknown as { __scene: THREE.Scene }).__scene = scene;
-  }, [clock, scene]);
+    if (window.location.search.includes("debug")) Object.assign(window, { __scene: scene, __camera: camera, __THREE: THREE });
+  }, [clock, scene, camera]);
   return null;
 }
 

@@ -4,6 +4,7 @@ import { useGLTF, useTexture } from "@react-three/drei";
 import { useLayoutEffect, useMemo, type RefObject } from "react";
 import * as THREE from "three";
 import type { VehicleModelDefinition } from "@/config/vehicle-models";
+import { brushedRoughnessMap, carbonMaps, grainMap } from "./textures";
 import type { VehicleMaterials } from "./vehicle-materials";
 
 export interface VehicleHandles {
@@ -89,10 +90,30 @@ export function VehicleModel({ model, materials, handles, shadowOpacity = 1, sho
       if (!ov) return;
       let next = recoloured.get(mat);
       if (!next) {
-        const c = mat.clone();
-        c.color.set(ov.color);
-        if (ov.metalness !== undefined) c.metalness = ov.metalness;
-        if (ov.roughness !== undefined) c.roughness = ov.roughness;
+        // Upgrade to a physical material so clear coat / textures are available.
+        const c = new THREE.MeshPhysicalMaterial({
+          name: mat.name,
+          color: ov.color,
+          metalness: ov.metalness ?? mat.metalness ?? 0,
+          roughness: ov.roughness ?? mat.roughness ?? 0.5,
+          clearcoat: ov.clearcoat ?? 0,
+          clearcoatRoughness: ov.clearcoatRoughness ?? 0.1,
+          envMapIntensity: ov.envMapIntensity ?? 1,
+          side: mat.side,
+        });
+        if (ov.texture === "carbon") {
+          const cm = carbonMaps();
+          if (cm) {
+            c.map = cm.map;
+            c.normalMap = cm.normalMap;
+            c.normalScale.set(0.6, 0.6);
+          }
+        } else if (ov.texture === "brushed") {
+          c.roughnessMap = brushedRoughnessMap();
+        } else if (ov.texture === "grain") {
+          c.bumpMap = grainMap();
+          c.bumpScale = 0.6;
+        }
         recoloured.set(mat, c);
         next = c;
       }
@@ -101,7 +122,7 @@ export function VehicleModel({ model, materials, handles, shadowOpacity = 1, sho
     scene.traverse((o) => {
       const m = o as THREE.Mesh;
       if (m.isMesh) {
-        m.castShadow = false;
+        m.castShadow = true;
         m.receiveShadow = false;
         // Tame the original interior materials so they sit in the studio light.
         const mat = m.material as THREE.MeshStandardMaterial;

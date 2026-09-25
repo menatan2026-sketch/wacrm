@@ -32,7 +32,19 @@ export interface VehicleModelParts {
 }
 
 /** Recolours original materials by material name (e.g. to neutralise badges). */
-export type MaterialOverrides = Record<string, { color: string; metalness?: number; roughness?: number }>;
+export type MaterialOverrides = Record<
+  string,
+  {
+    color: string;
+    metalness?: number;
+    roughness?: number;
+    clearcoat?: number;
+    clearcoatRoughness?: number;
+    envMapIntensity?: number;
+    /** Procedural / bundled surface detail. */
+    texture?: "carbon" | "brushed" | "grain";
+  }
+>;
 
 export interface VehicleModelDefinition {
   id: string;
@@ -81,9 +93,14 @@ export const vehicleModels: Record<string, VehicleModelDefinition> = {
     // service, not the marque.
     materialOverrides: {
       Ferrari_Yellow: { color: "#1b1c1f", metalness: 0.8, roughness: 0.35 },
-      metal_gray: { color: "#3b3d41", metalness: 1, roughness: 0.42 },
-      Carbon_Fiber: { color: "#18191c", metalness: 0.4, roughness: 0.3 },
-      Interior_light: { color: "#77726b", roughness: 0.7 },
+      metal_gray: { color: "#4a4c51", metalness: 1, roughness: 0.38, texture: "brushed" },
+      metal_chrome: { color: "#e9eaec", metalness: 1, roughness: 0.05, envMapIntensity: 1.2 },
+      Carbon_Fiber: { color: "#ffffff", metalness: 0.3, roughness: 0.35, clearcoat: 1, clearcoatRoughness: 0.05, texture: "carbon" },
+      Tires: { color: "#121213", metalness: 0, roughness: 0.92, texture: "grain" },
+      Leather: { color: "#2a2826", metalness: 0, roughness: 0.62, texture: "grain" },
+      Interior_light: { color: "#6f6a63", roughness: 0.7, texture: "grain" },
+      Interior_dark: { color: "#1f1f21", roughness: 0.75 },
+      plastic_gray: { color: "#2b2c2f", roughness: 0.6 },
     },
     anchors: {
       frontWheel: [0.95, 0.36, 1.16],
@@ -145,10 +162,19 @@ export const wheelFinishOptions: WheelFinishOption[] = [
   { id: "titanium", name: "Titanium", color: "#5d6066", metalness: 1, roughness: 0.25 },
 ];
 
-export type EnvironmentId = "studio" | "dusk" | "night";
+export type EnvironmentId = "studio" | "dusk" | "city" | "night";
 
 export const environmentOptions: { id: EnvironmentId; name: string }[] = [
   { id: "studio", name: "Studio" },
-  { id: "dusk", name: "Dusk" },
+  { id: "dusk", name: "Golden hour" },
+  { id: "city", name: "City" },
   { id: "night", name: "Night" },
 ];
+
+/** Which photographic backdrop each configurator environment uses. */
+export const environmentBackdrop = {
+  studio: "studio",
+  dusk: "sunrise",
+  city: "city",
+  night: "night",
+} as const;

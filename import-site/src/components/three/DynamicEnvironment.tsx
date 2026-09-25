@@ -1,7 +1,7 @@
 "use client";
 
-import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { createPortal, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
 
 /**
@@ -124,8 +124,13 @@ export class PaletteTarget {
   }
 }
 
+// Formers are additive emitters, so they never occlude the HDRI behind them.
+function formerMaterial(side: THREE.Side = THREE.DoubleSide) {
+  return new THREE.MeshBasicMaterial({ side, toneMapped: false, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+}
+
 function former(geo: THREE.BufferGeometry, pos: [number, number, number], rot: [number, number, number]) {
-  const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, toneMapped: false }));
+  const mesh = new THREE.Mesh(geo, formerMaterial());
   mesh.position.set(...pos);
   mesh.rotation.set(...rot);
   return mesh;
@@ -136,7 +141,13 @@ export function DynamicEnvironment({
   resolution = 256,
   throttle = 1,
   onTexture,
+  children,
+  dirty,
 }: {
+  /** Extra objects rendered into the env cube (e.g. HDRI spheres). */
+  children?: ReactNode;
+  /** External "needs re-render" flag, cleared after each cube update. */
+  dirty?: { envDirty: boolean };
   target: PaletteTarget;
   resolution?: number;
   /** Re-render at most every N frames while animating (mobile). */
@@ -165,10 +176,7 @@ export function DynamicEnvironment({
       back: [former(strip, [0, 3, -16], [0, 0, 0])],
       front: [former(strip, [-6, 4, 14], [0, Math.PI - 0.4, 0])],
       horizon: [
-        new THREE.Mesh(
-          new THREE.CylinderGeometry(30, 30, 1.6, 48, 1, true),
-          new THREE.MeshBasicMaterial({ side: THREE.BackSide, toneMapped: false }),
-        ),
+        new THREE.Mesh(new THREE.CylinderGeometry(30, 30, 1.6, 48, 1, true), formerMaterial(THREE.BackSide)),
       ],
       floor: [former(new THREE.CircleGeometry(40, 32), [0, -0.5, 0], [-Math.PI / 2, 0, 0])],
     };
@@ -211,8 +219,10 @@ export function DynamicEnvironment({
       current.intensity[s] += di * k;
     }
     frame.current++;
-    if (!needsFirst.current && (delta < 0.004 || frame.current % throttle !== 0)) return;
+    const external = dirty?.envDirty ?? false;
+    if (!needsFirst.current && ((delta < 0.004 && !external) || frame.current % throttle !== 0)) return;
     needsFirst.current = false;
+    if (dirty) dirty.envDirty = false;
     for (const s of SLOTS) {
       for (const m of slots[s]) {
         (m.material as THREE.MeshBasicMaterial).color.copy(current.colors[s]).multiplyScalar(current.intensity[s]);
@@ -222,5 +232,5 @@ export function DynamicEnvironment({
     fbo.texture.needsPMREMUpdate = true;
   });
 
-  return null;
+  return children ? createPortal(children, envScene) : null;
 }

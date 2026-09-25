@@ -21,11 +21,14 @@ export const Backdrop = forwardRef<BackdropHandle>(function Backdrop(_, ref) {
     }),
     [],
   );
-  useImperativeHandle(ref, () => ({ uniforms }), [uniforms]);
+  const mat = useRef<THREE.ShaderMaterial>(null!);
+  // R3F copies each uniform into the material, so hand out the material's own.
+  useImperativeHandle(ref, () => ({ get uniforms() { return mat.current.uniforms as typeof uniforms; } }), []);
   return (
     <mesh renderOrder={-10}>
       <sphereGeometry args={[80, 48, 24]} />
       <shaderMaterial
+        ref={mat}
         side={THREE.BackSide}
         depthWrite={false}
         fog={false}
@@ -401,26 +404,28 @@ export function setHeadlightGlow(group: THREE.Group | null, opacity: number) {
 /* ── Floor fade: dissolves the studio floor into the backdrop ───── */
 
 export interface FloorFadeHandle {
-  uniforms: { uInner: { value: number }; uOuter: { value: number }; uColor: { value: THREE.Color } };
+  uniforms: { uInner: { value: number }; uOuter: { value: number }; uColor: { value: THREE.Color }; uStrength: { value: number } };
 }
 
 export const FloorFade = forwardRef<FloorFadeHandle>(function FloorFade(_, ref) {
   const uniforms = useMemo(
-    () => ({ uInner: { value: 3.5 }, uOuter: { value: 15 }, uColor: { value: new THREE.Color("#030304") } }),
+    () => ({ uInner: { value: 3.5 }, uOuter: { value: 15 }, uColor: { value: new THREE.Color("#030304") }, uStrength: { value: 1 } }),
     [],
   );
-  useImperativeHandle(ref, () => ({ uniforms }), [uniforms]);
+  const mat = useRef<THREE.ShaderMaterial>(null!);
+  useImperativeHandle(ref, () => ({ get uniforms() { return mat.current.uniforms as typeof uniforms; } }), []);
   return (
     <mesh rotation-x={-Math.PI / 2} position-y={0.0015} renderOrder={1}>
       <planeGeometry args={[240, 240]} />
       <shaderMaterial
+        ref={mat}
         transparent
         depthWrite={false}
         fog={false}
         uniforms={uniforms}
         vertexShader={/* glsl */ `varying vec2 vXZ; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vXZ = w.xz; gl_Position = projectionMatrix * viewMatrix * w; }`}
-        fragmentShader={/* glsl */ `uniform float uInner; uniform float uOuter; uniform vec3 uColor; varying vec2 vXZ;
-          void main(){ float r = length(vXZ * vec2(1.0, 0.8)); float a = smoothstep(uInner, uOuter, r);
+        fragmentShader={/* glsl */ `uniform float uInner; uniform float uOuter; uniform vec3 uColor; uniform float uStrength; varying vec2 vXZ;
+          void main(){ float r = length(vXZ * vec2(1.0, 0.8)); float a = smoothstep(uInner, uOuter, r) * uStrength;
           gl_FragColor = vec4(uColor, a); 
           #include <colorspace_fragment>
           }`}

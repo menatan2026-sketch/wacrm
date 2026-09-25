@@ -9,6 +9,7 @@
  * continuous shot.
  */
 import type { ChapterId } from "./director";
+import type { BackdropId } from "@/config/environments";
 import type { PaletteId } from "./DynamicEnvironment";
 
 export interface Pose {
@@ -28,6 +29,8 @@ export interface Pose {
   globeSpin: number;
   /** Target lighting palette — the environment glides to it over time. */
   palette: PaletteId;
+  /** Photographic backdrop ("none" = procedural studio / void). */
+  backdrop: BackdropId | "none";
   envGain: number;
   glow: number;
   horizon: number;
@@ -67,6 +70,7 @@ export const BASE_POSE: Pose = {
   globeDraw: 0,
   globeSpin: 0,
   palette: "studio",
+  backdrop: "studio",
   envGain: 1,
   glow: 0.7,
   horizon: 0,
@@ -131,6 +135,7 @@ const GLOBE: Partial<Pose> = {
   ty: -2.2,
   tz: 0,
   palette: "void",
+  backdrop: "none",
   envGain: 0.5,
   glow: 0.15,
   floor: 0,
@@ -142,7 +147,7 @@ const GLOBE: Partial<Pose> = {
 export interface PoseContext {
   tall: boolean;
   /** Configurator overrides (know chapter). */
-  env: PaletteId;
+  env: "studio" | "dusk" | "city" | "night";
   lights: boolean;
   view: "free" | "front" | "side" | "rear" | "top";
 }
@@ -160,7 +165,19 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
     case "know": {
       const envKey = ctx.env;
       pose = track(p, [
-        [0, { az: 0.42, el: 0.06, dist: 8, shiftX: 0.24, shiftY: -0.1, ty: 0.5, palette: envKey }],
+        [
+          0,
+          {
+            az: 0.42,
+            el: 0.06,
+            dist: 8,
+            shiftX: 0.24,
+            shiftY: -0.1,
+            ty: 0.5,
+            palette: envKey === "city" ? "studio" : envKey,
+            backdrop: ({ studio: "studio", dusk: "sunrise", city: "city", night: "night" } as const)[envKey],
+          },
+        ],
         [0.5, { az: 1.5, el: 0.05, dist: 8.6 }],
         [1, { az: 2.45, el: 0.13, dist: 8.2 }],
       ]);
@@ -190,7 +207,7 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
     case "verify":
       pose = track(p, [
         [0, { ...GLOBE, shiftX: -0.2, globeDraw: 1, globeSpin: 0.45 }],
-        [0.2, { zoom: 0, az: 1.05, el: 0.04, dist: 3.4, tx: 0.82, ty: 0.38, tz: 1.3, shiftX: -0.16, palette: "inspect", envGain: 1, glow: 0.5, floor: 1, dust: 0.6, fogNear: 18, fogFar: 60, globeDraw: 1 }],
+        [0.2, { zoom: 0, az: 1.05, el: 0.04, dist: 3.4, tx: 0.82, ty: 0.38, tz: 1.3, shiftX: -0.16, palette: "inspect", backdrop: "studio", envGain: 1, glow: 0.5, floor: 1, dust: 0.6, fogNear: 18, fogFar: 60, globeDraw: 1 }],
         [0.3, { az: 1.25, dist: 3.0 }],
         [0.38, { az: 0.5, el: 0.16, dist: 3.3, tx: 0.55, ty: 0.66, tz: 1.75 }],
         [0.46, { az: 0.62, dist: 3.1 }],
@@ -215,15 +232,15 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
         [s(3), { az: 1.55, scanner: 1 }],
         [s(3, 0.3), { az: 0.35, el: 0.1, dist: 8.4, scanner: 1.2, palette: "studio", ring: 1 }],
         [s(4), { az: 0.5, ring: 0.6 }],
-        [s(4, 0.1), { az: 1.2, el: 0.14, dist: 13, ring: 0, container: 0, containerOpacity: 1, palette: "transit", glow: 0.25 }],
+        [s(4, 0.1), { az: 1.2, el: 0.14, dist: 13, ring: 0, container: 0, containerOpacity: 1, palette: "transit", backdrop: "none", glow: 0.25 }],
         [s(4, 0.55), { az: 1.5, el: 0.08, dist: 13.5, container: 1, speed: 0, flow: 0 }],
         [s(5), { az: 1.62, speed: 1, flow: 1, dust: 1.4 }],
         [s(5, 0.15), { az: 1.1, el: 0.12, dist: 9.6, containerOpacity: 0, speed: 0, flow: 0, dust: 0.8, gate: 0, palette: "night", glow: 0.3 }],
         [s(6), { az: 0.9, gate: 1 }],
-        [s(6, 0.15), { az: 2.75, el: 0.05, dist: 5.6, tx: 0, ty: 0.5, tz: -1.4, gate: 1.2, plate: 0, palette: "studio", glow: 0.6 }],
+        [s(6, 0.15), { az: 2.75, el: 0.05, dist: 5.6, tx: 0, ty: 0.5, tz: -1.4, gate: 1.2, plate: 0, palette: "studio", backdrop: "studio", glow: 0.6 }],
         [s(6, 0.45), { plate: 1, az: 2.9, dist: 5.2, taillights: 0.8 }],
         [s(7), { az: 2.95 }],
-        [s(7, 0.2), { az: 0.55, el: 0.03, dist: 7.4, tx: 0, ty: 0.5, tz: 0, palette: "dawn", horizon: 0.6, taillights: 0, headlights: 0 }],
+        [s(7, 0.2), { az: 0.55, el: 0.03, dist: 7.4, tx: 0, ty: 0.5, tz: 0, palette: "dawn", backdrop: "sunrise", horizon: 0.6, taillights: 0, headlights: 0 }],
         [1, { az: 0.3, dist: 7.0, headlights: 1 }],
       ]);
       pose.plate = Math.max(pose.plate, p > s(6, 0.4) ? 1 : 0);
@@ -232,14 +249,14 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
 
     case "drive":
       pose = track(p, [
-        [0, { az: 0.95, el: 0.05, dist: 8.6, shiftX: -0.2, shiftY: 0.2, palette: "dusk", headlights: 1, taillights: 0.7, horizon: 1, glow: 0.3, dust: 0.6, plate: 1 }],
+        [0, { az: 0.95, el: 0.05, dist: 8.6, shiftX: -0.2, shiftY: 0.2, palette: "dusk", backdrop: "sunrise", headlights: 1, taillights: 0.7, horizon: 1, glow: 0.3, dust: 0.6, plate: 1 }],
         [1, { az: 0.38, el: 0.07, dist: 6.9 }],
       ]);
       break;
 
     case "final":
       pose = track(p, [
-        [0, { az: 0, el: 0.035, dist: 9.5, tx: 0, ty: 0.62, tz: 0, carZ: -48, headlights: 1, palette: "night", envGain: 0.7, glow: 0.12, road: 1, dust: 0.4, fogNear: 6, fogFar: 42, plate: 1 }],
+        [0, { az: 0, el: 0.035, dist: 9.5, tx: 0, ty: 0.62, tz: 0, carZ: -48, headlights: 1, palette: "night", backdrop: "none", envGain: 0.7, glow: 0.12, road: 1, dust: 0.4, fogNear: 6, fogFar: 42, plate: 1 }],
         [0.62, { carZ: -3.2 }],
         [0.74, { carZ: 1.2, el: 0.02, fade: 0.25 }],
         [0.9, { fade: 1, carZ: 1.6 }],

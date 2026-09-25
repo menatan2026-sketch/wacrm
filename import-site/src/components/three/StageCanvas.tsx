@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { CHAPTERS, director, type ChapterId, type QualityTier } from "./director";
+import { Effects } from "./Effects";
 import { StageScene } from "./StageScene";
 import styles from "./StageCanvas.module.css";
 
@@ -150,8 +151,9 @@ export default function StageCanvas() {
         <Canvas
           dpr={dpr}
           camera={{ fov: 30, near: 0.05, far: 400, position: [6, 1.5, 7] }}
+          shadows
           gl={{
-            antialias: quality !== "low",
+            antialias: quality === "low" ? false : quality === "medium",
             powerPreference: "high-performance",
             alpha: false,
             stencil: false,
@@ -175,6 +177,7 @@ export default function StageCanvas() {
               if (fadeRef.current) fadeRef.current.style.opacity = v.toFixed(3);
             }}
           />
+          {quality !== "low" && <Effects quality={quality} />}
         </Canvas>
       )}
       <div className={styles.vignette} />
