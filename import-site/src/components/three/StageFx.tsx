@@ -46,7 +46,8 @@ export const Backdrop = forwardRef<BackdropHandle>(function Backdrop(_, ref) {
             float glow = exp(-pow(length(vec2(vDir.x * 1.6, h - 0.08)) * 2.2, 2.0));
             float horizon = exp(-pow((h - 0.02) * 11.0, 2.0));
             vec3 col = uBase + uGlow * glow * uGlowStrength + uHorizon * horizon * uHorizonStrength;
-            col *= smoothstep(-0.35, 0.05, h) * 0.85 + 0.15;
+            // Infinity-cove falloff: the wall darkens into the floor, so there's no horizon line.
+            col *= smoothstep(-0.02, 0.22, h) * 0.85 + 0.15;
             gl_FragColor = vec4(col, 1.0);
             #include <colorspace_fragment>
           }`}

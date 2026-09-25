@@ -164,7 +164,7 @@ export function VehicleDetail({ vehicle, related }: { vehicle: Vehicle; related:
             customs valuation, taxes and regulations at the time of import.
           </p>
           <Link href={calcHref} className="link">
-            Adjust in the calculator
+            Calculate import cost
           </Link>
         </div>
         <div className={s.table}>

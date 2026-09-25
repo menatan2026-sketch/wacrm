@@ -209,9 +209,9 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
       // Eight journey steps across the chapter.
       const s = (i: number, f = 0) => (i + f) / 8;
       pose = track(p, [
-        [0, { az: 0.6, el: 0.12, dist: 11.2, shiftY: 0.2, palette: "studio", envGain: 0.85 }],
+        [0, { az: 0.6, el: 0.12, dist: 11.2, shiftX: -0.2, shiftY: 0.18, palette: "studio", envGain: 0.85 }],
         [s(1), { az: 0.9, el: 0.22, dist: 10.2 }],
-        [s(2), { az: 1.35, el: 0.18, dist: 9.2, scanner: 0, palette: "inspect" }],
+        [s(2), { az: 1.35, el: 0.18, dist: 9.2, shiftX: 0, scanner: 0, palette: "inspect" }],
         [s(3), { az: 1.55, scanner: 1 }],
         [s(3, 0.3), { az: 0.35, el: 0.1, dist: 8.4, scanner: 1.2, palette: "studio", ring: 1 }],
         [s(4), { az: 0.5, ring: 0.6 }],

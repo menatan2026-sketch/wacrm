@@ -48,6 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
+        <noscript>
+          <style>{`.reveal-word{transform:none!important}.fade-up,[data-revealed]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <a href="#main" className="sr-only">
           Skip to content
         </a>
