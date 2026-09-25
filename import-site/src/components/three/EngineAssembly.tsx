@@ -215,7 +215,7 @@ export function EngineAssembly({ materials, bay }: { materials: VehicleMaterials
       <mesh geometry={geo.capGeo} position={[-0.18, 0.47, -0.02]} material={m.cap} />
 
       {/* Display lighting: a warm key over the engine plus LED strips. */}
-      <pointLight position={[0, 0.78, 0.05]} color="#ffdcb0" intensity={2.2} distance={1.6} decay={2} />
+      <pointLight position={[0, 0.78, 0.05]} color="#ffdcb0" intensity={1.3} distance={1.6} decay={2} />
       <pointLight position={[0, 0.5, -0.2]} color="#ffe9cc" intensity={0.8} distance={1.1} decay={2} />
       {/* Warm LED strips along the bay walls. */}
       {[1, -1].map((s) => (
@@ -234,6 +234,15 @@ export function EngineAssembly({ materials, bay }: { materials: VehicleMaterials
 export function FrunkAssembly({ materials, frunk }: { materials: VehicleMaterials; frunk: Frunk }) {
   const [w, h, d] = frunk.size;
   const bag = useMemo(() => new RoundedBoxGeometry(w * 0.62, h * 0.42, d * 0.62, 5, 0.05), [w, h, d]);
+  // A softer, more matte hide for the bag; its colour follows the cabin.
+  const bagMat = useMemo(() => {
+    const m = materials.leather.clone();
+    m.color = materials.leather.color;
+    m.roughness = 0.82;
+    m.sheen = 0.15;
+    m.envMapIntensity = 0.3;
+    return m;
+  }, [materials.leather]);
   const handle = useMemo(() => new THREE.TorusGeometry(0.06, 0.009, 10, 32, Math.PI), []);
   return (
     <group position={frunk.position}>
@@ -250,7 +259,7 @@ export function FrunkAssembly({ materials, frunk }: { materials: VehicleMaterial
           <planeGeometry args={[w, h]} />
         </mesh>
       ))}
-      <mesh geometry={bag} position={[0, h * 0.21 + 0.005, 0]} material={materials.leather} castShadow />
+      <mesh geometry={bag} position={[0, h * 0.21 + 0.005, 0]} material={bagMat} castShadow />
       <mesh geometry={handle} position={[0, h * 0.42 + 0.005, 0]} material={materials.leatherAccent} />
     </group>
   );

@@ -111,8 +111,11 @@ export function useBackdropTextures(first: BackdropId[], later: BackdropId[] = [
         .catch((e) => console.warn(`[backdrop] ${id} failed`, e));
     Promise.all(first.map(take)).then(() => {
       if (!alive) return;
+      // A busy render loop can starve idle callbacks indefinitely: cap the wait.
       const idle = (cb: () => void) =>
-        "requestIdleCallback" in window ? (window as Window & { requestIdleCallback: (f: () => void) => void }).requestIdleCallback(cb) : setTimeout(cb, 600);
+        "requestIdleCallback" in window
+          ? (window as Window & { requestIdleCallback: (f: () => void, o?: { timeout: number }) => void }).requestIdleCallback(cb, { timeout: 2500 })
+          : setTimeout(cb, 600);
       idle(() => later.forEach(take));
     });
     return () => {
