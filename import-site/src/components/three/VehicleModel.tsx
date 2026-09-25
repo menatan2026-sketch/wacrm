@@ -2,10 +2,11 @@
 
 import { useGLTF, useTexture } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
-import { useLayoutEffect, useMemo, type RefObject } from "react";
+import { useCallback, useLayoutEffect, useMemo, type RefObject } from "react";
 import * as THREE from "three";
 import type { MaterialSlot, OpenableDef, VehicleModelDefinition } from "@/config/vehicle-models";
 import { EngineAssembly, FrunkAssembly } from "./EngineAssembly";
+import { StarlightHeadliner, type StarlightHandle } from "./StarlightHeadliner";
 import { brushedRoughnessMap, carbonMaps, grainMap } from "./textures";
 import type { VehicleMaterials } from "./vehicle-materials";
 
@@ -36,10 +37,11 @@ export interface VehicleHandles {
   plate: THREE.Object3D | null;
   openables: Partial<Record<OpenableId, OpenableHandle>>;
   steeringWheel: { node: THREE.Object3D; base: THREE.Quaternion; axis: THREE.Vector3 } | null;
+  starlight: StarlightHandle | null;
 }
 
 export function createVehicleHandles(): VehicleHandles {
-  return { wheels: [], plate: null, openables: {}, steeringWheel: null };
+  return { wheels: [], plate: null, openables: {}, steeringWheel: null, starlight: null };
 }
 
 interface Props {
@@ -212,6 +214,12 @@ export function VehicleModel({ model, materials, handles, shadowOpacity = 1, sho
   const shadow = softShadow ?? bakedShadow;
   const plateTex = usePlateTexture();
   const slotted = Boolean(model.materialSlots);
+  const onStarlight = useCallback(
+    (h: StarlightHandle | null) => {
+      if (handles) handles.current.starlight = h;
+    },
+    [handles],
+  );
 
   useLayoutEffect(() => {
     applyMaterial(scene, model.parts.paint, materials.paint);
@@ -394,6 +402,7 @@ export function VehicleModel({ model, materials, handles, shadowOpacity = 1, sho
         <primitive object={scene} onClick={onClick} onPointerOver={onOver} onPointerOut={onOut} />
         {model.engineBay && <EngineAssembly materials={materials} bay={model.engineBay} />}
         {model.frunk && <FrunkAssembly materials={materials} frunk={model.frunk} />}
+        {model.starlight && <StarlightHeadliner def={model.starlight} handle={onStarlight} />}
         <mesh rotation-x={-Math.PI / 2} position-y={0.002} renderOrder={2}>
           <planeGeometry args={shadowScale} />
           <meshBasicMaterial

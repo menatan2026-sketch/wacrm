@@ -16,7 +16,7 @@ import {
   wheelFinishOptions,
   type EnvironmentId,
 } from "@/config/vehicle-models";
-import { Door, Hatch, Hood, Light, Plus, Rotate, Seat } from "@/components/ui/icons";
+import { Door, Hatch, Hood, Light, Plus, Rotate, Seat, Stars } from "@/components/ui/icons";
 import { BackdropEnvSpheres, BackdropSkyboxes, BackdropState, setWeight, SunAndShadows, useBackdropDriver, useBackdropTextures } from "./Backdrops";
 import { DynamicEnvironment, PaletteTarget } from "./DynamicEnvironment";
 import { Effects } from "./Effects";
@@ -26,8 +26,8 @@ import { createVehicleMaterials, updateVehicleMaterials } from "./vehicle-materi
 import { createVehicleHandles, poseOpenables, VehicleModel, type OpenableId, type VehicleHandles } from "./VehicleModel";
 import s from "./VehicleViewer.module.css";
 
-type View = "front" | "side" | "rear" | "top" | "free" | "cabin";
-const VIEW_POS: Record<Exclude<View, "free" | "cabin">, [number, number, number]> = {
+type View = "front" | "side" | "rear" | "top" | "free" | "cabin" | "starlight";
+const VIEW_POS: Record<Exclude<View, "free" | "cabin" | "starlight">, [number, number, number]> = {
   front: [3.6, 1.2, 5.6],
   side: [7, 1.1, 0.01],
   rear: [-3.6, 1.4, -5.6],
@@ -43,6 +43,7 @@ interface ViewerState {
   caliper: string;
   env: EnvironmentId;
   lights: boolean;
+  starlight: boolean;
   doors: boolean;
   hood: boolean;
   hatch: boolean;
@@ -92,9 +93,10 @@ function Scene({
 
   useEffect(() => {
     if (state.view === "free") return;
-    if (state.view === "cabin" && model.cabin) {
-      flying.current = { pos: new THREE.Vector3(...model.cabin.eye), target: new THREE.Vector3(...model.cabin.target).lerp(new THREE.Vector3(...model.cabin.eye), 0.75) };
-    } else if (state.view !== "cabin") {
+    const inside = state.view === "cabin" ? model.cabin : state.view === "starlight" ? model.starlightView : undefined;
+    if (inside) {
+      flying.current = { pos: new THREE.Vector3(...inside.eye), target: new THREE.Vector3(...inside.target).lerp(new THREE.Vector3(...inside.eye), 0.75) };
+    } else if (state.view !== "cabin" && state.view !== "starlight") {
       flying.current = { pos: new THREE.Vector3(...VIEW_POS[state.view]), target: ORBIT_TARGET.clone() };
     }
   }, [state.view, model]);
@@ -102,7 +104,7 @@ function Scene({
   useEffect(() => {
     // Zoom buttons dolly along the view ray.
     const c = controls.current;
-    if (!c || state.view === "cabin") return;
+    if (!c || state.view === "cabin" || state.view === "starlight") return;
     const dir = camera.position.clone().sub(c.target);
     const len = THREE.MathUtils.clamp(dir.length() * (state.zoom > 0 ? 0.85 : 1.18), 3.2, 12);
     flying.current = { pos: c.target.clone().add(dir.setLength(len)), target: c.target.clone() };
@@ -115,6 +117,8 @@ function Scene({
     palette.set(state.env === "dusk" ? "dusk" : state.env === "night" ? "night" : "studio");
     for (const k2 of Object.keys(palette.intensity) as (keyof typeof palette.intensity)[]) palette.intensity[k2] *= bd.studioStrips;
     updateVehicleMaterials(materials, state, k);
+    const sky = handles.current.starlight;
+    if (sky) sky.intensity.value += ((state.starlight ? 1 : 0) - sky.intensity.value) * k;
     const on = state.lights ? 1 : 0;
     materials.headlights.emissiveIntensity += (on * 5 - materials.headlights.emissiveIntensity) * k;
     materials.taillights.emissiveIntensity += (on * 3 - materials.taillights.emissiveIntensity) * k;
@@ -134,10 +138,10 @@ function Scene({
 
     const c = controls.current;
     if (c) {
-      const inCabin = state.view === "cabin";
+      const inCabin = state.view === "cabin" || state.view === "starlight";
       c.minDistance = inCabin ? 0.05 : 3.2;
       c.maxDistance = inCabin ? 1.2 : 12;
-      c.minPolarAngle = inCabin ? 0.6 : 0.15;
+      c.minPolarAngle = inCabin ? 0.05 : 0.15;
       c.maxPolarAngle = inCabin ? 2.1 : Math.PI / 2 - 0.04;
       c.rotateSpeed = inCabin ? -0.35 : 0.6;
     }
@@ -231,6 +235,7 @@ export default function VehicleViewer({ modelId, initialPaint }: { modelId: stri
     caliper: "graphite",
     env: "studio",
     lights: false,
+    starlight: true,
     doors: false,
     hood: false,
     hatch: false,
@@ -347,6 +352,18 @@ export default function VehicleViewer({ modelId, initialPaint }: { modelId: stri
                   </button>
                 ))}
               </div>
+              {model?.starlight && (
+                <div className={s.group}>
+                  <button type="button" className={s.chip} aria-pressed={state.starlight} onClick={() => patch({ starlight: !state.starlight })}>
+                    <Stars width={14} height={14} /> Starlight
+                  </button>
+                  {model.starlightView && (
+                    <button type="button" className={s.chip} aria-pressed={state.view === "starlight"} onClick={() => patch({ view: state.view === "starlight" ? "front" : "starlight", starlight: true })}>
+                      Look up
+                    </button>
+                  )}
+                </div>
+              )}
               {model?.cabin && (
                 <div className={s.group}>
                   <button type="button" className={s.chip} aria-pressed={state.view === "cabin"} onClick={() => patch({ view: state.view === "cabin" ? "front" : "cabin" })}>

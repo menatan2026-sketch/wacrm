@@ -134,3 +134,9 @@ export const Seat = (p: P) => (
     <path d="M8 4h4l-1 9h7l-1 4H7L6 13l2-9ZM9 17v3M15 17v3" />
   </svg>
 );
+/** Starlight headliner. */
+export const Stars = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12 4v4M10 6h4M6 12v3M4.5 13.5h3M17 11v5M14.5 13.5h5M9 18.5h.01M15 5.5h.01M19 19h.01" />
+  </svg>
+);

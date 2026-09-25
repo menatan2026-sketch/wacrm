@@ -166,6 +166,7 @@ export interface PoseContext {
   anchors: Record<"frontWheel" | "headlight" | "cockpit" | "vin" | "engine" | "hood", Vec3>;
   /** Cabin camera (car space) and the car's current yaw, for the interior view. */
   cabin?: { eye: Vec3; target: Vec3 };
+  starlightView?: { eye: Vec3; target: Vec3 };
   yaw: number;
 }
 
@@ -215,7 +216,10 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
         [0.5, { az: 1.5, el: 0.05, dist: 8.6 }],
         [1, { az: 2.45, el: 0.13, dist: 8.2 }],
       ]);
-      if (ctx.view === "cabin" && ctx.cabin) {
+      if (ctx.view === "starlight" && ctx.starlightView) {
+        // Lean back in the rear seat and look up at the stars.
+        Object.assign(pose, lookFrom(ctx.starlightView.eye, ctx.starlightView.target, ctx.yaw), { fov: 72, shiftX: 0.14, shiftY: 0, dust: 0 });
+      } else if (ctx.view === "cabin" && ctx.cabin) {
         Object.assign(pose, lookFrom(ctx.cabin.eye, ctx.cabin.target, ctx.yaw), { fov: 58, shiftX: 0.12, shiftY: 0, dust: 0 });
       } else if (ctx.view === "engine" || ctx.view === "frunk") {
         // Frame the opened bay from high on the side (the rear clamshell
@@ -226,7 +230,7 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
         const sn = Math.sin(ctx.yaw);
         const engine = ctx.view === "engine";
         Object.assign(pose, { tx: ax * c + az * sn, ty: ay, tz: -ax * sn + az * c, dist: engine ? 3.7 : 4.2, el: engine ? 1.05 : 0.8, az: ctx.yaw + (engine ? 1.75 : 0.55), shiftY: -0.04 });
-      } else if (ctx.view !== "free" && ctx.view !== "cabin") {
+      } else if (ctx.view === "front" || ctx.view === "side" || ctx.view === "rear" || ctx.view === "top") {
         const v = { front: [0.001, 0.05, 8], side: [Math.PI / 2, 0.04, 8.6], rear: [Math.PI - 0.001, 0.08, 8], top: [0.6, 1.25, 9.5] }[ctx.view];
         pose.az = v[0];
         pose.el = v[1];

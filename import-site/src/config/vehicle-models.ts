@@ -127,6 +127,10 @@ export interface VehicleModelDefinition {
   cabin?: { eye: [number, number, number]; target: [number, number, number] };
   /** Where the procedural engine sits (car space), if the bay is empty. */
   engineBay?: { position: [number, number, number]; scale: number; rotationY?: number };
+  /** Starlight headliner: centre (car space), size (w, d), downward sag at the edges, star count. */
+  starlight?: { center: [number, number, number]; size: [number, number]; sag: number; count: number };
+  /** Camera for looking up at the headliner (car space). */
+  starlightView?: { eye: [number, number, number]; target: [number, number, number] };
   /** Carpeted luggage tub under the bonnet (car space; size = w, h, d). */
   frunk?: { position: [number, number, number]; size: [number, number, number] };
   /** Showcase copy for the homepage configurator. */
@@ -218,6 +222,9 @@ export const vehicleModels: Record<string, VehicleModelDefinition> = {
     // Behind the +2 seats, under the rear clamshell (visible through the glass).
     engineBay: { position: [0, 0.2, -1.63], scale: 1 },
     frunk: { position: [0, 0.16, 2.06], size: [1.08, 0.44, 0.5] },
+    // Under the roof, over both rows (the glass roof is lined from inside).
+    starlight: { center: [0, 1.095, -0.16], size: [1.22, 1.42], sag: 0.035, count: 1600 },
+    starlightView: { eye: [0, 0.8, -0.95], target: [0, 1.08, 0.2] },
     showcase: {
       name: "Studio GT",
       subtitle: "Concept · 2+2 coupé",

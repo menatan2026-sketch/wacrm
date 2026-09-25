@@ -13,7 +13,7 @@ import {
   wheelFinishOptions,
 } from "@/config/vehicle-models";
 import { setStageConfig, useStageConfig, type StageView } from "@/components/three/director";
-import { ArrowRight, Close, Door, Hatch, Hood, Light, Rotate, Seat, Spec } from "@/components/ui/icons";
+import { ArrowRight, Close, Door, Hatch, Hood, Light, Rotate, Seat, Spec, Stars } from "@/components/ui/icons";
 import c from "./chapter.module.css";
 import s from "./KnowChapter.module.css";
 
@@ -24,6 +24,7 @@ const VIEWS: { id: StageView; label: string }[] = [
   { id: "rear", label: "Rear" },
   { id: "top", label: "Above" },
   { id: "cabin", label: "Cabin" },
+  { id: "starlight", label: "Starlight" },
 ];
 
 const TABS = [
@@ -73,6 +74,7 @@ export function KnowChapter() {
     caliper && `${caliper.name} calipers`,
     hide && `${hide.name} leather`,
     trim && `${trim.name} trim`,
+    cfg.starlight && hero?.starlight && "Starlight headliner",
   ].filter(Boolean);
   const sourceHref = `/request?${new URLSearchParams({
     color: paint?.name ?? "",
@@ -214,6 +216,21 @@ export function KnowChapter() {
                       ))}
                     </div>
                   </fieldset>
+                  {hero?.starlight && (
+                    <div className={s.tools} role="group" aria-label="Starlight headliner">
+                      <button type="button" className={s.tool} aria-pressed={cfg.starlight} onClick={() => setStageConfig({ starlight: !cfg.starlight })}>
+                        <Stars /> Starlight {cfg.starlight ? "on" : "off"}
+                      </button>
+                      <button
+                        type="button"
+                        className={s.tool}
+                        aria-pressed={cfg.view === "starlight"}
+                        onClick={() => setStageConfig(cfg.view === "starlight" ? { view: "free" } : { view: "starlight", starlight: true })}
+                      >
+                        Look up
+                      </button>
+                    </div>
+                  )}
                   <button
                     type="button"
                     className={`${s.tool} ${s.wide}`}

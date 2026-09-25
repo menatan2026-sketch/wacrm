@@ -179,6 +179,7 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
       view: cfg.view,
       anchors: model.anchors,
       cabin: model.cabin,
+      starlightView: model.starlightView,
       yaw: live.current.carYaw + (director.chapter === "know" ? director.drag.yaw : 0),
     });
 
@@ -306,6 +307,8 @@ export function StageScene({ onFade }: { onFade?: (v: number) => void }) {
     lastSteer.current = cur.steer;
 
     updateVehicleMaterials(materials, cfg, 1 - Math.exp(-dt * 4));
+    const sky = handles.current.starlight;
+    if (sky) sky.intensity.value = damp(sky.intensity.value, cfg.starlight ? 1 : 0, 3, dt);
     materials.headlights.emissiveIntensity = cur.headlights * 5;
     materials.taillights.emissiveIntensity = cur.taillights * 3.5;
     // Beams read in the dark; in daylight only the lamps themselves glow.

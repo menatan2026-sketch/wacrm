@@ -18,7 +18,7 @@ export const CHAPTERS: ChapterId[] = ["hero", "know", "find", "verify", "bring",
 export type QualityTier = "high" | "medium" | "low";
 
 /** Camera presets; "engine" / "frunk" frame an opened bay. */
-export type StageView = "free" | "front" | "side" | "rear" | "top" | "cabin" | "engine" | "frunk";
+export type StageView = "free" | "front" | "side" | "rear" | "top" | "cabin" | "starlight" | "engine" | "frunk";
 
 export interface StageConfig {
   paint: string;
@@ -28,6 +28,8 @@ export interface StageConfig {
   caliper: string;
   env: EnvironmentId;
   lights: boolean;
+  /** Fibre-optic starlight headliner. */
+  starlight: boolean;
   /** Hinged parts opened from the configurator (or by clicking the car). */
   doors: boolean;
   hood: boolean;
@@ -65,6 +67,7 @@ let config: StageConfig = {
   caliper: "graphite",
   env: "studio",
   lights: false,
+  starlight: true,
   doors: false,
   hood: false,
   hatch: false,
