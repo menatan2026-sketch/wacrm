@@ -32,7 +32,7 @@ export function scrollToTarget(lenis: Lenis | null, target: string | HTMLElement
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const [lenis, setLenis] = useState<Lenis | null>(null);
   const pathname = usePathname();
-  const first = useRef(true);
+  const lastPath = useRef(pathname);
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -56,12 +56,11 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // New route → start at the top (or at the hash target).
+  // New route → start at the top (or at the hash target). Only on an
+  // actual path change — not when Lenis itself finishes initialising.
   useEffect(() => {
-    if (first.current) {
-      first.current = false;
-      return;
-    }
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
     const hash = window.location.hash;
     if (hash) {
       requestAnimationFrame(() => scrollToTarget(lenis, hash));
@@ -71,6 +70,24 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     }
     requestAnimationFrame(() => ScrollTrigger.refresh());
   }, [pathname, lenis]);
+
+  // Same-page anchors (e.g. "/#journey" while on "/") glide instead of jumping.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const a = (e.target as Element).closest<HTMLAnchorElement>("a[href*='#']");
+      if (!a) return;
+      const url = new URL(a.href, window.location.href);
+      if (url.pathname !== window.location.pathname || !url.hash) return;
+      const target = document.querySelector(url.hash);
+      if (!target) return;
+      e.preventDefault();
+      history.pushState(null, "", url.hash);
+      scrollToTarget(lenis, target as HTMLElement);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, [lenis]);
 
   return <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>;
 }
