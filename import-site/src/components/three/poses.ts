@@ -224,7 +224,8 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
         const [ax, ay, az] = a;
         const c = Math.cos(ctx.yaw);
         const sn = Math.sin(ctx.yaw);
-        Object.assign(pose, { tx: ax * c + az * sn, ty: ay, tz: -ax * sn + az * c, dist: 4.4, el: 0.78, az: ctx.yaw + (ctx.view === "engine" ? 1.25 : 0.55), shiftY: -0.04 });
+        const engine = ctx.view === "engine";
+        Object.assign(pose, { tx: ax * c + az * sn, ty: ay, tz: -ax * sn + az * c, dist: engine ? 3.7 : 4.2, el: engine ? 1.05 : 0.8, az: ctx.yaw + (engine ? 1.75 : 0.55), shiftY: -0.04 });
       } else if (ctx.view !== "free" && ctx.view !== "cabin") {
         const v = { front: [0.001, 0.05, 8], side: [Math.PI / 2, 0.04, 8.6], rear: [Math.PI - 0.001, 0.08, 8], top: [0.6, 1.25, 9.5] }[ctx.view];
         pose.az = v[0];
@@ -265,8 +266,8 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
         [0.7, { az: 0.95, el: 0.42, dist: 3.1, ...at(A.vin), shiftX: -0.16, doors: 0 }],
         [0.77, { az: 1.1, dist: 2.9 }],
         // Service history: the rear clamshell rises over the engine.
-        [0.85, { az: 1.35, el: 0.82, dist: 3.9, ...at(A.engine), shiftX: -0.16, hatch: 1 }],
-        [0.9, { az: 1.55, dist: 3.6, scanner: -1 }],
+        [0.85, { az: 1.6, el: 1.02, dist: 3.8, ...at(A.engine), shiftX: -0.16, hatch: 1 }],
+        [0.9, { az: 1.85, dist: 3.5, scanner: -1 }],
         [0.92, { scanner: 0 }],
         [1, { az: 2.1, el: 0.16, dist: 8.8, tx: 0, ty: 0.5, tz: 0, shiftX: 0, scanner: 1, hatch: 0 }],
       ]);

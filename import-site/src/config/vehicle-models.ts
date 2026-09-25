@@ -198,7 +198,7 @@ export const vehicleModels: Record<string, VehicleModelDefinition> = {
       { id: "doorL", node: "BodyDoorLColor1", axis: [1, 0, 0], angle: 1.05, swing: { axis: [0, 1, 0], angle: -0.32 } },
       { id: "doorR", node: "BodyDoorRColor1", axis: [1, 0, 0], angle: 1.05, swing: { axis: [0, 1, 0], angle: 0.32 } },
       { id: "hood", node: "BodyHood", axis: [1, 0, 0], angle: 0.95 },
-      { id: "hatch", node: "BodyRearPanelsColor1", axis: [1, 0, 0], angle: -0.85 },
+      { id: "hatch", node: "BodyRearPanelsColor1", axis: [1, 0, 0], angle: -1.15 },
     ],
     hide: ["Engine"],
     anchors: {

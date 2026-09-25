@@ -316,25 +316,26 @@ export function PortTerminal({ state, envTex }: { state: BackdropState; envTex: 
         (is40 ? colors40 : colors20).push(c);
       }
     };
-    // Block behind (−z), rows of 40 ft boxes running along x.
-    for (let row = 0; row < 5; row++) {
+    // Block behind (−z), rows of 40 ft boxes running along x, with an
+    // aisle through the middle toward the quay cranes.
+    for (let row = 0; row < 4; row++) {
       for (let k = -4; k <= 3; k++) {
-        if (rand() < 0.12) continue;
-        place(k * 12.6 + 4, -20 - row * 2.7, 0, 1 + Math.floor(rand() * 4), true);
+        if (k === 0 || rand() < 0.18) continue;
+        place(k * 12.6 + 6, -34 - row * 2.7, 0, 1 + Math.floor(rand() * 3), true);
       }
     }
     // Block to the car's right (+x), running along z.
-    for (let row = 0; row < 4; row++) {
-      for (let k = -3; k <= 2; k++) {
-        if (rand() < 0.15) continue;
-        place(19 + row * 2.7, k * 12.6 - 2, Math.PI / 2, 1 + Math.floor(rand() * 3), rand() > 0.3);
+    for (let row = 0; row < 3; row++) {
+      for (let k = -2; k <= 2; k++) {
+        if (rand() < 0.2) continue;
+        place(30 + row * 2.7, k * 12.6 - 6, Math.PI / 2, 1 + Math.floor(rand() * 3), rand() > 0.3);
       }
     }
-    // Scattered 20 ft boxes on the left and ahead.
-    for (let i = 0; i < 26; i++) {
-      const ang = -Math.PI * 0.2 + rand() * Math.PI * 0.9 + Math.PI * 0.55;
-      const r = 24 + rand() * 30;
-      place(Math.cos(ang) * r, Math.sin(ang) * r, rand() * Math.PI, 1 + Math.floor(rand() * 3), false);
+    // A few loose 20 ft boxes on the left and ahead, low.
+    for (let i = 0; i < 16; i++) {
+      const ang = Math.PI * 0.55 + rand() * Math.PI * 0.9;
+      const r = 32 + rand() * 26;
+      place(Math.cos(ang) * r, Math.sin(ang) * r, rand() * Math.PI, 1 + Math.floor(rand() * 2), false);
     }
     return { long, short, colors40, colors20 };
   }, []);
@@ -368,7 +369,7 @@ export function PortTerminal({ state, envTex }: { state: BackdropState; envTex: 
 
   // Kept inside the 110 m sky dome (it draws over anything beyond).
   const cranes = useMemo(() => [-44, 2, 48].map((x, i) => ({ x, z: -58 - i * 4 })), []);
-  const masts = useMemo<[number, number][]>(() => [[-14, 12], [16, 16], [-28, -12], [30, -24], [0, 34], [-40, 30]], []);
+  const masts = useMemo<[number, number][]>(() => [[-18, 16], [20, 20], [-30, -18], [24, -26], [2, 40], [-44, 34]], []);
 
   return (
     <group ref={group}>
@@ -422,9 +423,9 @@ export function PortTerminal({ state, envTex }: { state: BackdropState; envTex: 
         </group>
       ))}
 
-      {/* Jersey barriers marking the delivery lane. */}
-      {[-6, 6].map((x) =>
-        [-9, -5, 5, 9].map((z) => (
+      {/* Jersey barriers marking the delivery lane (clear of the camera paths). */}
+      {[-13, 13].map((x) =>
+        [-14, -10, 10, 14].map((z) => (
           <mesh key={`${x}${z}`} position={[x, 0.41, z]} material={m.barrier}>
             <boxGeometry args={[0.6, 0.82, 3.6]} />
           </mesh>

@@ -69,7 +69,7 @@ export const backdrops: Record<BackdropId, BackdropDef> = {
   },
   sunrise: {
     id: "sunrise",
-    url: "/hdri/sunrise_4k.hdr.jpg",
+    url: "/hdri/sunrise_2k.hdr.jpg",
     format: "ultrahdr",
     groundHeight: 3,
     groundRadius: 110,
