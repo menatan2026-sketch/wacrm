@@ -1,51 +1,51 @@
 import { verificationLabels } from "@/data/content";
 import type { VerificationKey } from "@/domain/types";
+import { Check } from "@/components/ui/icons";
 import { Reveal, RevealText } from "@/components/ui/RevealText";
 import c from "./chapter.module.css";
 import s from "./TrustSection.module.css";
 
 const LEGEND = [
-  { key: "verified", label: "Verified", text: "Checked against a primary document or an inspection we commissioned." },
-  { key: "reported", label: "Reported", text: "Stated by the seller. We've requested the document; we say so until it arrives." },
-  { key: "estimate", label: "Estimate", text: "Calculated from current rules and rates. It can change, and we show the range." },
+  { key: "verified", label: "Verified", text: "checked against a document" },
+  { key: "reported", label: "Reported", text: "seller's word, flagged until proven" },
+  { key: "estimate", label: "Estimate", text: "calculated, with its range" },
 ] as const;
 
 const ORDER: VerificationKey[] = ["history", "mileage", "ownership", "accidents", "service", "mechanical", "specification", "documentation"];
 
-/** Trust — how verification works, in plain language, with honest labels. */
+/** What we check — eight checks, each tied to its source, with honest labels. */
 export function TrustSection() {
   return (
     <section className={`${c.plate} ${c.sectionPad}`} aria-labelledby="trust-title">
-      <div className={`container ${s.grid}`}>
-        <div className={s.side}>
-          <p className={c.index}>Trust</p>
-          <RevealText id="trust-title" className="display-m" lines={["Verified is", "a word we use", "carefully."]} />
-          <p className="body-l">
-            A six-figure car bought from another continent deserves more than an advert and a promise. Every claim on a Portolan
-            file carries a label that tells you how we know it.
-          </p>
-          <ul className={s.legend}>
-            {LEGEND.map((l) => (
-              <li key={l.key} data-kind={l.key}>
-                <span className={s.legendLabel}>{l.label}</span>
-                <span className={s.legendText}>{l.text}</span>
-              </li>
-            ))}
-          </ul>
+      <div className="container">
+        <div className={c.sectionHead}>
+          <div className={s.titleWrap}>
+            <p className={c.index}>What we check</p>
+            <RevealText id="trust-title" className="display-m" lines={["Eight checks.", "Before you pay."]} />
+          </div>
+          <div className={s.intro}>
+            <p className="body-l">Every car gets a written inspection file. Every line tells you how we know it.</p>
+            <ul className={s.legend}>
+              {LEGEND.map((l) => (
+                <li key={l.key} data-kind={l.key}>
+                  <span className={s.legendLabel}>{l.label}</span> {l.text}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <ol className={s.list}>
+        <ol className={s.grid}>
           {ORDER.map((key, i) => {
             const v = verificationLabels[key];
             return (
-              <Reveal as="li" key={key} className={s.item} threshold={0.4}>
-                <span className={s.num}>{String(i + 1).padStart(2, "0")}</span>
-                <div className={s.itemBody}>
-                  <h3 className={s.itemTitle}>{v.title}</h3>
-                  <p className={s.itemText}>{v.description}</p>
-                </div>
+              <Reveal as="li" key={key} className={`fade-up ${s.item}`} style={{ "--d": `${(i % 4) * 70}ms` } as React.CSSProperties}>
+                <span className={s.check}>
+                  <Check width={16} height={16} />
+                </span>
+                <h3 className={s.itemTitle}>{v.title}</h3>
+                <p className={s.itemText}>{v.description}</p>
                 <span className={s.src}>{v.source}</span>
-                <span className={s.rule} />
               </Reveal>
             );
           })}

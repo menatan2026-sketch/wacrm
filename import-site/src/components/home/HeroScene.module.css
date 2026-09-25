@@ -48,10 +48,31 @@
   flex-wrap: wrap;
 }
 
-.lede {
-  max-width: 34ch;
+.pitch {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   opacity: 0;
   animation: fadeUp 1.2s var(--ease-out) 1.1s forwards;
+}
+.lede {
+  max-width: 38ch;
+}
+.proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  font-size: 0.8125rem;
+  color: var(--text-2);
+}
+.proof li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.proof svg {
+  color: var(--accent);
 }
 
 .ctas {

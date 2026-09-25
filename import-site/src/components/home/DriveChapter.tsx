@@ -20,12 +20,12 @@ export function DriveChapter() {
             </h2>
             <div className={s.row}>
               <p className="body-l">
-                Tested, plated, detailed and delivered to your door — with every document, key and accessory accounted for.
+                Tested, plated and delivered to your door.
               </p>
               <div className={`${s.ctas} ${c.interactive}`}>
                 <Magnetic>
                   <Link href="/request" className="btn btn-primary" data-cursor="open">
-                    Start your import <ArrowRight className="btn-arrow" />
+                    Get a free quote <ArrowRight className="btn-arrow" />
                   </Link>
                 </Magnetic>
                 <a href={whatsappHref("Hi Portolan — I'd like to talk about importing a car.")} className="btn btn-ghost" target="_blank" rel="noreferrer">

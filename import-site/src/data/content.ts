@@ -121,3 +121,49 @@ export const testimonials: Testimonial[] = [
     isSample: true,
   },
 ];
+
+/*
+ * Sales-page trust content. These are commitments the business makes to
+ * every client — keep them true to how you actually operate, and edit
+ * them here (they render on the homepage and request page).
+ */
+
+export interface Guarantee {
+  key: "price" | "inspection" | "specialist" | "insured";
+  title: string;
+  text: string;
+}
+
+export const guarantees: Guarantee[] = [
+  { key: "price", title: "Landed price in writing", text: "Every cost to your door, confirmed before you pay a deposit." },
+  { key: "inspection", title: "Independent inspection", text: "A photographed report on the actual car before you commit." },
+  { key: "specialist", title: "One specialist, start to finish", text: "A named person on WhatsApp from first call to handover." },
+  { key: "insured", title: "Insured door to door", text: "Covered from collection abroad until the keys are in your hand." },
+];
+
+export const faqs: { q: string; a: string }[] = [
+  {
+    q: "How long does an import take?",
+    a: "Usually 6–12 weeks from purchase to Israeli plates. Europe is fastest; the US and Japan add sea time. You get a dated plan before you commit.",
+  },
+  {
+    q: "Is it cheaper than buying in Israel?",
+    a: "Often — especially for nearly-new cars, rare specifications and models not sold here. Our calculator shows the full landed cost so you can compare like for like.",
+  },
+  {
+    q: "Can any car be imported?",
+    a: "Personal import depends on the car's age, specification and standards approval. We confirm eligibility before any commitment, at no cost.",
+  },
+  {
+    q: "How do payments work?",
+    a: "Our fee is fixed in writing before we start. The car is paid by bank transfer against a signed contract, in agreed stages — never cash.",
+  },
+  {
+    q: "What about warranty and servicing?",
+    a: "We check the specific car's remaining manufacturer coverage and service history before purchase, and tell you in writing what applies in Israel.",
+  },
+  {
+    q: "Do I have to commit to get a quote?",
+    a: "No. The first consultation and your landed-cost estimate are free and without obligation.",
+  },
+];

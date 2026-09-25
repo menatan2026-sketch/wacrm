@@ -7,8 +7,8 @@ import { repositories } from "@/lib/repositories";
 import s from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "Start your import",
-  description: "Tell us exactly what you're looking for. We'll search international markets and build the route to your driveway.",
+  title: "Get a free quote",
+  description: "Tell us the car. We'll come back with options and a landed price — free, within one business day.",
 };
 
 export default async function RequestPage(props: PageProps<"/request">) {
@@ -23,12 +23,12 @@ export default async function RequestPage(props: PageProps<"/request">) {
   return (
     <div className={s.page}>
       <PageHeader
-        index={vehicle ? "Request this vehicle" : "We find it for you"}
-        title={vehicle ? [`${vehicle.year} ${vehicle.make}`, vehicle.model] : ["Can't find", "the right car?"]}
+        index={vehicle ? "Request this vehicle" : "Free quote"}
+        title={vehicle ? [`${vehicle.year} ${vehicle.make}`, vehicle.model] : ["Tell us", "the car."]}
         lede={
           vehicle
-            ? "Leave your details and a specialist will confirm availability, the latest landed-cost estimate and next steps."
-            : "Tell us exactly what you're looking for. We'll search international markets and build the route to your driveway."
+            ? "A specialist confirms availability and your landed price — within one business day."
+            : "Options and a landed price within one business day. Free, no obligation."
         }
       />
       <div className={`container ${s.grid}`}>

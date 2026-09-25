@@ -28,10 +28,10 @@ export interface NavItem {
 
 export const primaryNav: NavItem[] = [
   { label: "Vehicles", href: "/vehicles" },
-  { label: "Import", href: "/import" },
   { label: "How it works", href: "/#journey" },
-  { label: "Services", href: "/#services" },
-  { label: "About", href: "/#about" },
+  { label: "Import cost", href: "/import" },
+  { label: "Why us", href: "/#about" },
+  { label: "FAQ", href: "/#faq" },
   { label: "Contact", href: "/request" },
 ];
 
@@ -39,7 +39,8 @@ export const footerNav: NavItem[] = [
   { label: "Vehicles", href: "/vehicles" },
   { label: "Import", href: "/import" },
   { label: "Services", href: "/#services" },
-  { label: "About", href: "/#about" },
+  { label: "Why us", href: "/#about" },
+  { label: "FAQ", href: "/#faq" },
   { label: "Contact", href: "/request" },
 ];
 

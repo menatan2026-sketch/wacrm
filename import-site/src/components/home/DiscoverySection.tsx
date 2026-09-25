@@ -14,12 +14,9 @@ export function DiscoverySection({ vehicles }: { vehicles: Vehicle[] }) {
         <div className={c.sectionHead}>
           <div className={s.titleWrap}>
             <p className={c.index}>Discovery</p>
-            <RevealText id="discover-title" className="display-m" lines={["Describe it.", "We'll structure it."]} />
+            <RevealText id="discover-title" className="display-m" lines={["Describe it.", "We'll find it."]} />
           </div>
-          <p className="body-l">
-            Not a marketplace. Tell us the car the way you&apos;d tell a friend — we turn it into a sourcing brief, then search seven
-            markets for it.
-          </p>
+          <p className="body-l">Type the car the way you&apos;d say it. We turn it into a search across seven markets.</p>
         </div>
 
         <div className={s.query}>

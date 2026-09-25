@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Cursor } from "@/components/chrome/Cursor";
+import { FloatingWhatsApp } from "@/components/chrome/FloatingWhatsApp";
 import { Footer } from "@/components/chrome/Footer";
 import { Navigation } from "@/components/chrome/Navigation";
 import { SmoothScroll } from "@/components/chrome/SmoothScroll";
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </SmoothScroll>
         <Cursor />
+        <FloatingWhatsApp />
       </body>
     </html>
   );

@@ -17,7 +17,7 @@ export default function ImportPage() {
       <PageHeader
         index="Personal import calculator"
         title={["What will it cost", "to land?"]}
-        lede="Enter the purchase price and a few details. We'll estimate the landed cost in Israel, line by line — an estimate to plan with, not a quote."
+        lede="Enter the price. See every tax and fee to your door — then your specialist confirms it in writing."
       />
       <div className="container">
         <ImportCalculator variant="full" />

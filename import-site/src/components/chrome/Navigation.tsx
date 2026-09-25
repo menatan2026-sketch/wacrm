@@ -77,8 +77,8 @@ export function Navigation() {
 
           <div className={styles.actions}>
             <Magnetic strength={0.25}>
-              <Link href="/vehicles?intent=find" className={`btn btn-ghost btn-sm ${styles.cta}`} data-cursor="open">
-                Find my car
+              <Link href="/request" className={`btn btn-primary btn-sm ${styles.cta}`} data-cursor="open">
+                Get a quote
               </Link>
             </Magnetic>
             <button
@@ -110,8 +110,8 @@ export function Navigation() {
             ))}
           </ul>
           <div className={styles.menuFoot}>
-            <Link href="/vehicles?intent=find" className="btn btn-primary" tabIndex={open ? 0 : -1}>
-              Find my car <ArrowRight className="btn-arrow" />
+            <Link href="/request" className="btn btn-primary" tabIndex={open ? 0 : -1}>
+              Get a free quote <ArrowRight className="btn-arrow" />
             </Link>
             <a href={whatsappHref()} className="link" target="_blank" rel="noreferrer" tabIndex={open ? 0 : -1}>
               WhatsApp an import specialist

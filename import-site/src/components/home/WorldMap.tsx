@@ -51,8 +51,7 @@ export function WorldMap({ markets, counts }: { markets: Market[]; counts: Recor
               it.
             </h2>
             <p className={`body-l ${s.copy}`}>
-              Seven markets, searched in parallel — dealer networks, factory retailers, auctions and private sellers. Every route
-              ends in Israel.
+              Seven markets, searched at once — dealers, auctions and private sellers.
             </p>
           </header>
 

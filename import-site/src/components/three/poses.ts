@@ -329,7 +329,7 @@ export function chapterPose(chapter: ChapterId, p: number, ctx: PoseContext): Po
     const closeUp = pose.dist < 5 ? 0.45 : 1;
     pose.dist *= 1 + carShot * 0.95 * closeUp + pose.zoom * 0.75;
     pose.shiftX = 0;
-    pose.shiftY = chapter === "final" ? 0 : chapter === "bring" ? 0.2 : 0.16;
+    pose.shiftY = chapter === "final" ? 0 : chapter === "bring" ? 0.2 : chapter === "hero" ? 0.34 : 0.16;
     pose.fov = 34;
   }
   return pose;

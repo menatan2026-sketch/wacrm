@@ -140,3 +140,23 @@ export const Stars = (p: P) => (
     <path d="M12 4v4M10 6h4M6 12v3M4.5 13.5h3M17 11v5M14.5 13.5h5M9 18.5h.01M15 5.5h.01M19 19h.01" />
   </svg>
 );
+/** A written quote. */
+export const Receipt = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M6 3.5h12v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4v-17ZM9 8h6M9 11.5h6M9 15h3.5" />
+  </svg>
+);
+/** Inspection (magnifier over a check). */
+export const Inspect = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="10.5" cy="10.5" r="6" />
+    <path d="m15 15 5 5M8 10.6l1.8 1.8L13 9.2" />
+  </svg>
+);
+/** A named person. */
+export const Person = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="8.5" r="3.5" />
+    <path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5" />
+  </svg>
+);

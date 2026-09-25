@@ -2,6 +2,7 @@ import { AboutSection } from "@/components/home/AboutSection";
 import { CalculatorSection } from "@/components/home/CalculatorSection";
 import { DiscoverySection } from "@/components/home/DiscoverySection";
 import { DriveChapter } from "@/components/home/DriveChapter";
+import { FaqSection } from "@/components/home/FaqSection";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { HeroScene } from "@/components/home/HeroScene";
 import { HomeStage } from "@/components/home/HomeStage";
@@ -51,7 +52,9 @@ export default async function Home() {
       <CalculatorSection />
       <DriveChapter />
       <AboutSection />
-      <TestimonialSection items={testimonials} />
+      {/* Client stories appear only once real, approved ones exist. */}
+      {testimonials.some((t) => !t.isSample) && <TestimonialSection items={testimonials.filter((t) => !t.isSample)} />}
+      <FaqSection />
       <SourcingSection />
       <FinalCTA />
     </>

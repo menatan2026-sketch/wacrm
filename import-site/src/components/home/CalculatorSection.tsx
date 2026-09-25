@@ -9,13 +9,10 @@ export function CalculatorSection() {
       <div className="container">
         <div className={c.sectionHead}>
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            <p className={c.index}>Calculate import cost</p>
-            <RevealText id="calc-title" className="display-m" lines={["What will it cost", "to land?"]} />
+            <p className={c.index}>Import cost</p>
+            <RevealText id="calc-title" className="display-m" lines={["Know the price", "before you start."]} />
           </div>
-          <p className="body-l">
-            Purchase price in, estimated landed cost out — freight, insurance, duty, purchase tax, VAT, testing and registration,
-            line by line. An estimate to plan with, never a promise.
-          </p>
+          <p className="body-l">Every tax and fee to your door, line by line. Your specialist confirms it in writing.</p>
         </div>
         <ImportCalculator variant="compact" />
       </div>

@@ -22,7 +22,7 @@ export function FinalCTA() {
           <div className={`${s.ctas} ${c.interactive}`}>
             <Magnetic>
               <Link href="/request" className="btn btn-primary" data-cursor="open">
-                Start your import <ArrowRight className="btn-arrow" />
+                Get a free quote <ArrowRight className="btn-arrow" />
               </Link>
             </Magnetic>
             <Magnetic>
