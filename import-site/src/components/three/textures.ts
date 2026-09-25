@@ -615,23 +615,6 @@ export function flutedNormal() {
   });
 }
 
-/** Turntable resin: fine concentric lathe rings. */
-export function ringNormal() {
-  return cached("rings", () => {
-    const n = 1024;
-    const h = new Float32Array(n * n);
-    for (let y = 0; y < n; y++) {
-      for (let x = 0; x < n; x++) {
-        const r = Math.hypot(x / n - 0.5, y / n - 0.5);
-        h[y * n + x] = Math.sin(r * 900) * 0.5 + 0.5;
-      }
-    }
-    const t = dataTexture(heightToNormal(h, n, n, 0.6), n, n, 1);
-    t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
-    return t;
-  });
-}
-
 /**
  * Shipping-container skin: trapezoidal corrugation (normal) plus a grime
  * map (rust streaks from the top rail, dirt along the bottom) that the

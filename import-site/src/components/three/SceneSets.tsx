@@ -6,7 +6,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { QualityTier } from "./director";
 import { setWeight, type BackdropState } from "./Backdrops";
-import { asphaltMaps, bayMarkings, concreteMaps, containerMaps, flutedNormal, letteringTexture, ringNormal } from "./textures";
+import { asphaltMaps, bayMarkings, concreteMaps, containerMaps, flutedNormal, letteringTexture } from "./textures";
 
 /**
  * Built 3D sets. Each fades with the weight of the backdrop that uses it
@@ -39,7 +39,16 @@ function useFade(group: React.RefObject<THREE.Group | null>, mats: THREE.Materia
     if (group.current) group.current.visible = w > 0.01;
     if (Math.abs(w - last.current) < 0.002) return;
     last.current = w;
-    for (const m of mats) m.opacity = w;
+    // Stochastic alpha only while fading: at full weight the hash would
+    // still drop the odd pixel (speckles), so the set turns fully opaque.
+    const hash = w < 0.995;
+    for (const m of mats) {
+      m.opacity = w;
+      if (m.alphaHash !== hash) {
+        m.alphaHash = hash;
+        m.needsUpdate = true;
+      }
+    }
   });
 }
 
@@ -87,7 +96,7 @@ export function Showroom({ state, quality, envTex }: { state: BackdropState; qua
     const frame = fadeable(new THREE.MeshStandardMaterial({ color: "#101113", metalness: 0.8, roughness: 0.4 }));
     const edge = fadeable(new THREE.MeshPhysicalMaterial({ color: "#aeb1b6", metalness: 1, roughness: 0.28, envMapIntensity: 0.9 }));
     const resin = fadeable(
-      new THREE.MeshPhysicalMaterial({ color: "#070708", roughness: 0.3, metalness: 0.2, clearcoat: 1, clearcoatRoughness: 0.12, normalMap: ringNormal(), normalScale: new THREE.Vector2(0.25, 0.25), envMapIntensity: 0.25 }),
+      new THREE.MeshPhysicalMaterial({ color: "#060607", roughness: 0.5, metalness: 0.1, clearcoat: 0.6, clearcoatRoughness: 0.35, envMapIntensity: 0.12 }),
     );
     const halo = fadeable(new THREE.MeshBasicMaterial({ color: new THREE.Color("#ffd6a0").multiplyScalar(2.5), toneMapped: false }));
     const cove = fadeable(new THREE.MeshBasicMaterial({ color: new THREE.Color("#ffe2bd").multiplyScalar(1.2), toneMapped: false }));
@@ -138,8 +147,6 @@ export function Showroom({ state, quality, envTex }: { state: BackdropState; qua
             color="#050506"
             metalness={0.5}
             mirror={0}
-            normalMap={m.resin.normalMap ?? undefined}
-            normalScale={new THREE.Vector2(0.15, 0.15)}
             envMap={envTex ?? undefined}
             envMapIntensity={0.12}
             ref={(mat: THREE.Material | null) => {
