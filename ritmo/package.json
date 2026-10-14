@@ -1,0 +1,22 @@
+{
+  "name": "ritmo",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "setup": "bash tooling/setup.sh",
+    "db:start": "bash tooling/db.sh start",
+    "db:stop": "bash tooling/db.sh stop",
+    "db:reset": "pnpm --filter @ritmo/db reset",
+    "dev": "pnpm --filter @ritmo/web dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "e2e": "pnpm --filter @ritmo/web e2e"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.8",
+    "typescript": "^5.9.3"
+  }
+}

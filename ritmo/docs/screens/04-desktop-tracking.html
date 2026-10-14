@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ritmo · Desktop tracking</title>
+<link rel="stylesheet" href="../../design/tokens.css">
+<link rel="stylesheet" href="../../design/components.css">
+<link rel="stylesheet" href="../../design/motion.css">
+<link rel="stylesheet" href="screens.css">
+
+</head>
+<body class="rt-root">
+<div class="desk"><div class="agent m-pop" style="--origin: top left">
+  <div class="agent__bar"><img class="logo-light" src="../brand/logos/ritmo-lockup.svg" alt="Ritmo"><img class="logo-dark" src="../brand/logos/ritmo-lockup-on-dark.svg" alt="Ritmo"><span class="sp"></span><span class="rt-tracking"><span class="rt-tracking__live m-live"></span><b>Tracking</b></span></div>
+  <div class="agent__body">
+    <div class="agent__timer"><span class="t-timer rt-num">02:14:36</span><button class="rt-btn rt-btn--secondary rt-btn--sm"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg>Pause</button></div>
+    <div class="proj"><span class="proj__dot"></span><div><b>Q4 payroll close</b><span>Finance · Café Alma HQ</span></div><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg></div>
+    <div class="rt-track" aria-label="Today since 09:00: 3h 05m focused, 52m neutral, 18m idle">
+      <div class="rt-track__bar"><div class="rt-track__seg rt-track__seg--focus" style="flex:70"></div><div class="rt-track__seg rt-track__seg--neutral" style="flex:30"></div><div class="rt-track__seg rt-track__seg--idle" style="flex:18"></div><div class="rt-track__seg rt-track__seg--focus" style="flex:115"></div><div class="rt-track__seg rt-track__seg--neutral" style="flex:22"></div><div class="rt-track__seg" style="flex:285"></div></div>
+      <div class="rt-track__axis"><span>09:00</span><span>13:30</span><span>18:00</span></div>
+      <div class="rt-legend"><span><i style="background:var(--track-focus)"></i>Focused <b>3h 05m</b></span><span><i style="background:var(--track-neutral)"></i>Neutral <b>52m</b></span><span><i class="hatch"></i>Idle <b>18m</b></span></div>
+    </div>
+    <div class="idle m-enter">
+      <p><b>You were away for 18 min</b> <span class="muted">(<span class="rt-num">11:42–12:00</span>)</span>. What was it?</p>
+      <div class="chips"><span class="chip">Meeting</span><span class="chip">Phone call</span><span class="chip">Break</span><span class="chip">Personal · not tracked</span></div>
+    </div>
+  </div>
+  <div class="agent__foot"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 19 6v5.5c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>Work hours only<a href="#">What's collected</a></div>
+</div><article class="doc m-enter">
+  <header class="doc__head">
+    <span class="doc__eyebrow"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 19 6v5.5c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>Your privacy</span>
+    <h1 class="t-h1">What Ritmo collects about you</h1>
+    <p>Café Alma tracks computer activity only while you're clocked in. Below is exactly what your manager can see. Nothing is hidden from you.</p>
+  </header>
+  <section class="doc__sec">
+    <div class="ledger">
+      <div class="yes"><h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Collected during work hours</h3><ul><li>When you start, pause and stop work</li><li>Active and idle minutes</li><li>App and website names, grouped by category</li><li>Time per project and client</li></ul></div>
+      <div class="no"><h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l16 16M10.6 6.1A8.8 8.8 0 0 1 12 6c5 0 8.5 4.5 9 6-.3.8-1.2 2.3-2.7 3.6M6.4 7.6C4.6 8.8 3.4 10.6 3 12c.5 1.5 4 6 9 6 1.5 0 2.9-.4 4.1-1"/></svg>Never collected</h3><ul><li>What you type, keystrokes or passwords</li><li>The content of messages, email or files</li><li>Screenshots (turned off by Café Alma)</li><li>Anything outside your work hours</li><li>Camera, microphone or location</li></ul></div>
+    </div>
+  </section>
+  <section class="doc__sec">
+    <h2>Your apps today, as your manager sees them <span class="rt-pill rt-pill--live" style="margin-inline-start:auto">Live</span></h2>
+    <div class="apps"><div class="app"><span>Excel</span><div class="rt-meter"><i class="" style="inline-size:100%"></i></div><span class="t">2h 40m</span></div><div class="app"><span>Priority ERP</span><div class="rt-meter"><i class="" style="inline-size:72%"></i></div><span class="t">1h 55m</span></div><div class="app"><span>Slack</span><div class="rt-meter"><i class="n" style="inline-size:32%"></i></div><span class="t">52m</span></div><div class="app"><span>Zoom</span><div class="rt-meter"><i class="n" style="inline-size:25%"></i></div><span class="t">40m</span></div><div class="app"><span>Chrome · bank portal</span><div class="rt-meter"><i class="" style="inline-size:22%"></i></div><span class="t">35m</span></div></div>
+  </section>
+  <section class="doc__sec retain">
+    <p><b>Kept for 90 days, then deleted automatically</b>Set by Café Alma under the Israeli Privacy Protection Law and GDPR.</p>
+    <button class="rt-btn rt-btn--secondary rt-btn--sm"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 11 12 15.5 16.5 11M5 20h14"/></svg>Download my data</button><button class="rt-btn rt-btn--ghost rt-btn--sm">Request a correction</button>
+  </section>
+</article></div>
+</body>
+</html>

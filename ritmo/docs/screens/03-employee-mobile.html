@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ריטמו · אפליקציית עובדים</title>
+<link rel="stylesheet" href="../../design/tokens.css">
+<link rel="stylesheet" href="../../design/components.css">
+<link rel="stylesheet" href="../../design/motion.css">
+<link rel="stylesheet" href="screens.css">
+
+</head>
+<body class="rt-root">
+<div class="phones"><div class="phone"><div class="phone__island"></div><div class="phone__status"><span>9:41</span><span class="bat"></span></div>
+<div class="phone__body">
+  <div class="ptop"><h1>בוקר טוב, דנה<span class="sub">רביעי, 14 באוקטובר</span></h1><button class="rt-btn rt-btn--ghost rt-btn--icon bell" aria-label="התראות"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="dot"></span></button></div>
+  <section class="hero m-enter">
+    <div><div class="hero__label">משמרת בוקר · דיזנגוף · <span class="rt-num">07:00–15:00</span></div><div class="hero__timer">00:00:00</div></div>
+    <div class="hero__geo"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>בתוך אזור הסניף · דיוק 8 מ׳</div>
+    <button class="rt-btn rt-btn--pulse rt-btn--lg" id="clockin"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z"/></svg>כניסה למשמרת</button>
+  </section>
+  <section class="psec">
+    <div class="psec__title">משימות להיום<span><span class="rt-num">1/4</span> הושלמו</span></div>
+    <div class="plist m-stagger">
+      <div><span class="check done"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span><div class="plist__main"><b class="done-text">פתיחת מכונת קפה וכיול</b></div></div>
+      <div><span class="check"></span><div class="plist__main"><b>צ׳ק־ליסט ניקיון בוקר</b><span>8 סעיפים · נדרשת תמונה</span></div></div>
+      <div><span class="check"></span><div class="plist__main"><b>קבלת סחורה מחלבה</b><span>עד <span class="rt-num">10:30</span></span></div></div>
+    </div>
+  </section>
+  <section class="psec">
+    <div class="psec__title">עדכונים</div>
+    <div class="plist"><div><span class="rt-avatar rt-avatar--clay">מכ</span><div class="plist__main"><b>תפריט הסתיו נכנס ביום ראשון</b><span>מיכל כהן · נדרש אישור קריאה</span></div><span class="rt-pill rt-pill--plain rt-pill--pending">חדש</span></div></div>
+  </section>
+</div>
+<nav class="tabs"><a href="#" class="on" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>היום</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>משמרות</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>משימות</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18.5V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v6.5a2.5 2.5 0 0 1-2.5 2.5H8.5z"/></svg>צ׳אט</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.5" r="3.5"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.4c1.8.7 3 2.3 3.5 4.6"/></svg>אני</a></nav>
+</div><div class="phone"><div class="phone__island"></div><div class="phone__status"><span>9:41</span><span class="bat"></span></div>
+<div class="phone__body">
+  <div class="ptop"><h1>במשמרת<span class="sub">נכנסת ב־<span class="rt-num">07:02</span> · דיזנגוף</span></h1><span class="rt-pill rt-pill--live"><span class="m-live" style="display:none"></span>פעיל</span></div>
+  <section class="hero">
+    <div><div class="hero__label">זמן עבודה היום</div><div class="hero__timer">03:42:17</div></div>
+    <div class="rt-track" aria-label="עבודה 3:27, הפסקה 0:15">
+      <div class="rt-track__bar" style="background:color-mix(in srgb, var(--on-hero) 12%, transparent)"><div class="rt-track__seg rt-track__seg--focus" style="flex:22;background:var(--pulse)"></div><div class="rt-track__seg rt-track__seg--break" style="flex:2"></div><div class="rt-track__seg" style="flex:13;background:var(--pulse)"></div><div class="rt-track__seg" style="flex:43"></div></div>
+      <div class="rt-track__axis" style="color:var(--on-hero);opacity:.6"><span>07:00</span><span>11:00</span><span>15:00</span></div>
+    </div>
+    <div class="hero__row"><button class="rt-btn rt-btn--onhero rt-btn--lg"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M8.5 3.5v2.5M12 3.5v2.5"/></svg>הפסקה</button><button class="rt-btn rt-btn--beat rt-btn--lg">יציאה</button></div>
+  </section>
+  <section class="psec">
+    <div class="psec__title">השבוע</div>
+    <div class="plist">
+      <div><div class="plist__main"><b>שעות</b><span>מתוך 32 משובצות</span></div><span class="t-figure rt-num">24:10</span></div>
+      <div><div class="plist__main"><b>שכר משוער</b><span>לפני ניכויים, לפי <span class="rt-num">₪49</span> לשעה</span></div><span class="t-figure rt-num">₪1,184</span></div>
+      <div><div class="plist__main"><b>ימי חופשה</b><span>יתרה נכון להיום</span></div><span class="t-figure rt-num">6.5</span></div>
+    </div>
+  </section>
+</div>
+<nav class="tabs"><a href="#" class="on" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>היום</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>משמרות</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>משימות</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18.5V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v6.5a2.5 2.5 0 0 1-2.5 2.5H8.5z"/></svg>צ׳אט</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.5" r="3.5"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.4c1.8.7 3 2.3 3.5 4.6"/></svg>אני</a></nav>
+</div><div class="phone"><div class="phone__island"></div><div class="phone__status"><span>9:41</span><span class="bat"></span></div>
+<div class="phone__body">
+  <div class="ptop"><h1>משמרות<span class="sub">שבוע 42</span></h1><div class="rt-seg"><button aria-pressed="true">שלי</button><button>פתוחות</button></div></div>
+  <div class="daypick"><span class="has">א׳<b>12</b><i></i></span><span class="has">ב׳<b>13</b><i></i></span><span class="">ג׳<b>14</b><i></i></span><span class="on has">ד׳<b>15</b><i></i></span><span class="has">ה׳<b>16</b><i></i></span><span class="">ו׳<b>17</b><i></i></span><span class="">ש׳<b>18</b><i></i></span></div>
+  <section class="psec" style="margin-block-start:16px">
+    <div class="plist">
+      <div style="flex-direction:column;align-items:stretch;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px"><div class="plist__main"><b class="rt-num" style="align-self:flex-start;font-size:17px">07:00–15:00</b><span>בריסטה · דיזנגוף · 8 ש׳</span></div><span class="rt-shift rt-shift--green" style="min-inline-size:0;padding:4px 8px;cursor:default">בריסטה</span></div>
+        <div style="display:flex;align-items:center;gap:-4px"><span class="rt-avatar rt-avatar--sun">עכ</span><span class="rt-avatar rt-avatar--green" style="margin-inline-start:-6px;box-shadow:0 0 0 2px var(--surface)">אש</span><span class="rt-avatar rt-avatar--clay" style="margin-inline-start:-6px;box-shadow:0 0 0 2px var(--surface)">ימ</span><span class="muted" style="font-size:13px;margin-inline-start:8px">עם עומר, אביב ויוסי</span></div>
+        <div style="display:flex;gap:8px"><button class="rt-btn rt-btn--secondary" style="flex:1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>בקשת החלפה</button><button class="rt-btn rt-btn--secondary" style="flex:1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>ניווט</button></div>
+      </div>
+    </div>
+  </section>
+  <section class="psec">
+    <div class="psec__title">פתוחות ומתאימות לך<span>2</span></div>
+    <div class="plist">
+      <div><div class="plist__main"><b><span class="rt-num">18:00–23:00</span> · חמישי</b><span>בריסטה · נשארו 2 מקומות · <span class="rt-num">+₪240</span></span></div><button class="rt-btn rt-btn--primary rt-btn--sm">הגשה</button></div>
+      <div><div class="plist__main"><b><span class="rt-num">09:00–17:00</span> · שבת</b><span>בריסטה · מקום 1 · תוספת שבת</span></div><button class="rt-btn rt-btn--secondary rt-btn--sm">הגשה</button></div>
+    </div>
+  </section>
+  <section class="psec">
+    <div class="rt-banner rt-banner--warning"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg><div><b>עומר הסכים להחליף איתך את שישי</b><div class="muted" style="font-size:13px">ממתין לאישור של מיכל</div></div></div>
+  </section>
+</div>
+<nav class="tabs"><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>היום</a><a href="#" class="on" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>משמרות</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>משימות</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18.5V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v6.5a2.5 2.5 0 0 1-2.5 2.5H8.5z"/></svg>צ׳אט</a><a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.5" r="3.5"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.4c1.8.7 3 2.3 3.5 4.6"/></svg>אני</a></nav>
+</div></div><script>
+// Clock-in choreography demo (see docs/brand/MOTION.md → Clock in). Click the lime button.
+const b=document.getElementById('clockin');
+b&&b.addEventListener('click',()=>{const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ b.classList.add('m-ring'); b.style.setProperty('--ring-color','var(--pulse)');
+ setTimeout(()=>{b.className='rt-btn rt-btn--beat rt-btn--lg'; b.lastChild.textContent='יציאה';
+  const t=document.querySelector('.hero__timer'); t.classList.remove('m-enter'); void t.offsetWidth; if(!reduce) t.classList.add('m-enter');
+  let s=0; setInterval(()=>{s++; t.textContent=new Date(s*1000).toISOString().substring(11,19)},1000);},reduce?0:200);
+});
+</script>
+</body>
+</html>

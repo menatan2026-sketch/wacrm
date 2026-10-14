@@ -1,0 +1,100 @@
+/* Ritmo — motion primitives and choreographies (CSS).
+   Motion tokens (--dur-*, --ease-*, --stagger, --press-scale) are declared in tokens.css.
+   Spec and rationale: docs/brand/MOTION.md. JS presets: design/motion.ts.
+   Rules: animate transform + opacity only; exits are faster than entrances; nothing bounces;
+   every animation has a reduced-motion fallback (bottom of this file). */
+
+/* ---------- 1. Enter: fade + rise ---------- */
+@keyframes rt-enter { from { opacity: 0; transform: translateY(var(--rise, 8px)); } to { opacity: 1; transform: none; } }
+@keyframes rt-exit  { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(4px); } }
+.m-enter { animation: rt-enter var(--dur-moderate) var(--ease-out) both; }
+.m-exit  { animation: rt-exit var(--dur-fast) var(--ease-in) both; }
+
+/* Stagger: rows/cards reveal in reading order. Max 8 steps; the rest arrive with the 8th. */
+.m-stagger > * { animation: rt-enter var(--dur-moderate) var(--ease-out) both; }
+.m-stagger > :nth-child(1) { animation-delay: calc(var(--stagger) * 0); }
+.m-stagger > :nth-child(2) { animation-delay: calc(var(--stagger) * 1); }
+.m-stagger > :nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
+.m-stagger > :nth-child(4) { animation-delay: calc(var(--stagger) * 3); }
+.m-stagger > :nth-child(5) { animation-delay: calc(var(--stagger) * 4); }
+.m-stagger > :nth-child(6) { animation-delay: calc(var(--stagger) * 5); }
+.m-stagger > :nth-child(7) { animation-delay: calc(var(--stagger) * 6); }
+.m-stagger > :nth-child(n+8) { animation-delay: calc(var(--stagger) * 7); }
+
+/* ---------- 2. Pop: popovers, menus, tooltips (origin-aware) ---------- */
+@keyframes rt-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+.m-pop { animation: rt-pop var(--dur-base) var(--ease-out) both; transform-origin: var(--origin, top center); }
+
+/* ---------- 3. Dialog + sheet ---------- */
+@keyframes rt-overlay { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rt-dialog { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes rt-sheet { from { transform: translateY(100%); } to { transform: none; } }
+.m-overlay { animation: rt-overlay var(--dur-base) var(--ease-out) both; }
+.m-dialog  { animation: rt-dialog var(--dur-moderate) var(--ease-out) both; }
+.m-sheet   { animation: rt-sheet var(--dur-slow) var(--ease-out) both; }
+
+/* ---------- 4. Toast: rises from the block-end edge ---------- */
+@keyframes rt-toast { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
+.m-toast { animation: rt-toast var(--dur-moderate) var(--ease-out) both; }
+
+/* ---------- 5. Press feedback (pointer only) ---------- */
+.m-press { transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.m-press:active { transform: scale(var(--press-scale)); }
+
+/* ---------- 6. Live dot: a slow, quiet breath. Only on the user's own live state. ---------- */
+@keyframes rt-breath { 0% { transform: scale(1); opacity: .45; } 70%, 100% { transform: scale(2.4); opacity: 0; } }
+.m-live { position: relative; }
+.m-live::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: currentColor; animation: rt-breath 2.4s var(--ease-out) infinite; }
+
+/* ---------- 7. Clock-in confirmation ring (plays once) ---------- */
+@keyframes rt-ring { from { transform: scale(1); opacity: .55; } to { transform: scale(1.7); opacity: 0; } }
+.m-ring { position: relative; }
+.m-ring::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 2px var(--ring-color, var(--pulse)); animation: rt-ring var(--dur-deliberate) var(--ease-out) both; pointer-events: none; }
+
+/* ---------- 8. Number change: slide in the direction of change, never count up ---------- */
+@keyframes rt-num-up   { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes rt-num-down { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.m-num-up   { display: inline-block; animation: rt-num-up var(--dur-base) var(--ease-out) both; }
+.m-num-down { display: inline-block; animation: rt-num-down var(--dur-base) var(--ease-out) both; }
+
+/* ---------- 9. Skeleton shimmer (direction follows writing direction) ---------- */
+@keyframes rt-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.m-skeleton {
+  border-radius: var(--radius-xs); color: transparent !important; user-select: none;
+  background: linear-gradient(90deg, var(--surface-sunken) 0%, var(--surface-sunken) 35%, var(--line) 50%, var(--surface-sunken) 65%, var(--surface-sunken) 100%);
+  background-size: 200% 100%; animation: rt-shimmer 1.6s linear infinite;
+}
+[dir="rtl"] .m-skeleton { animation-direction: reverse; }
+
+/* ---------- 10. Rhythm loader: the mark's bars keep time. Ritmo's only loading spinner. ---------- */
+.rt-loader { display: inline-flex; flex-direction: column; gap: 3px; inline-size: 24px; color: var(--brand); }
+.rt-loader i { display: block; block-size: 4px; border-radius: var(--radius-pill); background: currentColor; transform-origin: left center; animation: rt-beat 1.2s var(--ease-in-out) infinite; }
+[dir="rtl"] .rt-loader i { transform-origin: right center; }
+.rt-loader i:nth-child(1) { inline-size: 70%; }
+.rt-loader i:nth-child(2) { inline-size: 100%; margin-inline-start: 25%; animation-delay: .15s; }
+.rt-loader i:nth-child(3) { inline-size: 45%; animation-delay: .3s; }
+@keyframes rt-beat { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(.45); } }
+
+/* ---------- 11. Timeline growth: the live segment extends, never jumps ---------- */
+.m-grow { transform-origin: left center; transition: transform var(--dur-slow) var(--ease-in-out); }
+[dir="rtl"] .m-grow { transform-origin: right center; }
+
+/* ---------- 12. Row collapse after an inline approval ---------- */
+@keyframes rt-collapse { to { opacity: 0; transform: translateX(calc(var(--dir, 1) * 12px)); } }
+.m-dismiss { animation: rt-collapse var(--dur-base) var(--ease-in) forwards; }
+[dir="rtl"] .m-dismiss { --dir: -1; }
+
+/* ---------- 13. Theme switch (View Transitions API): a short crossfade ---------- */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-base); animation-timing-function: var(--ease-in-out); }
+
+/* ---------- Reduced motion: keep state changes, drop movement ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .m-enter, .m-stagger > *, .m-pop, .m-dialog, .m-toast, .m-num-up, .m-num-down { animation: rt-overlay 1ms linear both !important; }
+  .m-sheet { animation: none; }
+  .m-live::after, .m-ring::after { animation: none; display: none; }
+  .m-skeleton { animation: none; }
+  .rt-loader i { animation-duration: 2.4s; }
+  .m-press:active { transform: none; }
+  .m-grow { transition: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
