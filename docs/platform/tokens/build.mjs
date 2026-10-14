@@ -10,6 +10,17 @@ import * as T from './tokens.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
+// Writes a generated file next to this script; exits with a clear message
+// (instead of a bare stack trace) if the file can't be written.
+function writeOutput(name, contents) {
+  try {
+    writeFileSync(join(here, name), contents);
+  } catch (err) {
+    console.error(`tokens: failed to write ${name}: ${err.message}`);
+    process.exit(1);
+  }
+}
+
 // ---------------------------------------------------------------- color math
 function oklchToLinear([L, C, h]) {
   const hr = (h * Math.PI) / 180;
@@ -265,7 +276,7 @@ for (const k of Object.keys(T.motion.duration))
   out(`    --duration-${k}: 0ms;`);
 out('  }');
 out('}');
-writeFileSync(join(here, 'tokens.css'), lines.join('\n') + '\n');
+writeOutput('tokens.css', lines.join('\n') + '\n');
 
 // ---------------------------------------------------------------- tokens.json (DTCG)
 const dtcg = { color: {}, theme: { light: {}, dark: {} } };
@@ -333,7 +344,7 @@ dtcg.spring = T.motion.spring;
 dtcg.zIndex = T.zIndex;
 dtcg.breakpoint = T.breakpoint;
 dtcg.spacing = { base: { $type: 'dimension', $value: T.spacingBase } };
-writeFileSync(join(here, 'tokens.json'), JSON.stringify(dtcg, null, 2) + '\n');
+writeOutput('tokens.json', JSON.stringify(dtcg, null, 2) + '\n');
 
 // ---------------------------------------------------------------- tokens.native.json
 // React Native can't parse oklch(), so mobile and desktop-native get hex.
@@ -371,10 +382,7 @@ const native = {
   spring: T.motion.spring,
   touch: { min: 44, mobile: 48, clockButton: 168 },
 };
-writeFileSync(
-  join(here, 'tokens.native.json'),
-  JSON.stringify(native, null, 2) + '\n'
-);
+writeOutput('tokens.native.json', JSON.stringify(native, null, 2) + '\n');
 
 // ---------------------------------------------------------------- report
 const rep = [
@@ -389,7 +397,7 @@ const rep = [
       `| ${r.mode} | \`${r.fg}\` | \`${r.bg}\` | ${r.min} | ${r.ratio.toFixed(2)} | ${r.ok ? '✅' : '❌'} |`
   ),
 ];
-writeFileSync(join(here, 'contrast-report.md'), rep.join('\n') + '\n');
+writeOutput('contrast-report.md', rep.join('\n') + '\n');
 
 console.log(
   `tokens: ${Object.keys(themes.light).length} semantic tokens per theme`
