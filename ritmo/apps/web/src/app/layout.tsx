@@ -7,6 +7,7 @@ import { THEME_COOKIE, dirOf, isLocale } from '@/i18n/locale';
 import './globals.css';
 import '@/styles/app.css';
 import '@/styles/me.css';
+import '@/styles/schedule.css';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('app');
