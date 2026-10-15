@@ -12,6 +12,7 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.134.0",
     "@ritmo/core": "workspace:*",
     "@ritmo/db": "workspace:*",
     "@ritmo/ui": "workspace:*",

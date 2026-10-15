@@ -26,6 +26,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Pro
   const current = locs.find((l) => l.id === loc) ?? null;
   const d = await overview(ctx, current?.id ?? null);
   const branches = locs.filter((l) => l.kind === 'branch');
+  const requestTime = new Date();
 
   const hoursDelta = d.hoursLastWeekSamePoint > 0 ? ((d.hoursWeek - d.hoursLastWeekSamePoint) / d.hoursLastWeekSamePoint) * 100 : null;
   const otDelta = d.overtimeLastWeek > 0 ? ((d.overtimeWeek - d.overtimeLastWeek) / d.overtimeLastWeek) * 100 : null;
@@ -110,7 +111,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Pro
             in: fmtTime(r.startedAt),
             today: fmtDuration(r.workedMinutes),
             lateMinutes: r.shiftStart ? Math.max(0, Math.round((r.startedAt.getTime() - r.shiftStart.getTime()) / 60000)) : 0,
-            breakMinutes: r.breakStartedAt ? Math.round((Date.now() - r.breakStartedAt.getTime()) / 60000) : null,
+            breakMinutes: r.breakStartedAt ? Math.round((requestTime.getTime() - r.breakStartedAt.getTime()) / 60000) : null,
             computer: r.source === 'desktop',
           }))}
           graceMinutes={ctx.member.policy.lateGraceMinutes}

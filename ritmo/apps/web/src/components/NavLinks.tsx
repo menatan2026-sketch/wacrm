@@ -37,7 +37,12 @@ export function NavLinks({ items, group, groupItems }: { items: Item[]; group: s
 export function SideToggle({ label }: { label: string }) {
   const [open, setOpen] = useState(false);
   const path = usePathname();
-  useEffect(() => setOpen(false), [path]);
+  // Close the drawer when the route changes.
+  const [seenPath, setSeenPath] = useState(path);
+  if (seenPath !== path) {
+    setSeenPath(path);
+    setOpen(false);
+  }
   useEffect(() => {
     document.getElementById('sidebar')?.classList.toggle('is-open', open);
     if (!open) return;

@@ -551,5 +551,36 @@
     "title": "This screen is on its way",
     "body": "It opens in the next update. Meanwhile, Café Alma's live overview is ready.",
     "back": "Back to overview"
+  },
+  "ask": {
+    "title": "Ask Ritmo",
+    "subtitle": "Questions about your team, hours and costs. Ritmo only reads; it never changes anything.",
+    "placeholder": "e.g. Who hasn't clocked in today?",
+    "send": "Ask",
+    "thinking": "Checking…",
+    "basicMode": "Basic mode: ready-made answers from your data. With a Claude key, Ritmo understands any free-form question.",
+    "aiMode": "Powered by Claude",
+    "error": "Something went wrong. Please try again.",
+    "rateLimited": "Lots of questions at once. Try again in a few minutes.",
+    "open": "Open",
+    "close": "Close",
+    "clear": "New conversation",
+    "you": "You",
+    "ritmo": "Ritmo",
+    "goTo": "Go",
+    "suggestions": [
+      "Who's on shift now?",
+      "Who hasn't clocked in?",
+      "How much overtime this week?",
+      "Labor cost vs budget?",
+      "Which requests are waiting for me?",
+      "Any open shifts?"
+    ],
+    "links": {
+      "/overview": "Overview",
+      "/time": "Time & attendance",
+      "/schedule": "Schedule",
+      "/people": "People"
+    }
   }
 }

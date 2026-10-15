@@ -3,9 +3,10 @@ import { Avatar, Count, Kbd, buttonClass } from '@ritmo/ui';
 import { initials } from '@ritmo/core';
 import type { Ctx } from '@/server/context';
 import { signOut } from '@/server/auth-actions';
-import { Logo, Mark } from './Logo';
+import { Logo } from './Logo';
 import { NavLinks, SideToggle } from './NavLinks';
 import { Icon } from './Icon';
+import { AskRitmo } from './AskRitmo';
 
 async function navCounts(ctx: Ctx) {
   return ctx.db(async (tx) => {
@@ -89,10 +90,7 @@ export async function AppFrame({ ctx, crumb, children }: { ctx: Ctx; crumb: stri
             />
             <Kbd>⌘K</Kbd>
           </form>
-          <button type="button" className={buttonClass('secondary', 'sm')} disabled title={t('askRitmoSoon')}>
-            <Mark size={16} />
-            {t('askRitmo')}
-          </button>
+          <AskRitmo label={t('askRitmo')} />
         </header>
         <main id="main" className="content">
           {children}

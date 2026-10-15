@@ -57,3 +57,22 @@
 .chat--mobile { grid-template-columns: 1fr; border: 0; border-radius: 0; flex: 1; }
 .chat--mobile .chat__list { max-block-size: none; border: 0; padding-inline: var(--space-4); }
 .chat--mobile .chat__main { min-block-size: calc(100dvh - 140px); }
+/* Ask Ritmo: a side sheet on the inline-end edge */
+dialog.dialog.ask { inline-size: min(440px, 100vw); block-size: 100dvh; max-block-size: 100dvh; margin-block: 0; margin-inline: auto 0; border-radius: 0; display: none; flex-direction: column; }
+dialog.dialog.ask[open] { display: flex; animation: rt-sheet var(--dur-slow) var(--ease-out) both; }
+.ask__log { flex: 1; overflow-y: auto; padding: var(--space-4) var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+.ask__intro { display: flex; flex-direction: column; gap: var(--space-4); }
+.ask__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ask__chip { min-block-size: 36px; padding: 6px 12px; border-radius: var(--radius-lg); border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; text-align: start; }
+.ask__chip:hover { background: var(--surface-sunken); }
+.ask__chip:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.ask__turn { display: flex; flex-direction: column; gap: 4px; }
+.ask__who { font-size: 12px; font-weight: 500; color: var(--ink-muted); }
+.ask__turn--assistant .ask__who { color: var(--brand-text); }
+.ask__text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.55; }
+.ask__turn--user .ask__text { background: var(--surface-sunken); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); align-self: flex-start; }
+.ask__links { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ask__form { display: flex; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-block-start: 1px solid var(--line); }
+.ask__form .rt-input { flex: 1; min-inline-size: 0; }
+.ask__mode { padding: 0 var(--space-4) var(--space-3); }
+@media (prefers-reduced-motion: reduce) { dialog.dialog.ask[open] { animation: none; } }
