@@ -13,14 +13,20 @@ const errors = [];
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 page.on('pageerror', (e) => errors.push(String(e)));
 page.on('response', (r) => r.status() >= 400 && errors.push(`${r.status()} ${r.url()}`));
-if (email !== '-') {
-  await page.goto(`${BASE}/login`);
-  await page.fill('input[name=email]', email);
-  await page.fill('input[name=password]', 'ritmo-demo');
-  await Promise.all([page.waitForURL((u) => !u.pathname.startsWith('/login'), { timeout: 60000 }), page.click('form button[type=submit] >> nth=0')]);
+try {
+  if (email !== '-') {
+    await page.goto(`${BASE}/login`);
+    await page.fill('input[name=email]', email);
+    await page.fill('input[name=password]', 'ritmo-demo');
+    await Promise.all([page.waitForURL((u) => !u.pathname.startsWith('/login'), { timeout: 60000 }), page.click('form button[type=submit] >> nth=0')]);
+  }
+  await page.goto(BASE + path, { waitUntil: 'load', timeout: 90000 });
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: out, fullPage: true });
+  console.log('url', page.url(), 'errors', JSON.stringify(errors));
+} catch (err) {
+  console.error('shot failed:', err instanceof Error ? err.message : err, 'errors', JSON.stringify(errors));
+  process.exitCode = 1;
+} finally {
+  await browser.close();
 }
-await page.goto(BASE + path, { waitUntil: 'load', timeout: 90000 });
-await page.waitForTimeout(1500);
-await page.screenshot({ path: out, fullPage: true });
-console.log('url', page.url(), 'errors', JSON.stringify(errors));
-await browser.close();
