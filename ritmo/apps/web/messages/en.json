@@ -361,7 +361,10 @@
     "noConversation": "Pick a conversation",
     "members": "{count, plural, one {1 member} other {# members}}",
     "offline": "You're offline. We'll send it when you're back.",
-    "you": "You"
+    "you": "You",
+    "back": "All conversations",
+    "sending": "Sending…",
+    "failed": "Not sent yet, will retry when back online"
   },
   "settings": {
     "title": "Settings",
