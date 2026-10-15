@@ -1,0 +1,26 @@
+/* Weekly schedule (/schedule). Grid base lives in app.css (.sched); these are the screen's extras. Tokens only. */
+.week-nav { display: flex; gap: var(--space-1); }
+.seg-link {
+  display: inline-flex; align-items: center; min-block-size: 28px; padding-inline: var(--space-3); border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500; text-decoration: none; color: var(--ink-muted);
+}
+.seg-link[aria-current='page'] { color: var(--ink); background: var(--surface); box-shadow: var(--shadow-sm); }
+.seg-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+.sched-layout { display: flex; flex-direction: column; gap: var(--space-6); }
+.sched-scroll { overflow-x: auto; }
+.sched-scroll .sched { min-inline-size: 920px; }
+.sched__item { display: flex; flex-direction: column; gap: 2px; }
+.sched .rt-shift { cursor: grab; }
+.sched .rt-shift:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.sched .rt-shift[data-draft] { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.sched .add-in-cell { display: flex; align-items: center; justify-content: center; inline-size: 100%; margin-block-start: auto; }
+@media (hover: none) { .sched .add-in-cell { opacity: 1; } }
+.open-avatar { background: transparent; box-shadow: inset 0 0 0 1px var(--line-strong); color: var(--ink-muted); }
+
+.sched-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-5); }
+.sched-foot__hint { margin-inline-start: auto; font-size: 12px; }
+
+.dialog__error { display: flex; align-items: center; gap: var(--space-2); color: var(--danger); font-size: 13px; }
+
+@media (prefers-reduced-motion: reduce) { .sched .add-in-cell { transition: none; } }
