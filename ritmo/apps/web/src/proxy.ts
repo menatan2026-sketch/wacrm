@@ -8,6 +8,8 @@ export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   if (PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
   if (request.cookies.has('ritmo_session')) return NextResponse.next();
+  // APIs answer machines: a status code, not a sign-in page.
+  if (pathname.startsWith('/api/')) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const url = new URL('/login', request.url);
   if (pathname !== '/') url.searchParams.set('next', pathname + search);
   return NextResponse.redirect(url);

@@ -19,6 +19,7 @@ export interface Membership {
   lastName: string;
   title: string | null;
   avatarColor: 'green' | 'sun' | 'sky' | 'clay' | 'stone';
+  worksOn: 'site' | 'computer' | 'both';
   timezone: string;
   isDemo: boolean;
   policy: AttendancePolicy;
@@ -46,10 +47,10 @@ export const requireCtx = cache(async (): Promise<Ctx> => {
     const r = await tx<
       {
         org_id: string; org_name: string; member_id: string; role: Role; first_name: string; last_name: string;
-        title: string | null; avatar_color: Membership['avatarColor']; timezone: string; is_demo: boolean; attendance_policy: unknown;
+        title: string | null; avatar_color: Membership['avatarColor']; works_on: Membership['worksOn']; timezone: string; is_demo: boolean; attendance_policy: unknown;
       }[]
     >`select o.id as org_id, o.name as org_name, m.id as member_id, m.role, m.first_name, m.last_name, m.title,
-             m.avatar_color, o.timezone, o.is_demo, o.attendance_policy
+             m.avatar_color, m.works_on, o.timezone, o.is_demo, o.attendance_policy
       from ritmo.members m join ritmo.organizations o on o.id = m.org_id
       where m.user_id = ${user.id} and m.status = 'active'
       order by o.created_at`;
@@ -65,6 +66,7 @@ export const requireCtx = cache(async (): Promise<Ctx> => {
     lastName: r.last_name,
     title: r.title,
     avatarColor: r.avatar_color,
+    worksOn: r.works_on,
     timezone: r.timezone,
     isDemo: r.is_demo,
     policy: resolvePolicy(r.attendance_policy),

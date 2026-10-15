@@ -1,0 +1,68 @@
+/* Employee app (/me): a phone-width column with a bottom tab bar. On wide
+   screens it sits centred like a device, on phones it fills the screen. */
+.mapp { min-block-size: 100dvh; display: flex; flex-direction: column; max-inline-size: 480px; margin-inline: auto; background: var(--bg); }
+.mapp__main { flex: 1; padding-block: var(--space-4) var(--space-6); display: flex; flex-direction: column; }
+.mapp__tabs { position: sticky; inset-block-end: 0; padding-block-end: max(var(--space-2), env(safe-area-inset-bottom)); z-index: 2; }
+.mapp__tabs a { min-block-size: 44px; justify-content: center; border-radius: var(--radius-md); }
+.mapp__tabs a:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+@media (min-width: 560px) {
+  body:has(.mapp) { background: var(--surface-sunken); }
+  .mapp { border-inline: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+}
+
+.ptop__actions { display: flex; align-items: center; gap: var(--space-2); }
+.mapp .ptop h1 { min-inline-size: 0; }
+
+/* Today hero: clock-in choreography (MOTION.md → Clock in). */
+.hero__timer.is-paused { opacity: .6; }
+.hero .rt-btn--pulse, .hero .rt-btn--beat { transition: background-color var(--dur-base) var(--ease-in-out), color var(--dur-base) var(--ease-in-out), transform var(--dur-fast) var(--ease-out); }
+.hero .rt-btn:active { transform: scale(var(--press-scale)); }
+.hero .rt-btn[aria-busy="true"] { cursor: progress; }
+.hero__tracking { align-self: flex-start; }
+@media (prefers-reduced-motion: reduce) {
+  .hero .rt-btn--pulse, .hero .rt-btn--beat { transition: none; }
+  .hero .rt-btn:active { transform: none; }
+}
+
+.mweek { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.mweek > div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); display: flex; flex-direction: column; gap: 2px; }
+.mweek span { font-size: 13px; color: var(--ink-muted); }
+
+/* Shifts tab */
+.daypick a { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0 8px; border-radius: var(--radius-md); font-size: 11px; color: var(--ink-muted); text-decoration: none; min-block-size: 44px; }
+.daypick a b { font: 500 16px/22px var(--font-sans); color: var(--ink); }
+.daypick a.on { background: var(--ink); color: var(--bg); }
+.daypick a.on b { color: var(--bg); }
+.daypick a i { inline-size: 4px; block-size: 4px; border-radius: 50%; background: transparent; }
+.daypick a.has i { background: var(--brand); }
+.daypick a.on.has i { background: var(--pulse); }
+.weeknav { display: flex; align-items: center; gap: var(--space-1); }
+.mshift { flex-direction: column; align-items: stretch !important; gap: var(--space-3) !important; }
+.mshift__head { display: flex; align-items: center; gap: var(--space-3); }
+.mshift__time { font-size: 17px; }
+.mshift__team { display: flex; align-items: center; gap: var(--space-2); font-size: 13px; color: var(--ink-muted); }
+.mshift__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.mshift__actions > * { flex: 1; }
+.mshift .rt-shift { min-inline-size: 0; inline-size: auto; flex: none; padding: 4px 8px; cursor: default; }
+.swap-pick { display: flex; gap: var(--space-2); align-items: flex-end; }
+.swap-pick .rt-field { flex: 1; }
+
+/* Profile */
+.mprofile { display: flex; align-items: center; gap: var(--space-3); padding: 0 16px; }
+.mprofile b { display: block; font: 600 17px/22px var(--font-sans); }
+.mprofile span { font-size: 13px; color: var(--ink-muted); }
+.mrow-link { text-decoration: none; color: inherit; }
+.mrow-link:focus-visible { outline: var(--focus-ring); outline-offset: -2px; }
+
+/* What's collected: the document from screen 04, inside the phone column. */
+.mapp .doc { margin-inline: 16px; }
+.mapp .doc__head, .mapp .doc__sec { padding-inline: var(--space-4); }
+.mapp .ledger { grid-template-columns: 1fr; gap: var(--space-4); }
+.mapp .app { grid-template-columns: minmax(0, 110px) 1fr 48px; }
+.correction { display: flex; flex-direction: column; gap: var(--space-2); }
+.correction textarea { inline-size: 100%; min-block-size: 88px; resize: vertical; font: inherit; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
+.correction textarea:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.doc__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.plist > a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-block-size: 44px; border-block-end: 1px solid var(--line); }
+.plist > a:last-child { border-block-end: 0; }
+.plist > a svg { color: var(--ink-faint); flex: none; }
