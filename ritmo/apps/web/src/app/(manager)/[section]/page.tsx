@@ -7,7 +7,7 @@ import { AppFrame } from '@/components/AppFrame';
 import { requireManager } from '@/server/context';
 
 // Screens still being built in this first version. Each gets its own route as it lands.
-const SECTIONS = ['time', 'activity', 'chat', 'people', 'settings'] as const;
+const SECTIONS = ['chat', 'people', 'settings'] as const;
 type Section = (typeof SECTIONS)[number];
 const isSection = (s: string): s is Section => (SECTIONS as readonly string[]).includes(s);
 

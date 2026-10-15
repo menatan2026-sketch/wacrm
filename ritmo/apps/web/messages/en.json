@@ -164,7 +164,9 @@
     "empty": "No computer activity on this day.",
     "emptyBody": "Activity appears only for people with the desktop agent, and only while they're clocked in.",
     "whatsCollected": "What's collected",
-    "agentNote": "The desktop agent (Windows and macOS) arrives in Phase 2. This is demo data."
+    "agentNote": "The desktop agent (Windows and macOS) arrives in Phase 2. This is demo data.",
+    "dayNav": "Day",
+    "legend": "Legend"
   },
   "time": {
     "title": "Time & attendance",
@@ -224,7 +226,20 @@
       "manager": "Manager"
     },
     "policyNote": "Calculated with the Israeli default: 8.4 h a day, 42 a week, first 2 overtime hours at 125%, then 150%, Saturday at 150%. Confirm with labor counsel.",
-    "selfApprove": "You can't approve your own hours."
+    "selfApprove": "You can't approve your own hours.",
+    "csv": {
+      "employeeNo": "Employee no.",
+      "name": "Name",
+      "location": "Branch",
+      "regular": "Regular hours",
+      "overtime1": "125% hours",
+      "overtime2": "150% hours",
+      "restDay": "Rest-day hours",
+      "total": "Total hours",
+      "approved": "Approved",
+      "yes": "Yes",
+      "no": "No"
+    }
   },
   "schedule": {
     "title": "Week {number}",

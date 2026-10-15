@@ -8,6 +8,7 @@ import './globals.css';
 import '@/styles/app.css';
 import '@/styles/me.css';
 import '@/styles/schedule.css';
+import '@/styles/manager.css';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('app');
