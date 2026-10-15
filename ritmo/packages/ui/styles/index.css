@@ -1,0 +1,6 @@
+/* Ritmo design system for the web app.
+ * Source of truth: /design (from the brand kit). tokens.css here differs from
+ * /design/tokens.css only in font URLs (served from the web app's /fonts). */
+@import "./tailwind-theme.css";
+@import "./components.css";
+@import "./motion.css";

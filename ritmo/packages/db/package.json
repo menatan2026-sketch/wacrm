@@ -1,0 +1,17 @@
+{
+  "name": "@ritmo/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts", "./seed-data": "./src/seed-data.ts" },
+  "scripts": {
+    "migrate": "tsx src/cli/migrate.ts",
+    "seed": "tsx src/cli/seed.ts",
+    "reset": "tsx src/cli/reset.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": { "postgres": "^3.4.7", "@ritmo/core": "workspace:*" },
+  "devDependencies": { "tsx": "^4.20.6", "vitest": "^4.1.9", "@types/node": "^22.18.0", "typescript": "^5.9.3" }
+}
