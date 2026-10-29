@@ -38,7 +38,10 @@ export function proxy(request: NextRequest) {
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
-    ...(dev ? [] : ["upgrade-insecure-requests"]),
+    // Only when served over HTTPS; on plain-HTTP hosts (CI, local prod builds) it would break every asset.
+    ...(!dev && (process.env.APP_URL ?? "").startsWith("https://")
+      ? ["upgrade-insecure-requests"]
+      : []),
   ].join("; ");
 
   const headers = new Headers(request.headers);

@@ -13,3 +13,6 @@ export function platform(): Platform {
 }
 
 export const deps = () => platform().deps;
+
+/** Development simulators (fake PSP page) are reachable only with DEV_TOOLS_ENABLED. */
+export const devToolsEnabled = () => serverConfig().DEV_TOOLS_ENABLED;

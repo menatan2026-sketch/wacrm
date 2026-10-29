@@ -5,7 +5,10 @@ import { resolveLocale } from "@/lib/i18n";
 
 const SLUGS = ["terms", "privacy", "accessibility", "restricted", "shipping"] as const;
 
-/** Policy pages: scaffolds clearly marked as drafts until legal provides content (KNOWN_ISSUES KI-005). */
+/**
+ * Policy pages: scaffolds clearly marked as drafts until legal provides content (KNOWN_ISSUES KI-005).
+ * Rendered per request like every page: the nonce-based CSP requires dynamic rendering.
+ */
 export default async function LegalPage({
   params,
 }: {
@@ -21,8 +24,4 @@ export default async function LegalPage({
       <Banner tone="warning">{t("draftNotice")}</Banner>
     </article>
   );
-}
-
-export function generateStaticParams() {
-  return SLUGS.map((slug) => ({ slug }));
 }

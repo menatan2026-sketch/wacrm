@@ -4,10 +4,10 @@ import { isFakePaymentProvider, payments } from "@mfg/core";
 import { formatMoney } from "@mfg/i18n";
 import { Banner, Card } from "@mfg/ui";
 import { resolveLocale } from "@/lib/i18n";
-import { deps } from "@/lib/platform";
+import { deps, devToolsEnabled } from "@/lib/platform";
 import { DevPayButtons } from "./DevPayButtons";
 
-/** Hosted-payment-page simulator for the fake PSP (never available with a real provider). */
+/** Hosted-payment-page simulator for the fake PSP (dev tools only; never with a real provider). */
 export default async function DevPayPage({
   params,
 }: {
@@ -16,7 +16,7 @@ export default async function DevPayPage({
   const locale = await resolveLocale(params);
   const { ref } = await params;
   const d = deps();
-  if (!isFakePaymentProvider(d.payments)) notFound();
+  if (!devToolsEnabled() || !isFakePaymentProvider(d.payments)) notFound();
   const payment = await payments.findPaymentByRef(d, ref);
   if (!payment) notFound();
   const t = await getTranslations("payments.devPay");

@@ -5,6 +5,11 @@ const bool = z.enum(["true", "false", "1", "0"]).transform((v) => v === "true" |
 const serverSchema = z
   .object({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    /**
+     * Deployment environment. Separate from NODE_ENV because `next start` always runs with
+     * NODE_ENV=production, including CI and staging. Required whenever NODE_ENV=production.
+     */
+    APP_ENV: z.enum(["development", "ci", "staging", "production"]).optional(),
     APP_URL: z.url().default("http://localhost:3000"),
     APP_SECRET: z.string().min(32, "APP_SECRET must be at least 32 characters"),
     DATABASE_URL: z.string().min(1),
@@ -39,12 +44,32 @@ const serverSchema = z
       .default(15 * 1024 * 1024),
   })
   .superRefine((env, ctx) => {
-    if (env.NODE_ENV === "production" && env.DEV_TOOLS_ENABLED) {
+    if (env.NODE_ENV === "production" && !env.APP_ENV) {
       ctx.addIssue({
         code: "custom",
-        path: ["DEV_TOOLS_ENABLED"],
-        message: "must be false in production",
+        path: ["APP_ENV"],
+        message: "required when NODE_ENV=production (ci, staging or production)",
       });
+    }
+    // Production must never run simulators presented as the real thing (fake PSP page, fake
+    // courier tracking, log-only email) or development tools.
+    if (env.APP_ENV === "production") {
+      const forbidden: [keyof typeof env, boolean, string][] = [
+        ["DEV_TOOLS_ENABLED", env.DEV_TOOLS_ENABLED, "must be false in production"],
+        [
+          "PAYMENT_PROVIDER",
+          env.PAYMENT_PROVIDER === "fake",
+          "the fake payment provider is not allowed in production",
+        ],
+        [
+          "SHIPPING_PROVIDER",
+          env.SHIPPING_PROVIDER === "fake",
+          "the fake shipping provider is not allowed in production",
+        ],
+        ["EMAIL_DRIVER", env.EMAIL_DRIVER === "log", "log-only email is not allowed in production"],
+      ];
+      for (const [key, bad, message] of forbidden)
+        if (bad) ctx.addIssue({ code: "custom", path: [key], message });
     }
     if (env.STORAGE_DRIVER === "s3") {
       for (const key of ["S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"] as const) {

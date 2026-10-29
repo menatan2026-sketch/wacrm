@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { randomUUID } from "node:crypto";
 import { isFakePaymentProvider, payments } from "@mfg/core";
-import { deps } from "@/lib/platform";
+import { deps, devToolsEnabled } from "@/lib/platform";
 
 /**
  * Fake PSP: produce a correctly signed webhook and deliver it to the real webhook handler, exactly
@@ -14,7 +14,8 @@ export async function devPayAction(
   locale: string,
 ) {
   const d = deps();
-  if (!isFakePaymentProvider(d.payments)) throw new Error("fake payments disabled");
+  if (!devToolsEnabled() || !isFakePaymentProvider(d.payments))
+    throw new Error("fake payments disabled");
   const payment = await payments.findPaymentByRef(d, providerRef);
   if (!payment) throw new Error("unknown payment");
   const hook = d.payments.buildWebhook({

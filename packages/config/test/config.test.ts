@@ -26,10 +26,35 @@ describe("parseServerConfig", () => {
     }
   });
 
-  it("refuses dev tools in production", () => {
-    expect(() =>
-      parseServerConfig({ ...base, NODE_ENV: "production", DEV_TOOLS_ENABLED: "true" }),
-    ).toThrow(/DEV_TOOLS_ENABLED/);
+  it("refuses dev tools and simulators in production", () => {
+    const prod = {
+      ...base,
+      NODE_ENV: "production",
+      APP_ENV: "production",
+      EMAIL_DRIVER: "smtp",
+      SMTP_URL: "smtp://x",
+      SHIPPING_PROVIDER: "manual",
+    };
+    expect(() => parseServerConfig({ ...prod, DEV_TOOLS_ENABLED: "true" })).toThrow(
+      /DEV_TOOLS_ENABLED/,
+    );
+    // The only payment adapter today is the fake one, so production cannot start until a real PSP exists.
+    expect(() => parseServerConfig(prod)).toThrow(/PAYMENT_PROVIDER/);
+    expect(() => parseServerConfig({ ...prod, SHIPPING_PROVIDER: "fake" })).toThrow(
+      /SHIPPING_PROVIDER/,
+    );
+    expect(() => parseServerConfig({ ...prod, EMAIL_DRIVER: "log" })).toThrow(/EMAIL_DRIVER/);
+  });
+
+  it("requires APP_ENV under NODE_ENV=production, and allows simulators in CI", () => {
+    expect(() => parseServerConfig({ ...base, NODE_ENV: "production" })).toThrow(/APP_ENV/);
+    const ci = parseServerConfig({
+      ...base,
+      NODE_ENV: "production",
+      APP_ENV: "ci",
+      DEV_TOOLS_ENABLED: "true",
+    });
+    expect(ci.DEV_TOOLS_ENABLED).toBe(true);
   });
 
   it("requires S3 credentials for the s3 driver", () => {
