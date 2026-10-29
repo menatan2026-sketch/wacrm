@@ -52,3 +52,7 @@ export class FakePaymentProvider implements PaymentProvider {
     }
   }
 }
+
+export function isFakePaymentProvider(p: PaymentProvider): p is FakePaymentProvider {
+  return p.name === "fake" && typeof (p as Partial<FakePaymentProvider>).buildWebhook === "function";
+}

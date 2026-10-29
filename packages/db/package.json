@@ -13,9 +13,9 @@
     "typecheck": "tsc -p .",
     "test": "vitest run",
     "generate": "drizzle-kit generate",
-    "migrate": "tsx scripts/migrate.ts",
+    "migrate": "tsx --env-file-if-exists=../../.env scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
-    "reset": "tsx scripts/reset.ts"
+    "reset": "tsx --env-file-if-exists=../../.env scripts/reset.ts"
   },
   "dependencies": {
     "@mfg/config": "workspace:*",

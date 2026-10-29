@@ -1,4 +1,5 @@
 import { Redis } from "ioredis";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import type { ServerConfig } from "@mfg/config";
 import { createDb, createPool } from "@mfg/db";
@@ -19,6 +20,17 @@ export interface Platform {
   close(): Promise<void>;
 }
 
+/** The repository root (where pnpm-workspace.yaml lives), so every process resolves the same local paths. */
+export function workspaceRoot(from = process.cwd()): string {
+  let dir = path.resolve(from);
+  while (!existsSync(path.join(dir, "pnpm-workspace.yaml"))) {
+    const parent = path.dirname(dir);
+    if (parent === dir) return path.resolve(from);
+    dir = parent;
+  }
+  return dir;
+}
+
 /** Composition root: wire real or development adapters from validated configuration. */
 export function createPlatform(config: ServerConfig, opts: { rootDir?: string; poolSize?: number } = {}): Platform {
   const pool = createPool(config.DATABASE_URL, opts.poolSize ?? 10);
@@ -27,7 +39,7 @@ export function createPlatform(config: ServerConfig, opts: { rootDir?: string; p
   const storage =
     config.STORAGE_DRIVER === "s3"
       ? new S3Storage(config.S3_BUCKET!, { region: config.S3_REGION, endpoint: config.S3_ENDPOINT, accessKeyId: config.S3_ACCESS_KEY_ID!, secretAccessKey: config.S3_SECRET_ACCESS_KEY!, forcePathStyle: config.S3_FORCE_PATH_STYLE })
-      : new LocalStorage(path.resolve(opts.rootDir ?? process.cwd(), config.STORAGE_LOCAL_DIR), config.APP_URL, config.APP_SECRET);
+      : new LocalStorage(path.resolve(opts.rootDir ?? workspaceRoot(), config.STORAGE_LOCAL_DIR), config.APP_URL, config.APP_SECRET);
   const deps: Deps = {
     db,
     secret: config.APP_SECRET,

@@ -5,7 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./messages": "./src/messages.ts"
+    "./messages": "./src/messages.ts",
+    "./format": "./src/format.ts",
+    "./config": "./src/config.ts"
   },
   "scripts": {
     "typecheck": "tsc -p .",

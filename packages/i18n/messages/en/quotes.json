@@ -1,1 +1,18 @@
-{}
+{
+  "lines": {
+    "manufacturing": "Manufacturing",
+    "urgency_fast": "Fast production",
+    "urgency_urgent": "Urgent production",
+    "design_fee": "Design",
+    "shipping": "Delivery"
+  },
+  "subtotal": "Subtotal before VAT",
+  "vat": "VAT ({rate})",
+  "total": "Total",
+  "validUntil": "Valid until {date}",
+  "title": "Your quote",
+  "pay": "Pay {total}",
+  "change": "Change quantity or speed",
+  "update": "Update price",
+  "includes": "Includes manufacturing, quality check, packaging and delivery."
+}

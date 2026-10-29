@@ -1,1 +1,13 @@
-{}
+{
+  "status": {
+    "LABEL_CREATED": "Этикетка создана",
+    "PICKED_UP": "Забран курьером",
+    "IN_TRANSIT": "В пути",
+    "OUT_FOR_DELIVERY": "Передан на доставку",
+    "DELIVERED": "Доставлен",
+    "EXCEPTION": "Проблема с доставкой",
+    "RETURNED": "Возвращён",
+    "CANCELLED": "Отменён"
+  },
+  "carrier": "Перевозчик"
+}

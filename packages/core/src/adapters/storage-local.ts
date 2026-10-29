@@ -80,3 +80,8 @@ export class LocalStorage implements StorageProvider {
     await rm(this.resolve(key), { force: true });
   }
 }
+
+/** Structural check (class identity can differ across bundles, so `instanceof` is unreliable). */
+export function isLocalStorage(s: StorageProvider): s is LocalStorage {
+  return typeof (s as Partial<LocalStorage>).verifyUpload === "function" && typeof (s as Partial<LocalStorage>).verifyDownload === "function";
+}

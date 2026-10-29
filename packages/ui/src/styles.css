@@ -1,0 +1,48 @@
+/* Motifs and motion that Tailwind utilities don't express (UI_DESIGN_SYSTEM §1, MOTION_SYSTEM §3). */
+.tech-grid {
+  background-image: radial-gradient(circle, color-mix(in oklab, var(--mfg-border-strong) 22%, transparent) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+.toolpath-active {
+  animation: mfg-toolpath 1.2s linear infinite;
+  background-image: linear-gradient(90deg, var(--mfg-primary) 50%, transparent 50%);
+  background-size: 12px 2px;
+  background-repeat: repeat-x;
+  background-position: 0 0;
+}
+@keyframes mfg-toolpath {
+  to { background-position: calc(24px * var(--mfg-motion-inline)) 0; }
+}
+.layer-buildup rect {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: mfg-layer 1.6s var(--mfg-ease-mechanical) 3 both;
+}
+@keyframes mfg-layer {
+  0% { opacity: 0; transform: scaleY(0); }
+  30%, 100% { opacity: 1; transform: scaleY(1); }
+}
+.stage-done {
+  animation: mfg-pop var(--mfg-duration-standard) var(--mfg-ease-enter) both;
+}
+@keyframes mfg-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.enter-inline {
+  animation: mfg-enter-inline var(--mfg-duration-standard) var(--mfg-ease-enter) both;
+}
+@keyframes mfg-enter-inline {
+  from { opacity: 0; transform: translateX(calc(16px * var(--mfg-motion-inline))); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) .layer-buildup rect,
+  :root:not([data-motion="full"]) .toolpath-active,
+  :root:not([data-motion="full"]) .stage-done,
+  :root:not([data-motion="full"]) .enter-inline { animation: none; }
+}
+:root[data-motion="reduced"] .layer-buildup rect,
+:root[data-motion="reduced"] .toolpath-active,
+:root[data-motion="reduced"] .stage-done,
+:root[data-motion="reduced"] .enter-inline { animation: none; }

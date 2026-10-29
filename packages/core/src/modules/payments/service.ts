@@ -258,3 +258,13 @@ export async function cancelOrder(d: Deps, ctx: Ctx, orderId: string, reason: st
     if (payment) await requestRefund(d, { ...ctx, actor: SYSTEM }, orderId, { amountMinor: payment.amountMinor - payment.refundedMinor, reasonCode: "cancelled_before_production" });
   }
 }
+
+export async function documentsForOrder(ctx: Ctx, orderId: string) {
+  return ctx.db.select().from(schema.invoices).where(eq(schema.invoices.orderId, orderId)).orderBy(schema.invoices.issuedAt);
+}
+
+/** Development payment page support: look up a payment by its provider reference. */
+export async function findPaymentByRef(d: Deps, providerRef: string) {
+  const [row] = await d.db.select().from(schema.payments).where(and(eq(schema.payments.provider, d.payments.name), eq(schema.payments.providerRef, providerRef)));
+  return row ?? null;
+}

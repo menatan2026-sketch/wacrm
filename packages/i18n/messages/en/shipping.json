@@ -1,1 +1,13 @@
-{}
+{
+  "status": {
+    "LABEL_CREATED": "Label created",
+    "PICKED_UP": "Picked up",
+    "IN_TRANSIT": "In transit",
+    "OUT_FOR_DELIVERY": "Out for delivery",
+    "DELIVERED": "Delivered",
+    "EXCEPTION": "Delivery problem",
+    "RETURNED": "Returned",
+    "CANCELLED": "Cancelled"
+  },
+  "carrier": "Carrier"
+}

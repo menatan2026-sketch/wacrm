@@ -21,7 +21,8 @@
     "db:seed": "pnpm --filter @mfg/core seed -- --dev",
     "db:reset": "pnpm --filter @mfg/db reset",
     "dev:services": "bash infrastructure/local/services.sh start",
-    "dev:services:stop": "bash infrastructure/local/services.sh stop"
+    "dev:services:stop": "bash infrastructure/local/services.sh stop",
+    "dev:geometry": "cd services/geometry && set -a && . ../../.env && set +a && uv run uvicorn geometry.app:app --host 127.0.0.1 --port 8001"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

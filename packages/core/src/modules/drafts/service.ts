@@ -132,6 +132,7 @@ export interface DraftEvaluation {
   price: PriceBreakdown | null;
   /** Why this draft goes to manual review instead of an instant price. */
   reviewReasons: string[];
+  taxRateBps: number;
 }
 
 /** Everything the wizard shows for a file draft: analysis, fitting materials and a live price preview. */
@@ -160,6 +161,7 @@ export async function evaluateDraft(ctx: Ctx, draftId: string): Promise<DraftEva
 
   let dimensionsMm: [number, number, number] | null = null;
   let price: PriceBreakdown | null = null;
+  const taxRateBps = await vatRateBps(ctx);
   if (analysis?.status === "succeeded") {
     const g = scaledGeometry(analysis, p.units ?? (analysis.unitsDetected === "in" ? "in" : "mm"), p.scale ?? 1);
     dimensionsMm = g.bboxMm;
@@ -171,14 +173,14 @@ export async function evaluateDraft(ctx: Ctx, draftId: string): Promise<DraftEva
           items: [{ ...g, materialCode: material.code, densityGCm3: material.densityGCm3, qualityProfile: requirements.qualityProfile, quantity: p.quantity ?? 1 }],
           urgency: p.urgency ?? "standard",
           includeShipping: true,
-          taxRateBps: await vatRateBps(ctx),
+          taxRateBps,
         },
         rules.rules,
       );
       reviewReasons.push(...price.reviewReasons);
     }
   }
-  return { analysis, requirements, materials, selectedVariantId, dimensionsMm, price, reviewReasons: [...new Set(reviewReasons)] };
+  return { analysis, requirements, materials, selectedVariantId, dimensionsMm, price, reviewReasons: [...new Set(reviewReasons)], taxRateBps };
 }
 
 /** Turn a completed draft into an order. Flow A is auto-quoted when every guard passes. */
@@ -240,4 +242,27 @@ export async function submitDraft(d: Deps, ctx: Ctx, draftId: string, locale: st
   });
   if (result.existing || result.flow !== "file") return { orderId: result.orderId, outcome: "review" };
   return { orderId: result.orderId, outcome: await autoQuote(d, ctx, result.orderId) };
+}
+
+/** Start a new draft from a past order's item (same file and choices); the price is recomputed. */
+export async function reorderFrom(ctx: Ctx, orderId: string): Promise<DraftRow> {
+  const user = requireUser(ctx.actor);
+  const [order] = await ctx.db.select().from(schema.orders).where(eq(schema.orders.id, orderId));
+  if (!order || order.customerUserId !== user.userId) throw notFound("order");
+  const [item] = await ctx.db.select().from(schema.orderItems).where(eq(schema.orderItems.orderId, orderId));
+  if (!item?.fileId) throw notFound("order_item");
+  const draft = await startDraft(ctx, "file");
+  const payload: DraftPayload = {
+    fileId: item.fileId,
+    units: (item.unitsConfirmed as "mm" | "in") ?? "mm",
+    scale: item.scale,
+    usage: usageSchema.parse(item.usage),
+    materialVariantId: item.materialVariantId ?? undefined,
+    quantity: item.quantity,
+    urgency: order.urgencyTier as "standard",
+    title: item.title,
+  };
+  const [row] = await ctx.db.update(schema.wizardDrafts).set({ payload, step: "price" }).where(eq(schema.wizardDrafts.id, draft.id)).returning();
+  await track(ctx, "repeat_order", { fromOrderId: orderId });
+  return row!;
 }

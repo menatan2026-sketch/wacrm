@@ -1,1 +1,12 @@
-{}
+{
+  "required": "This field is required.",
+  "email": "Enter a valid email address.",
+  "code": "Enter the 6-digit code.",
+  "number": "Enter a number, for example 12.5.",
+  "positive": "Must be greater than zero.",
+  "quantity": "Enter a quantity between 1 and 500.",
+  "phone": "Enter a phone number.",
+  "minPhotos": "Add at least {n} photos.",
+  "tooShort": "Please add a few more details.",
+  "summary": "Check the highlighted fields."
+}

@@ -1,1 +1,31 @@
-{}
+{
+  "customer": {
+    "home": "Home",
+    "newOrder": "New order",
+    "orders": "My orders",
+    "account": "Account",
+    "signIn": "Sign in",
+    "menu": "Menu",
+    "main": "Main navigation"
+  },
+  "supplier": {
+    "today": "Today",
+    "offers": "Offers",
+    "jobs": "Jobs",
+    "payouts": "Payouts",
+    "profile": "Workshop",
+    "title": "Partner workspace"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "qc": "Quality control",
+    "suppliers": "Suppliers",
+    "pricing": "Pricing rules",
+    "payments": "Payments",
+    "payouts": "Payouts",
+    "flags": "Feature flags",
+    "audit": "Audit log",
+    "title": "Operations"
+  }
+}
