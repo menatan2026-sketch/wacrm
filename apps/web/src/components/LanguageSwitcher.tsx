@@ -24,7 +24,9 @@ export function LanguageSwitcher({ surface }: { surface: "customer" | "supplier"
           start(async () => {
             await setLocaleAction(next, surface);
             const rest = pathname.split("/").slice(2).join("/");
-            router.replace(`/${next}${rest ? `/${rest}` : ""}${window.location.search}`, { scroll: false });
+            router.replace(`/${next}${rest ? `/${rest}` : ""}${window.location.search}`, {
+              scroll: false,
+            });
           });
         }}
         className="h-9 rounded-s border border-border-default bg-surface-raised px-2 text-sm text-text-primary focus-visible:outline-2 focus-visible:outline-focus"

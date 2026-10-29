@@ -7,7 +7,10 @@ import type { InvoiceProvider } from "../ports";
  */
 export class InternalInvoiceProvider implements InvoiceProvider {
   readonly name = "internal";
-  async issue(input: { kind: "receipt" | "credit_note"; sequence: number }): Promise<{ documentNumber: string }> {
+  async issue(input: {
+    kind: "receipt" | "credit_note";
+    sequence: number;
+  }): Promise<{ documentNumber: string }> {
     return { documentNumber: `${input.kind === "receipt" ? "RC" : "CN"}-${input.sequence}` };
   }
 }

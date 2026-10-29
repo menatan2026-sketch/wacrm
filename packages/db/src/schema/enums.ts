@@ -52,13 +52,27 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number];
 export const URGENCY_TIERS = ["standard", "fast", "urgent"] as const;
 export type UrgencyTier = (typeof URGENCY_TIERS)[number];
 
-export const FILE_KINDS = ["model", "photo", "preview", "qc_photo", "label", "invoice", "design_revision"] as const;
+export const FILE_KINDS = [
+  "model",
+  "photo",
+  "preview",
+  "qc_photo",
+  "label",
+  "invoice",
+  "design_revision",
+] as const;
 export type FileKind = (typeof FILE_KINDS)[number];
 
 export const QUOTE_STATUSES = ["ready", "accepted", "expired", "superseded", "withdrawn"] as const;
 export type QuoteStatus = (typeof QUOTE_STATUSES)[number];
 
-export const SUPPLIER_STATUSES = ["invited", "onboarding", "active", "paused", "suspended"] as const;
+export const SUPPLIER_STATUSES = [
+  "invited",
+  "onboarding",
+  "active",
+  "paused",
+  "suspended",
+] as const;
 export type SupplierStatus = (typeof SUPPLIER_STATUSES)[number];
 
 export const JOB_STATUSES = [

@@ -44,11 +44,15 @@ export function Dropzone({
       }}
       className={cn(
         "tech-grid relative flex flex-col items-center gap-3 rounded-l border-2 border-dashed px-6 py-10 text-center transition-colors duration-(--mfg-duration-fast)",
-        over ? "toolpath-active border-primary bg-primary-subtle" : "border-border-default bg-surface-raised",
+        over
+          ? "toolpath-active border-primary bg-primary-subtle"
+          : "border-border-default bg-surface-raised",
         disabled && "opacity-60",
       )}
     >
-      <span className="text-primary">{icon ?? <UploadCloud aria-hidden className="size-10" strokeWidth={1.5} />}</span>
+      <span className="text-primary">
+        {icon ?? <UploadCloud aria-hidden className="size-10" strokeWidth={1.5} />}
+      </span>
       <p className="text-base font-semibold text-text-primary">{title}</p>
       <p className="text-sm text-text-secondary">{hint}</p>
       <button

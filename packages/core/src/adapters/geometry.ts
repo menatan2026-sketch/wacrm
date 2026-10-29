@@ -11,7 +11,11 @@ export class HttpGeometryClient implements GeometryClient {
   async analyze(fileName: string, bytes: Buffer): Promise<GeometryResult> {
     const res = await fetch(`${this.baseUrl}/analyze`, {
       method: "POST",
-      headers: { "content-type": "application/octet-stream", "x-shared-secret": this.sharedSecret, "x-file-name": encodeURIComponent(fileName) },
+      headers: {
+        "content-type": "application/octet-stream",
+        "x-shared-secret": this.sharedSecret,
+        "x-file-name": encodeURIComponent(fileName),
+      },
       body: new Uint8Array(bytes),
       signal: AbortSignal.timeout(this.timeoutMs),
     });
@@ -35,7 +39,10 @@ export class FakeGeometryClient implements GeometryClient {
       ok: true,
       analyzer_version: "fake-1",
       duration_ms: 5,
-      stages: ["parse", "measure", "check_geometry", "printability", "volume"].map((stage) => ({ stage, status: "done" as const })),
+      stages: ["parse", "measure", "check_geometry", "printability", "volume"].map((stage) => ({
+        stage,
+        status: "done" as const,
+      })),
       metrics: {
         units_detected: "mm",
         bbox_mm: [side, side, side],

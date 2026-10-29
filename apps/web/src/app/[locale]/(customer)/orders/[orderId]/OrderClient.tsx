@@ -1,12 +1,39 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Banner, Button, Card, Dialog, Field, Input, RadioCards, Textarea } from "@mfg/ui";
-import { cancelOrderAction, checkoutAction, reorderAction, reportProblemAction, requoteAction, sendMessageAction } from "@/app/actions/orders";
+import {
+  cancelOrderAction,
+  checkoutAction,
+  reorderAction,
+  reportProblemAction,
+  requoteAction,
+  sendMessageAction,
+} from "@/app/actions/orders";
 import { useErrorMessage } from "@/lib/errors";
 import { useRouter } from "next/navigation";
 
-export function QuotePanel({ orderId, locale, quantity, urgency, total, lines, vat, validUntil, canChange }: { orderId: string; locale: string; quantity: number; urgency: "standard" | "fast" | "urgent"; total: string; lines: { label: string; amount: string }[]; vat: { label: string; amount: string }; validUntil: string; canChange: boolean }) {
+export function QuotePanel({
+  orderId,
+  locale,
+  quantity,
+  urgency,
+  total,
+  lines,
+  vat,
+  validUntil,
+  canChange,
+}: {
+  orderId: string;
+  locale: string;
+  quantity: number;
+  urgency: "standard" | "fast" | "urgent";
+  total: string;
+  lines: { label: string; amount: string }[];
+  vat: { label: string; amount: string };
+  validUntil: string;
+  canChange: boolean;
+}) {
   const tq = useTranslations("quotes");
   const tp = useTranslations("payments.checkout");
   const tm = useTranslations("manufacturing");
@@ -18,9 +45,19 @@ export function QuotePanel({ orderId, locale, quantity, urgency, total, lines, v
   const [editing, setEditing] = useState(false);
   const [qty, setQty] = useState(String(quantity));
   const [urg, setUrg] = useState(urgency);
-  const idem = useRef(`co-${orderId}-${Math.random().toString(36).slice(2)}`);
-  const [address, setAddress] = useState({ recipientName: "", phone: "", line1: "", line2: "", city: "", postalCode: "", notes: "" });
-  const set = (k: keyof typeof address) => (e: React.ChangeEvent<HTMLInputElement>) => setAddress((a) => ({ ...a, [k]: e.target.value }));
+  // One idempotency key per page visit, so a double-submitted checkout reuses the same payment.
+  const [idemKey] = useState(() => `co-${orderId}-${crypto.randomUUID()}`);
+  const [address, setAddress] = useState({
+    recipientName: "",
+    phone: "",
+    line1: "",
+    line2: "",
+    city: "",
+    postalCode: "",
+    notes: "",
+  });
+  const set = (k: keyof typeof address) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setAddress((a) => ({ ...a, [k]: e.target.value }));
 
   return (
     <Card className="flex flex-col gap-5">
@@ -46,22 +83,49 @@ export function QuotePanel({ orderId, locale, quantity, urgency, total, lines, v
       </dl>
       <p className="text-xs text-text-secondary">{tq("includes")}</p>
       {canChange && !editing && (
-        <button type="button" className="self-start text-sm text-primary hover:underline" onClick={() => setEditing(true)}>
+        <button
+          type="button"
+          className="self-start text-sm text-primary hover:underline"
+          onClick={() => setEditing(true)}
+        >
           {tq("change")}
         </button>
       )}
       {editing && (
         <div className="flex flex-col gap-4 rounded-m border border-border-subtle p-4">
           <Field label={tw("quantity")} className="w-32">
-            {({ id }) => <Input id={id} type="number" min={1} max={500} dir="ltr" value={qty} onChange={(e) => setQty(e.target.value)} />}
+            {({ id }) => (
+              <Input
+                id={id}
+                type="number"
+                min={1}
+                max={500}
+                dir="ltr"
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+              />
+            )}
           </Field>
-          <RadioCards name="urgency" legend={tw("urgency")} columns={3} value={urg} onChange={setUrg} options={(["standard", "fast", "urgent"] as const).map((u) => ({ value: u, title: tm(`urgency.${u}`) }))} />
+          <RadioCards
+            name="urgency"
+            legend={tw("urgency")}
+            columns={3}
+            value={urg}
+            onChange={setUrg}
+            options={(["standard", "fast", "urgent"] as const).map((u) => ({
+              value: u,
+              title: tm(`urgency.${u}`),
+            }))}
+          />
           <Button
             variant="secondary"
             loading={pending}
             onClick={() =>
               start(async () => {
-                const r = await requoteAction(orderId, locale, { quantity: Number(qty), urgency: urg });
+                const r = await requoteAction(orderId, locale, {
+                  quantity: Number(qty),
+                  urgency: urg,
+                });
                 if (!r.ok) return setError(errorText(r));
                 setEditing(false);
                 router.refresh();
@@ -78,20 +142,94 @@ export function QuotePanel({ orderId, locale, quantity, urgency, total, lines, v
           e.preventDefault();
           start(async () => {
             setError(undefined);
-            const r = await checkoutAction(orderId, locale, { ...address, line2: address.line2 || undefined, postalCode: address.postalCode || undefined, notes: address.notes || undefined }, idem.current);
+            const r = await checkoutAction(
+              orderId,
+              locale,
+              {
+                ...address,
+                line2: address.line2 || undefined,
+                postalCode: address.postalCode || undefined,
+                notes: address.notes || undefined,
+              },
+              idemKey,
+            );
             if (r && !r.ok) setError(errorText(r));
           });
         }}
       >
         <h3 className="font-semibold">{tp("address")}</h3>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={tp("name")}>{({ id }) => <Input id={id} autoComplete="name" required value={address.recipientName} onChange={set("recipientName")} />}</Field>
-          <Field label={tp("phone")} hint={tp("phoneHint")}>{({ id, describedBy }) => <Input id={id} type="tel" dir="ltr" autoComplete="tel" required value={address.phone} aria-describedby={describedBy} onChange={set("phone")} />}</Field>
-          <Field label={tp("line1")} className="sm:col-span-2">{({ id }) => <Input id={id} autoComplete="address-line1" required value={address.line1} onChange={set("line1")} />}</Field>
-          <Field label={tp("line2")}>{({ id }) => <Input id={id} autoComplete="address-line2" value={address.line2} onChange={set("line2")} />}</Field>
-          <Field label={tp("city")}>{({ id }) => <Input id={id} autoComplete="address-level2" required value={address.city} onChange={set("city")} />}</Field>
-          <Field label={tp("postalCode")}>{({ id }) => <Input id={id} dir="ltr" autoComplete="postal-code" value={address.postalCode} onChange={set("postalCode")} />}</Field>
-          <Field label={tp("notes")}>{({ id }) => <Input id={id} value={address.notes} onChange={set("notes")} />}</Field>
+          <Field label={tp("name")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                autoComplete="name"
+                required
+                value={address.recipientName}
+                onChange={set("recipientName")}
+              />
+            )}
+          </Field>
+          <Field label={tp("phone")} hint={tp("phoneHint")}>
+            {({ id, describedBy }) => (
+              <Input
+                id={id}
+                type="tel"
+                dir="ltr"
+                autoComplete="tel"
+                required
+                value={address.phone}
+                aria-describedby={describedBy}
+                onChange={set("phone")}
+              />
+            )}
+          </Field>
+          <Field label={tp("line1")} className="sm:col-span-2">
+            {({ id }) => (
+              <Input
+                id={id}
+                autoComplete="address-line1"
+                required
+                value={address.line1}
+                onChange={set("line1")}
+              />
+            )}
+          </Field>
+          <Field label={tp("line2")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                autoComplete="address-line2"
+                value={address.line2}
+                onChange={set("line2")}
+              />
+            )}
+          </Field>
+          <Field label={tp("city")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                autoComplete="address-level2"
+                required
+                value={address.city}
+                onChange={set("city")}
+              />
+            )}
+          </Field>
+          <Field label={tp("postalCode")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                dir="ltr"
+                autoComplete="postal-code"
+                value={address.postalCode}
+                onChange={set("postalCode")}
+              />
+            )}
+          </Field>
+          <Field label={tp("notes")}>
+            {({ id }) => <Input id={id} value={address.notes} onChange={set("notes")} />}
+          </Field>
         </div>
         {error && <Banner tone="danger">{error}</Banner>}
         <Button type="submit" size="xl" loading={pending}>
@@ -103,7 +241,15 @@ export function QuotePanel({ orderId, locale, quantity, urgency, total, lines, v
   );
 }
 
-export function MessagesPanel({ orderId, locale, messages }: { orderId: string; locale: string; messages: { id: string; mine: boolean; body: string; at: string }[] }) {
+export function MessagesPanel({
+  orderId,
+  locale,
+  messages,
+}: {
+  orderId: string;
+  locale: string;
+  messages: { id: string; mine: boolean; body: string; at: string }[];
+}) {
   const t = useTranslations("orders.detail");
   const errorText = useErrorMessage();
   const router = useRouter();
@@ -118,7 +264,10 @@ export function MessagesPanel({ orderId, locale, messages }: { orderId: string; 
       ) : (
         <ul className="flex flex-col gap-3">
           {messages.map((m) => (
-            <li key={m.id} className={`flex max-w-[85%] flex-col gap-1 rounded-m p-3 text-sm ${m.mine ? "self-end bg-primary-subtle" : "self-start bg-surface-sunken"}`}>
+            <li
+              key={m.id}
+              className={`flex max-w-[85%] flex-col gap-1 rounded-m p-3 text-sm ${m.mine ? "self-end bg-primary-subtle" : "self-start bg-surface-sunken"}`}
+            >
               <span className="text-xs font-medium text-text-secondary">
                 {m.mine ? t("fromYou") : t("fromTeam")} · {m.at}
               </span>
@@ -140,9 +289,23 @@ export function MessagesPanel({ orderId, locale, messages }: { orderId: string; 
         }}
       >
         <Field label={t("reply")} error={error}>
-          {({ id, invalid }) => <Textarea id={id} rows={3} value={body} invalid={invalid} onChange={(e) => setBody(e.target.value)} />}
+          {({ id, invalid }) => (
+            <Textarea
+              id={id}
+              rows={3}
+              value={body}
+              invalid={invalid}
+              onChange={(e) => setBody(e.target.value)}
+            />
+          )}
         </Field>
-        <Button type="submit" variant="secondary" className="self-end" loading={pending} disabled={!body.trim()}>
+        <Button
+          type="submit"
+          variant="secondary"
+          className="self-end"
+          loading={pending}
+          disabled={!body.trim()}
+        >
           {t("send")}
         </Button>
       </form>
@@ -150,7 +313,21 @@ export function MessagesPanel({ orderId, locale, messages }: { orderId: string; 
   );
 }
 
-export function OrderActions({ orderId, locale, cancellable, paid, canReport, canReorder }: { orderId: string; locale: string; cancellable: boolean; paid: boolean; canReport: boolean; canReorder: boolean }) {
+export function OrderActions({
+  orderId,
+  locale,
+  cancellable,
+  paid,
+  canReport,
+  canReorder,
+}: {
+  orderId: string;
+  locale: string;
+  cancellable: boolean;
+  paid: boolean;
+  canReport: boolean;
+  canReorder: boolean;
+}) {
   const t = useTranslations("orders.detail");
   const tc = useTranslations("common.actions");
   const errorText = useErrorMessage();
@@ -163,7 +340,11 @@ export function OrderActions({ orderId, locale, cancellable, paid, canReport, ca
   return (
     <div className="flex flex-col gap-2">
       {canReorder && (
-        <Button size="lg" loading={pending} onClick={() => start(() => reorderAction(orderId, locale))}>
+        <Button
+          size="lg"
+          loading={pending}
+          onClick={() => start(() => reorderAction(orderId, locale))}
+        >
           {t("reorder")}
         </Button>
       )}

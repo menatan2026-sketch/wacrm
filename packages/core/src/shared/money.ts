@@ -5,7 +5,8 @@ export interface Money {
 }
 
 export const money = (amountMinor: number, currency = "ILS"): Money => {
-  if (!Number.isSafeInteger(amountMinor)) throw new Error(`money must be an integer, got ${amountMinor}`);
+  if (!Number.isSafeInteger(amountMinor))
+    throw new Error(`money must be an integer, got ${amountMinor}`);
   return { amountMinor, currency };
 };
 

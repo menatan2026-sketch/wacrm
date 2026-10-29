@@ -4,9 +4,18 @@ import { usePathname } from "next/navigation";
 import { cn } from "@mfg/ui";
 
 /** Section navigation for the partner and ops workspaces; marks the current section. */
-export function SurfaceNav({ items, label, base }: { items: { href: string; label: string }[]; label: string; base: string }) {
+export function SurfaceNav({
+  items,
+  label,
+  base,
+}: {
+  items: { href: string; label: string }[];
+  label: string;
+  base: string;
+}) {
   const pathname = usePathname();
-  const isCurrent = (href: string) => (href === base ? pathname === base : pathname === href || pathname.startsWith(`${href}/`));
+  const isCurrent = (href: string) =>
+    href === base ? pathname === base : pathname === href || pathname.startsWith(`${href}/`);
   return (
     <nav aria-label={label} className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
       <ul className="flex min-w-max gap-1">

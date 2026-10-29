@@ -47,16 +47,40 @@ describe("server-side RBAC on platform controls", () => {
 describe("partner views", () => {
   it("offers and jobs carry a part summary without customer data", async () => {
     const q = await quotedOrder(h);
-    const { checkoutUrl } = await payments.startCheckout(h.d, h.ctx(q.customer), q.orderId, { address: { recipientName: "Dana Cohen", phone: "050-0000000", line1: "Herzl 1", city: "Haifa" }, idempotencyKey: "k1", locale: "en" });
+    const { checkoutUrl } = await payments.startCheckout(h.d, h.ctx(q.customer), q.orderId, {
+      address: {
+        recipientName: "Dana Cohen",
+        phone: "050-0000000",
+        line1: "Herzl 1",
+        city: "Haifa",
+      },
+      idempotencyKey: "k1",
+      locale: "en",
+    });
     const quote = await quotes.currentQuote(h.ctx(SYSTEM), q.orderId);
-    const hook = h.payments.buildWebhook({ providerEventId: "evt-1", type: "payment.captured", providerRef: checkoutUrl.split("/").pop()!, amountMinor: quote!.snapshot.totalMinor, currency: "ILS" });
+    const hook = h.payments.buildWebhook({
+      providerEventId: "evt-1",
+      type: "payment.captured",
+      providerRef: checkoutUrl.split("/").pop()!,
+      amountMinor: quote!.snapshot.totalMinor,
+      currency: "ILS",
+    });
     await payments.handlePaymentWebhook(h.d, hook.body, hook.headers);
     await h.drain();
     const adminActor = await h.signIn("admin@mfg.local", "admin");
     const [decision] = await routing.routingDecisions(h.ctx(adminActor), q.orderId);
     const supplierId = decision!.chosenSupplierId!;
-    const offerId = await routing.offerToSupplier(h.d, h.ctx(adminActor), q.orderId, supplierId, "manual_confirmed");
-    const [supplier] = await h.db.select().from(schema.suppliers).where(eq(schema.suppliers.id, supplierId));
+    const offerId = await routing.offerToSupplier(
+      h.d,
+      h.ctx(adminActor),
+      q.orderId,
+      supplierId,
+      "manual_confirmed",
+    );
+    const [supplier] = await h.db
+      .select()
+      .from(schema.suppliers)
+      .where(eq(schema.suppliers.id, supplierId));
     const partner = h.ctx(await h.signIn(supplier!.contactEmail!, "supplier"));
 
     const [offer] = await routing.supplierOffers(partner, supplierId);

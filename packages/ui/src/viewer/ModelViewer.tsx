@@ -10,7 +10,11 @@ function Model({ url, highlight }: { url: string; highlight: string }) {
     const copy = scene.clone(true);
     copy.traverse((o) => {
       if ((o as THREE.Mesh).isMesh) {
-        (o as THREE.Mesh).material = new THREE.MeshStandardMaterial({ color: highlight, roughness: 0.55, metalness: 0.05 });
+        (o as THREE.Mesh).material = new THREE.MeshStandardMaterial({
+          color: highlight,
+          roughness: 0.55,
+          metalness: 0.05,
+        });
       }
     });
     return copy;
@@ -23,10 +27,27 @@ function Model({ url, highlight }: { url: string; highlight: string }) {
  * Axes are never mirrored in RTL; no auto-rotation (reduced-motion safe). Keyboard: arrows rotate
  * via OrbitControls' listenToKeyEvents; a static image + dimensions remain the non-visual fallback.
  */
-export default function ModelViewer({ url, label, color = "#5B82FF" }: { url: string; label: string; color?: string }) {
+export default function ModelViewer({
+  url,
+  label,
+  color = "#5B82FF",
+}: {
+  url: string;
+  label: string;
+  color?: string;
+}) {
   return (
-    <div role="img" aria-label={label} className="relative aspect-[4/3] w-full overflow-hidden rounded-m bg-viewer-canvas" dir="ltr">
-      <Canvas dpr={[1, 2]} camera={{ position: [120, 90, 120], fov: 35, near: 0.1, far: 5000 }} gl={{ antialias: true, powerPreference: "low-power" }}>
+    <div
+      role="img"
+      aria-label={label}
+      className="relative aspect-[4/3] w-full overflow-hidden rounded-m bg-viewer-canvas"
+      dir="ltr"
+    >
+      <Canvas
+        dpr={[1, 2]}
+        camera={{ position: [120, 90, 120], fov: 35, near: 0.1, far: 5000 }}
+        gl={{ antialias: true, powerPreference: "low-power" }}
+      >
         <color attach="background" args={["#0C0E11"]} />
         <ambientLight intensity={0.6} />
         <directionalLight position={[100, 200, 100]} intensity={1.2} />
@@ -36,7 +57,15 @@ export default function ModelViewer({ url, label, color = "#5B82FF" }: { url: st
             <Model url={url} highlight={color} />
           </Bounds>
         </Suspense>
-        <Grid infiniteGrid cellSize={10} sectionSize={50} cellColor="#2A2F36" sectionColor="#3D444D" fadeDistance={600} position={[0, -0.01, 0]} />
+        <Grid
+          infiniteGrid
+          cellSize={10}
+          sectionSize={50}
+          cellColor="#2A2F36"
+          sectionColor="#3D444D"
+          fadeDistance={600}
+          position={[0, -0.01, 0]}
+        />
         <OrbitControls makeDefault enableDamping dampingFactor={0.12} />
       </Canvas>
     </div>

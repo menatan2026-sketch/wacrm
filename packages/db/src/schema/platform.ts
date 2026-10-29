@@ -1,5 +1,14 @@
 import { sql } from "drizzle-orm";
-import { boolean, index, integer, jsonb, pgTable, primaryKey, text, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  primaryKey,
+  text,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { createdAt, id, oneOf, ts, updatedAt } from "./_shared";
 import { users } from "./identity";
 
@@ -38,7 +47,11 @@ export const outboxEvents = pgTable(
     attempts: integer("attempts").notNull().default(0),
     lastError: text("last_error"),
   },
-  (t) => [index("outbox_unpublished_idx").on(t.availableAt).where(sql`${t.publishedAt} IS NULL`)],
+  (t) => [
+    index("outbox_unpublished_idx")
+      .on(t.availableAt)
+      .where(sql`${t.publishedAt} IS NULL`),
+  ],
 );
 
 export const processedEvents = pgTable(

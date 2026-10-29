@@ -3,3 +3,8 @@ pnpm-lock.yaml
 **/node_modules
 packages/db/migrations
 docs
+.local
+services/geometry/.venv
+**/test-results
+**/playwright-report
+packages/tokens/src/tokens.css

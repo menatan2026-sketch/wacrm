@@ -1,8 +1,39 @@
-{ "name": "@mfg/ui", "version": "0.1.0", "private": true, "type": "module",
-  "exports": { ".": "./src/index.ts", "./viewer": "./src/viewer/index.ts", "./styles.css": "./src/styles.css" },
-  "scripts": { "typecheck": "tsc -p .", "test": "vitest run" },
-  "dependencies": { "@mfg/motion": "workspace:*", "@mfg/tokens": "workspace:*", "@base-ui/react": "^1.6.0",
-    "@react-three/drei": "^10.7.6", "@react-three/fiber": "^9.4.0", "clsx": "^2.1.1", "lucide-react": "^0.548.0", "three": "^0.181.0" },
-  "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0" },
-  "devDependencies": { "@testing-library/react": "^16.3.0", "@types/react": "^19.2.2", "@types/react-dom": "^19.2.2", "@types/three": "^0.181.0",
-    "jsdom": "^27.1.0", "react": "19.2.4", "react-dom": "19.2.4", "vitest": "^4.0.8" } }
+{
+  "name": "@mfg/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./viewer": "./src/viewer/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@mfg/motion": "workspace:*",
+    "@mfg/tokens": "workspace:*",
+    "@base-ui/react": "^1.6.0",
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.548.0",
+    "three": "^0.181.0"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/three": "^0.181.0",
+    "jsdom": "^27.1.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "vitest": "^4.0.8"
+  }
+}

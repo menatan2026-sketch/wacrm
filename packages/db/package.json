@@ -11,7 +11,7 @@
   },
   "scripts": {
     "typecheck": "tsc -p .",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "generate": "drizzle-kit generate",
     "migrate": "tsx --env-file-if-exists=../../.env scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",

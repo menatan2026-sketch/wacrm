@@ -132,7 +132,16 @@ export const elevation = {
 
 /** Motion tokens (MOTION_SYSTEM.md §2). */
 export const motion = {
-  duration: { instant: 0, micro: 100, fast: 160, standard: 240, slow: 360, educational: 600, success: 480, critical: 200 },
+  duration: {
+    instant: 0,
+    micro: 100,
+    fast: 160,
+    standard: 240,
+    slow: 360,
+    educational: 600,
+    success: 480,
+    critical: 200,
+  },
   easing: {
     standard: "cubic-bezier(0.2, 0, 0, 1)",
     enter: "cubic-bezier(0, 0, 0, 1)",
@@ -155,7 +164,9 @@ export const fontStacks = {
 /** WCAG relative luminance contrast ratio between two #RRGGBB colors. */
 export function contrastRatio(a: string, b: string): number {
   const lum = (hex: string) => {
-    const [r, g, bl] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+    const [r, g, bl] = [1, 3, 5]
+      .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
     return 0.2126 * r! + 0.7152 * g! + 0.0722 * bl!;
   };
   const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);

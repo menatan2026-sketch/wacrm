@@ -2,13 +2,13 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@mfg/core";
 import { Card } from "@mfg/ui";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { deps } from "@/lib/platform";
 import { getActor } from "@/lib/session";
 import { MfaForm } from "./MfaForm";
 
 export default async function MfaPage({ params }: { params: Promise<{ locale: string }> }) {
-  const locale = await useLocaleParam(params);
+  const locale = await resolveLocale(params);
   const actor = await getActor("admin");
   if (!actor) redirect(`/${locale}/ops/sign-in`);
   if (actor.mfaVerified) redirect(`/${locale}/ops`);

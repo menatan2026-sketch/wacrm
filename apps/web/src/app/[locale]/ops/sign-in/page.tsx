@@ -2,11 +2,17 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Card } from "@mfg/ui";
 import { SignInForm } from "@/components/SignInForm";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { getActor } from "@/lib/session";
 
-export default async function OpsSignIn({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ next?: string }> }) {
-  const locale = await useLocaleParam(params);
+export default async function OpsSignIn({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const locale = await resolveLocale(params);
   const { next } = await searchParams;
   if (await getActor("admin")) redirect(`/${locale}/ops`);
   const t = await getTranslations("auth");

@@ -22,7 +22,15 @@ export function StagedProgress({ stages, label }: { stages: StageItem[]; label: 
         <li key={s.key} className="flex items-start gap-3">
           <StageIcon state={s.state} />
           <span className="flex flex-col">
-            <span className={cn("text-sm", s.state === "pending" ? "text-text-tertiary" : "font-medium text-text-primary", s.state === "failed" && "text-danger")}>{s.label}</span>
+            <span
+              className={cn(
+                "text-sm",
+                s.state === "pending" ? "text-text-tertiary" : "font-medium text-text-primary",
+                s.state === "failed" && "text-danger",
+              )}
+            >
+              {s.label}
+            </span>
             {s.detail && <span className="font-mono text-xs text-text-secondary">{s.detail}</span>}
           </span>
         </li>
@@ -33,10 +41,29 @@ export function StagedProgress({ stages, label }: { stages: StageItem[]; label: 
 
 function StageIcon({ state }: { state: StageState }) {
   const base = "flex size-5 shrink-0 items-center justify-center rounded-full";
-  if (state === "done") return <span className={cn(base, "stage-done bg-success text-on-primary")}><Check aria-hidden className="size-3.5" strokeWidth={3} /></span>;
-  if (state === "failed") return <span className={cn(base, "bg-danger text-on-primary")}><X aria-hidden className="size-3.5" strokeWidth={3} /></span>;
-  if (state === "active") return <span className={cn(base, "text-signature")}><LayerBuildup size={18} /></span>;
-  return <span className={cn(base, "text-border-strong")}><Circle aria-hidden className="size-4" /></span>;
+  if (state === "done")
+    return (
+      <span className={cn(base, "stage-done bg-success text-on-primary")}>
+        <Check aria-hidden className="size-3.5" strokeWidth={3} />
+      </span>
+    );
+  if (state === "failed")
+    return (
+      <span className={cn(base, "bg-danger text-on-primary")}>
+        <X aria-hidden className="size-3.5" strokeWidth={3} />
+      </span>
+    );
+  if (state === "active")
+    return (
+      <span className={cn(base, "text-signature")}>
+        <LayerBuildup size={18} />
+      </span>
+    );
+  return (
+    <span className={cn(base, "text-border-strong")}>
+      <Circle aria-hidden className="size-4" />
+    </span>
+  );
 }
 
 export interface TimelineStage {
@@ -51,9 +78,19 @@ export function Timeline({ stages, label }: { stages: TimelineStage[]; label: st
   return (
     <ol aria-label={label} className="flex flex-col gap-0 lg:flex-row lg:gap-2">
       {stages.map((s, i) => (
-        <li key={s.key} aria-current={s.state === "current" ? "step" : undefined} className="relative flex gap-3 pb-5 lg:flex-1 lg:flex-col lg:pb-0">
+        <li
+          key={s.key}
+          aria-current={s.state === "current" ? "step" : undefined}
+          className="relative flex gap-3 pb-5 lg:flex-1 lg:flex-col lg:pb-0"
+        >
           {i < stages.length - 1 && (
-            <span aria-hidden className={cn("absolute start-[11px] top-6 h-[calc(100%-1.5rem)] w-px lg:start-6 lg:top-[11px] lg:h-px lg:w-[calc(100%-1.5rem)]", s.state === "done" ? "bg-success" : "bg-border-default")} />
+            <span
+              aria-hidden
+              className={cn(
+                "absolute start-[11px] top-6 h-[calc(100%-1.5rem)] w-px lg:start-6 lg:top-[11px] lg:h-px lg:w-[calc(100%-1.5rem)]",
+                s.state === "done" ? "bg-success" : "bg-border-default",
+              )}
+            />
           )}
           <span
             className={cn(
@@ -64,10 +101,21 @@ export function Timeline({ stages, label }: { stages: TimelineStage[]; label: st
               s.state === "exception" && "border-warning bg-surface-raised text-warning",
             )}
           >
-            {s.state === "done" ? <Check aria-hidden className="size-3.5" strokeWidth={3} /> : s.state === "current" ? <LayerBuildup size={14} /> : null}
+            {s.state === "done" ? (
+              <Check aria-hidden className="size-3.5" strokeWidth={3} />
+            ) : s.state === "current" ? (
+              <LayerBuildup size={14} />
+            ) : null}
           </span>
           <span className="flex flex-col">
-            <span className={cn("text-sm", s.state === "upcoming" ? "text-text-tertiary" : "font-medium text-text-primary")}>{s.label}</span>
+            <span
+              className={cn(
+                "text-sm",
+                s.state === "upcoming" ? "text-text-tertiary" : "font-medium text-text-primary",
+              )}
+            >
+              {s.label}
+            </span>
             {s.meta && <span className="text-xs text-text-secondary">{s.meta}</span>}
           </span>
         </li>
@@ -77,21 +125,52 @@ export function Timeline({ stages, label }: { stages: TimelineStage[]; label: st
 }
 
 /** Compact wizard stepper: "Step 3 of 5 · Usage" on mobile; labelled steps on desktop. */
-export function Stepper({ steps, current, ofLabel }: { steps: string[]; current: number; ofLabel: string }) {
+export function Stepper({
+  steps,
+  current,
+  ofLabel,
+}: {
+  steps: string[];
+  current: number;
+  ofLabel: string;
+}) {
   return (
     <nav aria-label={ofLabel} className="flex flex-col gap-2">
       <p className="text-xs font-medium text-text-secondary sm:hidden">{ofLabel}</p>
       <div className="h-1 overflow-hidden rounded-full bg-surface-sunken sm:hidden">
-        <div className="h-full rounded-full bg-primary transition-[width] duration-(--mfg-duration-standard)" style={{ width: `${((current + 1) / steps.length) * 100}%` }} />
+        <div
+          className="h-full rounded-full bg-primary transition-[width] duration-(--mfg-duration-standard)"
+          style={{ width: `${((current + 1) / steps.length) * 100}%` }}
+        />
       </div>
       <ol className="hidden items-center gap-2 sm:flex">
         {steps.map((s, i) => (
-          <li key={s} aria-current={i === current ? "step" : undefined} className="flex items-center gap-2">
-            <span className={cn("flex size-6 items-center justify-center rounded-full font-mono text-xs", i < current && "bg-success text-on-primary", i === current && "bg-primary text-on-primary", i > current && "border border-border-default text-text-tertiary")}>
+          <li
+            key={s}
+            aria-current={i === current ? "step" : undefined}
+            className="flex items-center gap-2"
+          >
+            <span
+              className={cn(
+                "flex size-6 items-center justify-center rounded-full font-mono text-xs",
+                i < current && "bg-success text-on-primary",
+                i === current && "bg-primary text-on-primary",
+                i > current && "border border-border-default text-text-tertiary",
+              )}
+            >
               {i < current ? <Check aria-hidden className="size-3.5" strokeWidth={3} /> : i + 1}
             </span>
-            <span className={cn("text-sm", i === current ? "font-medium text-text-primary" : "text-text-secondary")}>{s}</span>
-            {i < steps.length - 1 && <span aria-hidden className="mx-1 h-px w-6 bg-border-default" />}
+            <span
+              className={cn(
+                "text-sm",
+                i === current ? "font-medium text-text-primary" : "text-text-secondary",
+              )}
+            >
+              {s}
+            </span>
+            {i < steps.length - 1 && (
+              <span aria-hidden className="mx-1 h-px w-6 bg-border-default" />
+            )}
           </li>
         ))}
       </ol>

@@ -4,11 +4,11 @@ import { formatDate, formatMoney } from "@mfg/i18n";
 import { Badge, Card, DataTable, EmptyState, SectionTitle } from "@mfg/ui";
 import { closeStatementAction, markPaidAction } from "@/app/actions/ops";
 import { ActionForm } from "@/components/ActionForm";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { opsContext } from "@/lib/ops";
 
 export default async function OpsPayouts({ params }: { params: Promise<{ locale: string }> }) {
-  const locale = await useLocaleParam(params);
+  const locale = await resolveLocale(params);
   const { ctx } = await opsContext(locale, `/${locale}/ops/payouts`);
   const t = await getTranslations("admin.payouts");
   const s = await getTranslations("admin.suppliers");
@@ -23,11 +23,47 @@ export default async function OpsPayouts({ params }: { params: Promise<{ locale:
         rowKey={(r) => r.id}
         empty={<EmptyState title={s("empty")} />}
         columns={[
-          { key: "name", header: s("name"), cell: (r) => <span className="font-medium">{r.name}</span> },
-          { key: "pending", header: t("pending"), numeric: true, cell: (r) => formatMoney(r.unstatementedMinor, "ILS", locale) },
-          { key: "balance", header: t("balance"), numeric: true, cell: (r) => formatMoney(r.balanceMinor, "ILS", locale) },
-          { key: "details", header: t("details"), cell: (r) => (r.hasDetails ? <Badge tone="success">✓</Badge> : <Badge tone="warning">{t("noDetails")}</Badge>) },
-          { key: "act", header: "", cell: (r) => (r.unstatementedMinor !== 0 ? <ActionForm action={closeStatementAction.bind(null, locale, r.id)} submitLabel={t("close")} variant="secondary" size="sm" dialogTitle={t("close")} /> : null) },
+          {
+            key: "name",
+            header: s("name"),
+            cell: (r) => <span className="font-medium">{r.name}</span>,
+          },
+          {
+            key: "pending",
+            header: t("pending"),
+            numeric: true,
+            cell: (r) => formatMoney(r.unstatementedMinor, "ILS", locale),
+          },
+          {
+            key: "balance",
+            header: t("balance"),
+            numeric: true,
+            cell: (r) => formatMoney(r.balanceMinor, "ILS", locale),
+          },
+          {
+            key: "details",
+            header: t("details"),
+            cell: (r) =>
+              r.hasDetails ? (
+                <Badge tone="success">✓</Badge>
+              ) : (
+                <Badge tone="warning">{t("noDetails")}</Badge>
+              ),
+          },
+          {
+            key: "act",
+            header: "",
+            cell: (r) =>
+              r.unstatementedMinor !== 0 ? (
+                <ActionForm
+                  action={closeStatementAction.bind(null, locale, r.id)}
+                  submitLabel={t("close")}
+                  variant="secondary"
+                  size="sm"
+                  dialogTitle={t("close")}
+                />
+              ) : null,
+          },
         ]}
       />
       <Card className="flex flex-col gap-4">
@@ -39,9 +75,28 @@ export default async function OpsPayouts({ params }: { params: Promise<{ locale:
             {openStatements.map((st) => (
               <li key={st.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                 <span className="text-sm">
-                  <span className="font-medium">{name(st.supplierId)}</span> · {formatDate(st.periodStart, locale)} – {formatDate(st.periodEnd, locale)} · <span className="tabular-nums">{formatMoney(st.totalMinor, st.currency, locale)}</span>
+                  <span className="font-medium">{name(st.supplierId)}</span> ·{" "}
+                  {formatDate(st.periodStart, locale)} – {formatDate(st.periodEnd, locale)} ·{" "}
+                  <span className="tabular-nums">
+                    {formatMoney(st.totalMinor, st.currency, locale)}
+                  </span>
                 </span>
-                <ActionForm action={markPaidAction.bind(null, locale, st.id)} submitLabel={t("markPaid")} size="sm" dialogTitle={t("markPaid")} dialogDescription={t("holdHint")} fields={[{ name: "reference", label: t("reference"), kind: "text", required: true, ltr: true }]} />
+                <ActionForm
+                  action={markPaidAction.bind(null, locale, st.id)}
+                  submitLabel={t("markPaid")}
+                  size="sm"
+                  dialogTitle={t("markPaid")}
+                  dialogDescription={t("holdHint")}
+                  fields={[
+                    {
+                      name: "reference",
+                      label: t("reference"),
+                      kind: "text",
+                      required: true,
+                      ltr: true,
+                    },
+                  ]}
+                />
               </li>
             ))}
           </ul>

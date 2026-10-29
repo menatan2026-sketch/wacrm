@@ -5,7 +5,9 @@ import { createDb, createPool } from "../src/index";
 export async function runMigrations(url: string): Promise<void> {
   const pool = createPool(url, 1);
   try {
-    await migrate(createDb(pool), { migrationsFolder: fileURLToPath(new URL("../migrations", import.meta.url)) });
+    await migrate(createDb(pool), {
+      migrationsFolder: fileURLToPath(new URL("../migrations", import.meta.url)),
+    });
   } finally {
     await pool.end();
   }

@@ -5,14 +5,24 @@ import type { Actor, RoleGrant } from "../src/shared/context";
 import { hmac, randomDigits, seal, signPayload, unseal, verifyPayload } from "../src/shared/crypto";
 import { applyBps, roundToStep, taxFromGross } from "../src/shared/money";
 
-const user = (roles: RoleGrant[]): Actor => ({ kind: "user", userId: "u", email: "e", locale: "he", roles, sessionId: "s", surface: "admin", mfaVerified: true });
+const user = (roles: RoleGrant[]): Actor => ({
+  kind: "user",
+  userId: "u",
+  email: "e",
+  locale: "he",
+  roles,
+  sessionId: "s",
+  surface: "admin",
+  mfaVerified: true,
+});
 
 describe("RBAC permission matrix", () => {
   it("grants exactly the declared permissions for platform-scoped roles", () => {
     for (const role of ROLES) {
       if (role === "SUPPLIER_OPERATOR" || role === "SUPPLIER_MANAGER") continue;
       const actor = user([{ role, scopeType: "platform", scopeId: null }]);
-      for (const p of PERMISSIONS) expect(can(actor, p), `${role} ${p}`).toBe(ROLE_PERMISSIONS[role].includes(p));
+      for (const p of PERMISSIONS)
+        expect(can(actor, p), `${role} ${p}`).toBe(ROLE_PERMISSIONS[role].includes(p));
     }
   });
 

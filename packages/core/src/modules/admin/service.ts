@@ -17,17 +17,36 @@ export async function opsDashboard(ctx: Ctx) {
   startOfDay.setUTCHours(0, 0, 0, 0);
   const monthAgo = new Date(now.getTime() - 30 * 24 * 3600 * 1000);
 
-  const byStatus = await ctx.db.select({ status: schema.orders.status, n: sql<number>`count(*)::int` }).from(schema.orders).groupBy(schema.orders.status);
-  const attention = await ctx.db
-    .select({ id: schema.orders.id, orderNumber: schema.orders.orderNumber, status: schema.orders.status, onHold: schema.orders.onHold, holdReason: schema.orders.holdReason, reviewReasons: schema.orders.reviewReasons, statusChangedAt: schema.orders.statusChangedAt, flow: schema.orders.flow })
+  const byStatus = await ctx.db
+    .select({ status: schema.orders.status, n: sql<number>`count(*)::int` })
     .from(schema.orders)
-    .where(sql`${schema.orders.onHold} OR ${schema.orders.status} IN ('REVIEW_REQUIRED','ROUTING','QC_PENDING','QC_FAILED','DISPUTED','READY_FOR_SHIPMENT')`)
+    .groupBy(schema.orders.status);
+  const attention = await ctx.db
+    .select({
+      id: schema.orders.id,
+      orderNumber: schema.orders.orderNumber,
+      status: schema.orders.status,
+      onHold: schema.orders.onHold,
+      holdReason: schema.orders.holdReason,
+      reviewReasons: schema.orders.reviewReasons,
+      statusChangedAt: schema.orders.statusChangedAt,
+      flow: schema.orders.flow,
+    })
+    .from(schema.orders)
+    .where(
+      sql`${schema.orders.onHold} OR ${schema.orders.status} IN ('REVIEW_REQUIRED','ROUTING','QC_PENDING','QC_FAILED','DISPUTED','READY_FOR_SHIPMENT')`,
+    )
     .orderBy(schema.orders.statusChangedAt)
     .limit(100);
   const late = await ctx.db
     .select({ n: sql<number>`count(*)::int` })
     .from(schema.productionJobs)
-    .where(and(inArray(schema.productionJobs.status, ["ACCEPTED", "IN_PRODUCTION", "QC_PENDING"]), sql`${schema.productionJobs.dueAt} < ${now}`));
+    .where(
+      and(
+        inArray(schema.productionJobs.status, ["ACCEPTED", "IN_PRODUCTION", "QC_PENDING"]),
+        sql`${schema.productionJobs.dueAt} < ${now}`,
+      ),
+    );
   const [money] = await ctx.db
     .select({
       revenueToday: sql<number>`coalesce(sum(p.amount_minor) FILTER (WHERE p.updated_at >= ${startOfDay}), 0)::bigint`,
@@ -35,7 +54,9 @@ export async function opsDashboard(ctx: Ctx) {
       margin30: sql<number>`coalesce(sum(s.expected_margin_minor), 0)::bigint`,
       paidOrders30: sql<number>`count(distinct o.id)::int`,
     })
-    .from(sql`orders o JOIN payments p ON p.order_id = o.id AND p.status IN ('CAPTURED','PARTIALLY_REFUNDED') JOIN quote_snapshots s ON s.quote_id = p.quote_id`)
+    .from(
+      sql`orders o JOIN payments p ON p.order_id = o.id AND p.status IN ('CAPTURED','PARTIALLY_REFUNDED') JOIN quote_snapshots s ON s.quote_id = p.quote_id`,
+    )
     .where(gte(sql`o.paid_at`, monthAgo));
   const [funnel] = await ctx.db
     .select({
@@ -48,8 +69,19 @@ export async function opsDashboard(ctx: Ctx) {
     })
     .from(schema.analyticsEvents)
     .where(gte(schema.analyticsEvents.at, monthAgo));
-  const failedWebhooks = await ctx.db.select({ n: sql<number>`count(*)::int` }).from(schema.inboundWebhooks).where(and(eq(schema.inboundWebhooks.signatureValid, false), gte(schema.inboundWebhooks.receivedAt, monthAgo)));
-  const failedEvents = await ctx.db.select({ n: sql<number>`count(*)::int` }).from(schema.outboxEvents).where(sql`${schema.outboxEvents.publishedAt} IS NULL AND ${schema.outboxEvents.attempts} > 0`);
+  const failedWebhooks = await ctx.db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(schema.inboundWebhooks)
+    .where(
+      and(
+        eq(schema.inboundWebhooks.signatureValid, false),
+        gte(schema.inboundWebhooks.receivedAt, monthAgo),
+      ),
+    );
+  const failedEvents = await ctx.db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(schema.outboxEvents)
+    .where(sql`${schema.outboxEvents.publishedAt} IS NULL AND ${schema.outboxEvents.attempts} > 0`);
   const revenue30 = Number(money?.revenue30 ?? 0);
   const paid = Number(money?.paidOrders30 ?? 0);
   return {
@@ -67,11 +99,17 @@ export async function opsDashboard(ctx: Ctx) {
   };
 }
 
-export async function listOrdersAdmin(ctx: Ctx, opts: { status?: string; search?: string; limit?: number } = {}) {
+export async function listOrdersAdmin(
+  ctx: Ctx,
+  opts: { status?: string; search?: string; limit?: number } = {},
+) {
   authorize(ctx.actor, "order.read.any");
   const where = [];
   if (opts.status) where.push(eq(schema.orders.status, opts.status));
-  if (opts.search) where.push(sql`(${schema.orders.orderNumber} ILIKE ${"%" + opts.search + "%"} OR ${schema.users.email} ILIKE ${"%" + opts.search + "%"})`);
+  if (opts.search)
+    where.push(
+      sql`(${schema.orders.orderNumber} ILIKE ${"%" + opts.search + "%"} OR ${schema.users.email} ILIKE ${"%" + opts.search + "%"})`,
+    );
   return ctx.db
     .select({ order: schema.orders, email: schema.users.email })
     .from(schema.orders)
@@ -85,16 +123,32 @@ export async function listOrdersAdmin(ctx: Ctx, opts: { status?: string; search?
 export async function orderDetail(ctx: Ctx, orderId: string) {
   authorize(ctx.actor, "order.read.any");
   const [row] = await ctx.db
-    .select({ order: schema.orders, email: schema.users.email, locale: schema.users.preferredLocale, customerName: schema.users.displayName })
+    .select({
+      order: schema.orders,
+      email: schema.users.email,
+      locale: schema.users.preferredLocale,
+      customerName: schema.users.displayName,
+    })
     .from(schema.orders)
     .innerJoin(schema.users, eq(schema.users.id, schema.orders.customerUserId))
     .where(eq(schema.orders.id, orderId));
   if (!row) throw notFound("order");
   const items = await ctx.db
-    .select({ item: schema.orderItems, geometry: schema.geometryAnalyses, variant: schema.materialVariants, material: schema.materials })
+    .select({
+      item: schema.orderItems,
+      geometry: schema.geometryAnalyses,
+      variant: schema.materialVariants,
+      material: schema.materials,
+    })
     .from(schema.orderItems)
-    .leftJoin(schema.geometryAnalyses, sql`${schema.geometryAnalyses.id} = (SELECT g.id FROM geometry_analyses g WHERE g.file_id = ${schema.orderItems.fileId} ORDER BY g.created_at DESC LIMIT 1)`)
-    .leftJoin(schema.materialVariants, eq(schema.materialVariants.id, schema.orderItems.materialVariantId))
+    .leftJoin(
+      schema.geometryAnalyses,
+      sql`${schema.geometryAnalyses.id} = (SELECT g.id FROM geometry_analyses g WHERE g.file_id = ${schema.orderItems.fileId} ORDER BY g.created_at DESC LIMIT 1)`,
+    )
+    .leftJoin(
+      schema.materialVariants,
+      eq(schema.materialVariants.id, schema.orderItems.materialVariantId),
+    )
     .leftJoin(schema.materials, eq(schema.materials.id, schema.materialVariants.materialId))
     .where(eq(schema.orderItems.orderId, orderId))
     .orderBy(schema.orderItems.position);
@@ -105,16 +159,41 @@ export async function orderDetail(ctx: Ctx, orderId: string) {
     .where(eq(schema.productionJobs.orderId, orderId))
     .orderBy(desc(schema.productionJobs.attemptNo));
   const payments = can(ctx.actor, "payment.read.any") ? await paymentsForOrder(ctx, orderId) : [];
-  const refunds = payments.length ? await ctx.db.select().from(schema.refunds).where(inArray(schema.refunds.paymentId, payments.map((p) => p.id))).orderBy(desc(schema.refunds.createdAt)) : [];
+  const refunds = payments.length
+    ? await ctx.db
+        .select()
+        .from(schema.refunds)
+        .where(
+          inArray(
+            schema.refunds.paymentId,
+            payments.map((p) => p.id),
+          ),
+        )
+        .orderBy(desc(schema.refunds.createdAt))
+    : [];
   const [quote, history, messages, decisions, shipments, auditTrail] = await Promise.all([
     currentQuote(ctx, orderId),
     orderHistory(ctx, orderId),
     orderMessages(ctx, orderId),
     routingDecisions(ctx, orderId),
     shipmentsForOrder(ctx, orderId),
-    can(ctx.actor, "audit.read") ? queryAudit(ctx, { resourceId: orderId, limit: 50 }) : Promise.resolve([]),
+    can(ctx.actor, "audit.read")
+      ? queryAudit(ctx, { resourceId: orderId, limit: 50 })
+      : Promise.resolve([]),
   ]);
-  return { ...row, items, jobs, payments, refunds, quote, history, messages, decisions, shipments, auditTrail };
+  return {
+    ...row,
+    items,
+    jobs,
+    payments,
+    refunds,
+    quote,
+    history,
+    messages,
+    decisions,
+    shipments,
+    auditTrail,
+  };
 }
 
 /** Suppliers with their payout position, for the finance payouts screen. */
@@ -126,13 +205,19 @@ export async function payoutOverview(ctx: Ctx) {
       coalesce(sum(e.amount_minor), 0)::bigint AS balance
     FROM suppliers s LEFT JOIN payout_ledger_entries e ON e.supplier_id = s.id
     GROUP BY s.id ORDER BY s.name`);
-  const statements = await ctx.db.select().from(schema.payoutStatements).where(eq(schema.payoutStatements.status, "closed")).orderBy(schema.payoutStatements.periodEnd);
+  const statements = await ctx.db
+    .select()
+    .from(schema.payoutStatements)
+    .where(eq(schema.payoutStatements.status, "closed"))
+    .orderBy(schema.payoutStatements.periodEnd);
   return {
     suppliers: (rows.rows as Record<string, unknown>[]).map((r) => ({
       id: String(r.id),
       name: String(r.name),
       hasDetails: Boolean(r.has_details),
-      detailsChangedAt: r.payout_details_changed_at ? new Date(String(r.payout_details_changed_at)) : null,
+      detailsChangedAt: r.payout_details_changed_at
+        ? new Date(String(r.payout_details_changed_at))
+        : null,
       unstatementedMinor: Number(r.unstatemented),
       balanceMinor: Number(r.balance),
     })),

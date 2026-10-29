@@ -4,11 +4,11 @@ import { formatDateTime } from "@mfg/i18n";
 import { Badge, Banner, Card, Ltr } from "@mfg/ui";
 import { setFlagAction } from "@/app/actions/ops";
 import { ActionForm } from "@/components/ActionForm";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { opsContext } from "@/lib/ops";
 
 export default async function OpsFlags({ params }: { params: Promise<{ locale: string }> }) {
-  const locale = await useLocaleParam(params);
+  const locale = await resolveLocale(params);
   const { ctx } = await opsContext(locale, `/${locale}/ops/flags`);
   const t = await getTranslations("admin.flags");
   const od = await getTranslations("admin.order");
@@ -24,10 +24,18 @@ export default async function OpsFlags({ params }: { params: Promise<{ locale: s
               <div className="flex flex-col gap-1">
                 <span className="flex items-center gap-2 font-medium">
                   <Ltr mono>{f.key}</Ltr>
-                  <Badge tone={f.enabled ? "success" : "neutral"}>{f.enabled ? t("on") : t("off")}</Badge>
+                  <Badge tone={f.enabled ? "success" : "neutral"}>
+                    {f.enabled ? t("on") : t("off")}
+                  </Badge>
                 </span>
-                <span className="text-sm text-text-secondary">{t.has(`describe.${f.key}`) ? t(`describe.${f.key as "AUTO_PRICING"}`) : f.description}</span>
-                <span className="text-xs text-text-tertiary">{formatDateTime(f.updatedAt, locale)}</span>
+                <span className="text-sm text-text-secondary">
+                  {t.has(`describe.${f.key}`)
+                    ? t(`describe.${f.key as "AUTO_PRICING"}`)
+                    : f.description}
+                </span>
+                <span className="text-xs text-text-tertiary">
+                  {formatDateTime(f.updatedAt, locale)}
+                </span>
               </div>
               <ActionForm
                 action={setFlagAction.bind(null, locale, f.key, !f.enabled)}

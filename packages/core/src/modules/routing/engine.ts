@@ -10,7 +10,14 @@ export interface RoutingWeights {
   load: number;
 }
 
-export const DEFAULT_ROUTING_WEIGHTS: RoutingWeights = { quality: 0.3, onTime: 0.2, acceptance: 0.1, reprint: 0.15, cost: 0.15, load: 0.1 };
+export const DEFAULT_ROUTING_WEIGHTS: RoutingWeights = {
+  quality: 0.3,
+  onTime: 0.2,
+  acceptance: 0.1,
+  reprint: 0.15,
+  cost: 0.15,
+  load: 0.1,
+};
 
 export interface RoutingMachine {
   status: string;
@@ -41,7 +48,11 @@ export interface RoutingRequest {
 }
 
 /** True when the part fits the build volume in any of the 6 axis orientations (5 mm margin). */
-export function fitsBuildVolume(part: [number, number, number], build: [number, number, number], marginMm = 5): boolean {
+export function fitsBuildVolume(
+  part: [number, number, number],
+  build: [number, number, number],
+  marginMm = 5,
+): boolean {
   const [a, b, c] = part;
   const orientations: [number, number, number][] = [
     [a, b, c],
@@ -51,21 +62,29 @@ export function fitsBuildVolume(part: [number, number, number], build: [number, 
     [c, a, b],
     [c, b, a],
   ];
-  return orientations.some(([x, y, z]) => x + marginMm <= build[0] && y + marginMm <= build[1] && z + marginMm <= build[2]);
+  return orientations.some(
+    ([x, y, z]) => x + marginMm <= build[0] && y + marginMm <= build[1] && z + marginMm <= build[2],
+  );
 }
 
-const tieBreak = (orderId: string, supplierId: string) => createHash("sha256").update(`${orderId}:${supplierId}`).digest().readUInt32BE(0);
+const tieBreak = (orderId: string, supplierId: string) =>
+  createHash("sha256").update(`${orderId}:${supplierId}`).digest().readUInt32BE(0);
 
 /**
  * Deterministic routing (MASTER_PLAN §15): hard filters, then a weighted score in [0,1].
  * Returns every candidate with its score components or exclusion reason, best first.
  */
-export function rankSuppliers(req: RoutingRequest, suppliers: RoutingSupplier[], weights: RoutingWeights): RoutingCandidate[] {
+export function rankSuppliers(
+  req: RoutingRequest,
+  suppliers: RoutingSupplier[],
+  weights: RoutingWeights,
+): RoutingCandidate[] {
   type Eligible = { supplier: RoutingSupplier; free: number; capacity: number; tie: number };
   const eligible: Eligible[] = [];
   const excluded: RoutingCandidate[] = [];
   for (const s of suppliers) {
-    const exclude = (reason: string) => excluded.push({ supplierId: s.id, supplierName: s.name, excludedReason: reason });
+    const exclude = (reason: string) =>
+      excluded.push({ supplierId: s.id, supplierName: s.name, excludedReason: reason });
     if (s.status !== "active") {
       exclude("not_active");
       continue;
@@ -74,7 +93,9 @@ export function rankSuppliers(req: RoutingRequest, suppliers: RoutingSupplier[],
       exclude("previously_declined_or_failed");
       continue;
     }
-    const capable = s.machines.filter((m) => m.status === "active" && m.materialVariantIds.includes(req.materialVariantId));
+    const capable = s.machines.filter(
+      (m) => m.status === "active" && m.materialVariantIds.includes(req.materialVariantId),
+    );
     if (capable.length === 0) {
       exclude("material_unavailable");
       continue;
@@ -88,7 +109,9 @@ export function rankSuppliers(req: RoutingRequest, suppliers: RoutingSupplier[],
       exclude("lead_time_too_long");
       continue;
     }
-    const capacity = fitting.reduce((sum, m) => sum + m.dailyCapacityMinutes, 0) * Math.max(req.workingDaysUntilDue, 1);
+    const capacity =
+      fitting.reduce((sum, m) => sum + m.dailyCapacityMinutes, 0) *
+      Math.max(req.workingDaysUntilDue, 1);
     const free = capacity - s.committedMinutes;
     if (free < req.printMinutes) {
       exclude("no_capacity");
@@ -112,8 +135,19 @@ export function rankSuppliers(req: RoutingRequest, suppliers: RoutingSupplier[],
       cost: max === min ? 1 : (max - s.payoutMinor) / (max - min),
       load: Math.max(0, Math.min(1, e.free / e.capacity)),
     };
-    const raw = (Object.keys(weights) as (keyof RoutingWeights)[]).reduce((sum, k) => sum + weights[k] * components[k], 0);
-    return { candidate: { supplierId: s.id, supplierName: s.name, score: Number((raw / weightTotal).toFixed(4)), components }, tie: e.tie };
+    const raw = (Object.keys(weights) as (keyof RoutingWeights)[]).reduce(
+      (sum, k) => sum + weights[k] * components[k],
+      0,
+    );
+    return {
+      candidate: {
+        supplierId: s.id,
+        supplierName: s.name,
+        score: Number((raw / weightTotal).toFixed(4)),
+        components,
+      },
+      tie: e.tie,
+    };
   });
   scored.sort((a, b) => b.candidate.score - a.candidate.score || a.tie - b.tie);
   return [...scored.map((s) => s.candidate), ...excluded];

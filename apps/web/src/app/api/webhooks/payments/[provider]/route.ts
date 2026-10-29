@@ -5,7 +5,10 @@ import { deps } from "@/lib/platform";
 export const runtime = "nodejs";
 
 /** PSP webhook: raw body is verified by the provider adapter, de-duplicated and processed in one transaction. */
-export async function POST(request: Request, { params }: { params: Promise<{ provider: string }> }) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ provider: string }> },
+) {
   const { provider } = await params;
   const d = deps();
   if (provider !== d.payments.name) return new Response(null, { status: 404 });

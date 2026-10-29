@@ -1,4 +1,15 @@
-import { bigint, boolean, index, integer, jsonb, numeric, pgTable, text, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import {
+  bigint,
+  boolean,
+  index,
+  integer,
+  jsonb,
+  numeric,
+  pgTable,
+  text,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { createdAt, id, oneOf, ts, updatedAt } from "./_shared";
 import { FILE_KINDS } from "./enums";
 import { users } from "./identity";
@@ -25,7 +36,12 @@ export const fileObjects = pgTable(
     uniqueIndex("file_objects_key_uq").on(t.storageKey),
     index("file_objects_owner_idx").on(t.ownerUserId),
     oneOf("file_objects_kind_ck", "kind", FILE_KINDS),
-    oneOf("file_objects_status_ck", "status", ["pending_upload", "uploaded", "rejected", "deleted"]),
+    oneOf("file_objects_status_ck", "status", [
+      "pending_upload",
+      "uploaded",
+      "rejected",
+      "deleted",
+    ]),
   ],
 );
 
@@ -39,7 +55,9 @@ export const geometryAnalyses = pgTable(
   "geometry_analyses",
   {
     id: id(),
-    fileId: uuid("file_id").notNull().references(() => fileObjects.id),
+    fileId: uuid("file_id")
+      .notNull()
+      .references(() => fileObjects.id),
     status: text("status").notNull().default("queued"),
     stages: jsonb("stages").$type<GeometryStage[]>().notNull().default([]),
     failureCode: text("failure_code"),

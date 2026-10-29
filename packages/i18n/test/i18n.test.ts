@@ -1,8 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { checkCatalogs } from "../scripts/check-catalogs";
-import { directionOf, formatLength, formatMoney, negotiateLocale, parseDecimal, toMm, translate } from "../src/index";
+import {
+  directionOf,
+  formatLength,
+  formatMoney,
+  negotiateLocale,
+  parseDecimal,
+  toMm,
+  translate,
+} from "../src/index";
 
-const nbsp = (s: string) => s.replace(/[  ‏‎]/g, " ");
+const nbsp = (s: string) => s.replace(/[\u00A0\u202F\u200F\u200E]/g, " ");
 
 describe("formatMoney", () => {
   it("formats ILS per locale without manual symbol concatenation", () => {
@@ -21,7 +29,9 @@ describe("parseDecimal", () => {
     ["7", 7],
   ])("parses %s", (input, expected) => expect(parseDecimal(input)).toBe(expected));
 
-  it.each(["", "abc", "1,2,3", "1.2.3", "--1"])("rejects %s", (input) => expect(parseDecimal(input)).toBeNull());
+  it.each(["", "abc", "1,2,3", "1.2.3", "--1"])("rejects %s", (input) =>
+    expect(parseDecimal(input)).toBeNull(),
+  );
 });
 
 describe("units", () => {

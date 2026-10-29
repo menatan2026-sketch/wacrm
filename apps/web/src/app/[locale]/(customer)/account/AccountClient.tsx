@@ -44,7 +44,12 @@ export function SignOutButton({ locale }: { locale: string }) {
   const t = useTranslations("common.actions");
   const [pending, start] = useTransition();
   return (
-    <Button variant="secondary" className="self-start" loading={pending} onClick={() => start(() => signOutAction("customer", locale))}>
+    <Button
+      variant="secondary"
+      className="self-start"
+      loading={pending}
+      onClick={() => start(() => signOutAction("customer", locale))}
+    >
       {t("signOut")}
     </Button>
   );

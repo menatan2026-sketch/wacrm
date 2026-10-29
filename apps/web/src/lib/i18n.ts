@@ -4,7 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { isLocale, type AppLocale } from "@mfg/i18n";
 
 /** Validate the [locale] segment and enable static locale for next-intl in this request. */
-export async function useLocaleParam(params: Promise<{ locale: string }>): Promise<AppLocale> {
+export async function resolveLocale(params: Promise<{ locale: string }>): Promise<AppLocale> {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
@@ -12,10 +12,17 @@ export async function useLocaleParam(params: Promise<{ locale: string }>): Promi
 }
 
 /** Localized display name from admin-managed catalog JSON (falls back to English, then the code). */
-export function catalogName(i18n: Partial<Record<string, { name: string; description?: string }>> | null | undefined, locale: AppLocale, fallback: string) {
+export function catalogName(
+  i18n: Partial<Record<string, { name: string; description?: string }>> | null | undefined,
+  locale: AppLocale,
+  fallback: string,
+) {
   return i18n?.[locale]?.name ?? i18n?.en?.name ?? fallback;
 }
-export function catalogDescription(i18n: Partial<Record<string, { name: string; description?: string }>> | null | undefined, locale: AppLocale) {
+export function catalogDescription(
+  i18n: Partial<Record<string, { name: string; description?: string }>> | null | undefined,
+  locale: AppLocale,
+) {
   return i18n?.[locale]?.description ?? i18n?.en?.description ?? "";
 }
 

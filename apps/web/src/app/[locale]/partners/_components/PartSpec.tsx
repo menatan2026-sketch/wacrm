@@ -17,14 +17,22 @@ export interface PartView {
 export async function PartSpec({ part, locale }: { part: PartView; locale: AppLocale }) {
   const t = await getTranslations("supplier.offer");
   const u = await getTranslations("common.units");
-  const material = part.materialCode ? catalogName(part.materialI18n, locale, part.materialCode) : "—";
+  const material = part.materialCode
+    ? catalogName(part.materialI18n, locale, part.materialCode)
+    : "—";
   const color = part.colorI18n ? catalogName(part.colorI18n, locale, "") : "";
   return (
     <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
       <div>
         <dt className="text-text-secondary">{t("material")}</dt>
         <dd className="flex items-center gap-2 font-medium">
-          {part.colorHex && <span aria-hidden className="size-3 rounded-full border border-border-default" style={{ backgroundColor: part.colorHex }} />}
+          {part.colorHex && (
+            <span
+              aria-hidden
+              className="size-3 rounded-full border border-border-default"
+              style={{ backgroundColor: part.colorHex }}
+            />
+          )}
           {material}
           {color && <span className="text-text-secondary">· {color}</span>}
         </dd>

@@ -1,6 +1,13 @@
 import type { Db } from "@mfg/db";
 import type { RateLimiter } from "./platform/rate-limit";
-import type { EmailSender, GeometryClient, InvoiceProvider, PaymentProvider, ShippingProvider, StorageProvider } from "./ports";
+import type {
+  EmailSender,
+  GeometryClient,
+  InvoiceProvider,
+  PaymentProvider,
+  ShippingProvider,
+  StorageProvider,
+} from "./ports";
 import type { Clock } from "./shared/context";
 
 /** Everything the application layer needs from the outside world, wired once per process. */

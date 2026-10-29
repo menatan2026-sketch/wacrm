@@ -36,9 +36,16 @@ export function Dialog({
           <div className="flex items-start justify-between gap-4">
             <div className="flex flex-col gap-1">
               <Base.Title className="text-lg font-semibold text-text-primary">{title}</Base.Title>
-              {description && <Base.Description className="text-sm text-text-secondary">{description}</Base.Description>}
+              {description && (
+                <Base.Description className="text-sm text-text-secondary">
+                  {description}
+                </Base.Description>
+              )}
             </div>
-            <Base.Close aria-label={closeLabel} className="rounded-s p-1 text-text-secondary hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-focus">
+            <Base.Close
+              aria-label={closeLabel}
+              className="rounded-s p-1 text-text-secondary hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-focus"
+            >
               <X aria-hidden className="size-5" />
             </Base.Close>
           </div>

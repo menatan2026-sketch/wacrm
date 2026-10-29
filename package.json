@@ -13,7 +13,7 @@
     "lint:deps": "depcruise apps packages --config .dependency-cruiser.cjs",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "test:e2e": "pnpm --filter @mfg/e2e test",
+    "test:e2e": "pnpm --filter @mfg/e2e e2e",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "i18n:check": "pnpm --filter @mfg/i18n check",

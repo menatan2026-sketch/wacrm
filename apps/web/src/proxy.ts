@@ -13,7 +13,9 @@ export function proxy(request: NextRequest) {
   const first = pathname.split("/")[1];
   if (!isLocale(first)) {
     const cookie = request.cookies.get(LOCALE_COOKIE)?.value;
-    const locale = isLocale(cookie) ? cookie : negotiateLocale(request.headers.get("accept-language")) ?? defaultLocale;
+    const locale = isLocale(cookie)
+      ? cookie
+      : (negotiateLocale(request.headers.get("accept-language")) ?? defaultLocale);
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;
     url.search = search;
@@ -51,5 +53,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|icon|fonts|.*\\.(?:png|svg|jpg|webp|woff2?)$).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|icon|fonts|.*\\.(?:png|svg|jpg|webp|woff2?)$).*)",
+  ],
 };

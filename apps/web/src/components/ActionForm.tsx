@@ -6,11 +6,28 @@ import { Banner, Button, Dialog, Field, Input, Select, Textarea, type ButtonProp
 import { useErrorMessage } from "@/lib/errors";
 
 export type FormField =
-  | { name: string; label: string; kind: "text" | "money" | "textarea"; required?: boolean; hint?: string; ltr?: boolean; defaultValue?: string }
-  | { name: string; label: string; kind: "select"; options: { value: string; label: string }[]; required?: boolean; defaultValue?: string }
+  | {
+      name: string;
+      label: string;
+      kind: "text" | "money" | "textarea";
+      required?: boolean;
+      hint?: string;
+      ltr?: boolean;
+      defaultValue?: string;
+    }
+  | {
+      name: string;
+      label: string;
+      kind: "select";
+      options: { value: string; label: string }[];
+      required?: boolean;
+      defaultValue?: string;
+    }
   | { name: string; label: string; kind: "checkbox"; defaultValue?: boolean };
 
-type Result = { ok: true; data?: unknown } | { ok: false; code: string; ref?: string; details?: Record<string, unknown> };
+type Result =
+  | { ok: true; data?: unknown }
+  | { ok: false; code: string; ref?: string; details?: Record<string, unknown> };
 
 /**
  * Generic staff form: renders typed fields, calls a bound server action with string values, shows
@@ -44,7 +61,17 @@ export function ActionForm({
   const v = useTranslations("validation");
   const errorText = useErrorMessage();
   const router = useRouter();
-  const initial = () => Object.fromEntries(fields.map((f) => [f.name, f.kind === "checkbox" ? (f.defaultValue ? "on" : "") : (f.defaultValue ?? (f.kind === "select" ? (f.options[0]?.value ?? "") : ""))]));
+  const initial = () =>
+    Object.fromEntries(
+      fields.map((f) => [
+        f.name,
+        f.kind === "checkbox"
+          ? f.defaultValue
+            ? "on"
+            : ""
+          : (f.defaultValue ?? (f.kind === "select" ? (f.options[0]?.value ?? "") : "")),
+      ]),
+    );
   const [values, setValues] = useState<Record<string, string>>(initial);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string>();
@@ -56,7 +83,9 @@ export function ActionForm({
     start(async () => {
       setError(undefined);
       setResult(null);
-      const empty = fields.filter((f) => f.kind !== "checkbox" && f.required && !values[f.name]?.trim()).map((f) => f.name);
+      const empty = fields
+        .filter((f) => f.kind !== "checkbox" && f.required && !values[f.name]?.trim())
+        .map((f) => f.name);
       setMissing(empty);
       if (empty.length) return setError(v("summary"));
       const r = await action(values);
@@ -72,14 +101,30 @@ export function ActionForm({
       {fields.map((f) =>
         f.kind === "checkbox" ? (
           <label key={f.name} className="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
-            <input type="checkbox" className="size-5 accent-primary" checked={values[f.name] === "on"} onChange={(e) => setValues({ ...values, [f.name]: e.target.checked ? "on" : "" })} />
+            <input
+              type="checkbox"
+              className="size-5 accent-primary"
+              checked={values[f.name] === "on"}
+              onChange={(e) => setValues({ ...values, [f.name]: e.target.checked ? "on" : "" })}
+            />
             {f.label}
           </label>
         ) : (
-          <Field key={f.name} label={f.label} hint={"hint" in f ? f.hint : undefined} error={missing.includes(f.name) ? v("required") : undefined}>
+          <Field
+            key={f.name}
+            label={f.label}
+            hint={"hint" in f ? f.hint : undefined}
+            error={missing.includes(f.name) ? v("required") : undefined}
+          >
             {({ id, describedBy, invalid }) =>
               f.kind === "select" ? (
-                <Select id={id} aria-describedby={describedBy} invalid={invalid} value={values[f.name]} onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}>
+                <Select
+                  id={id}
+                  aria-describedby={describedBy}
+                  invalid={invalid}
+                  value={values[f.name]}
+                  onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}
+                >
                   {f.options.map((o) => (
                     <option key={o.value} value={o.value}>
                       {o.label}
@@ -87,9 +132,26 @@ export function ActionForm({
                   ))}
                 </Select>
               ) : f.kind === "textarea" ? (
-                <Textarea id={id} aria-describedby={describedBy} invalid={invalid} rows={f.name === "rules" ? 18 : 3} dir={f.ltr ? "ltr" : undefined} className={f.ltr ? "font-mono text-xs" : undefined} value={values[f.name]} onChange={(e) => setValues({ ...values, [f.name]: e.target.value })} />
+                <Textarea
+                  id={id}
+                  aria-describedby={describedBy}
+                  invalid={invalid}
+                  rows={f.name === "rules" ? 18 : 3}
+                  dir={f.ltr ? "ltr" : undefined}
+                  className={f.ltr ? "font-mono text-xs" : undefined}
+                  value={values[f.name]}
+                  onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}
+                />
               ) : (
-                <Input id={id} aria-describedby={describedBy} invalid={invalid} dir={f.kind === "money" || f.ltr ? "ltr" : undefined} inputMode={f.kind === "money" ? "decimal" : undefined} value={values[f.name]} onChange={(e) => setValues({ ...values, [f.name]: e.target.value })} />
+                <Input
+                  id={id}
+                  aria-describedby={describedBy}
+                  invalid={invalid}
+                  dir={f.kind === "money" || f.ltr ? "ltr" : undefined}
+                  inputMode={f.kind === "money" ? "decimal" : undefined}
+                  value={values[f.name]}
+                  onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}
+                />
               )
             }
           </Field>
@@ -99,7 +161,10 @@ export function ActionForm({
     </div>
   );
 
-  const extra = resultField && result?.data && typeof result.data === "object" ? String((result.data as Record<string, unknown>)[resultField] ?? "") : "";
+  const extra =
+    resultField && result?.data && typeof result.data === "object"
+      ? String((result.data as Record<string, unknown>)[resultField] ?? "")
+      : "";
   const outcome =
     result && (successMessage || extra) ? (
       <Banner tone="success" title={successMessage}>
@@ -129,7 +194,11 @@ export function ActionForm({
               <Button variant="ghost" onClick={() => setOpen(false)}>
                 {c("actions.cancel")}
               </Button>
-              <Button variant={variant === "danger-outline" ? "danger" : variant} loading={pending} onClick={submit}>
+              <Button
+                variant={variant === "danger-outline" ? "danger" : variant}
+                loading={pending}
+                onClick={submit}
+              >
                 {submitLabel}
               </Button>
             </div>

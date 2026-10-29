@@ -1,8 +1,19 @@
-import { createCipheriv, createDecipheriv, createHash, createHmac, hkdfSync, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  createHmac,
+  hkdfSync,
+  randomBytes,
+  randomInt,
+  timingSafeEqual,
+} from "node:crypto";
 
-export const sha256 = (value: string | Buffer): string => createHash("sha256").update(value).digest("hex");
+export const sha256 = (value: string | Buffer): string =>
+  createHash("sha256").update(value).digest("hex");
 
-export const hmac = (secret: string, value: string): string => createHmac("sha256", secret).update(value).digest("hex");
+export const hmac = (secret: string, value: string): string =>
+  createHmac("sha256", secret).update(value).digest("hex");
 
 export function safeEqual(a: string, b: string): boolean {
   const ab = Buffer.from(a);
@@ -42,7 +53,10 @@ export function signPayload(secret: string, payload: Record<string, unknown>): s
   return `${body}.${hmac(secret, body)}`;
 }
 
-export function verifyPayload<T extends Record<string, unknown>>(secret: string, token: string): T | null {
+export function verifyPayload<T extends Record<string, unknown>>(
+  secret: string,
+  token: string,
+): T | null {
   const [body, sig] = token.split(".");
   if (!body || !sig || !safeEqual(sig, hmac(secret, body))) return null;
   try {

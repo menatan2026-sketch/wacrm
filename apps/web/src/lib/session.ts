@@ -8,10 +8,15 @@ import { deps } from "./platform";
 
 const secure = () => (process.env.APP_URL ?? "").startsWith("https://");
 /** Host-only cookies per surface; `__Host-` prefix whenever served over HTTPS (SECURITY §2). */
-export const sessionCookie = (surface: Surface) => `${secure() ? "__Host-" : ""}mfg_${surface === "customer" ? "c" : surface === "supplier" ? "s" : "a"}`;
+export const sessionCookie = (surface: Surface) =>
+  `${secure() ? "__Host-" : ""}mfg_${surface === "customer" ? "c" : surface === "supplier" ? "s" : "a"}`;
 export const ANON_COOKIE = "mfg_anon";
 
-export const SURFACE_PATH: Record<Surface, string> = { customer: "", supplier: "/partners", admin: "/ops" };
+export const SURFACE_PATH: Record<Surface, string> = {
+  customer: "",
+  supplier: "/partners",
+  admin: "/ops",
+};
 
 export const getActor = cache(async (surface: Surface): Promise<UserActor | null> => {
   const jar = await cookies();
@@ -19,7 +24,11 @@ export const getActor = cache(async (surface: Surface): Promise<UserActor | null
 });
 
 /** Signed-in actor for a surface, or a redirect to its sign-in page. Staff must have passed MFA. */
-export async function requireActor(surface: Surface, locale: string, next?: string): Promise<UserActor> {
+export async function requireActor(
+  surface: Surface,
+  locale: string,
+  next?: string,
+): Promise<UserActor> {
   const actor = await getActor(surface);
   const base = `/${locale}${SURFACE_PATH[surface]}`;
   if (!actor) redirect(`${base}/sign-in${next ? `?next=${encodeURIComponent(next)}` : ""}`);
@@ -49,7 +58,13 @@ export async function ctxFor(actor: Actor): Promise<Ctx> {
 }
 
 export async function setSessionCookie(surface: Surface, token: string, expires: Date) {
-  (await cookies()).set(sessionCookie(surface), token, { httpOnly: true, secure: secure(), sameSite: "lax", path: "/", expires });
+  (await cookies()).set(sessionCookie(surface), token, {
+    httpOnly: true,
+    secure: secure(),
+    sameSite: "lax",
+    path: "/",
+    expires,
+  });
 }
 
 export async function clearSessionCookie(surface: Surface) {

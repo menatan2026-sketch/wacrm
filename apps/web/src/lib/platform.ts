@@ -6,7 +6,9 @@ const globalForPlatform = globalThis as unknown as { __mfgPlatform?: Platform };
 
 /** One platform (DB pool, Redis, adapters) per server process, reused across hot reloads. */
 export function platform(): Platform {
-  globalForPlatform.__mfgPlatform ??= createPlatform(serverConfig(), { rootDir: process.env.MFG_ROOT });
+  globalForPlatform.__mfgPlatform ??= createPlatform(serverConfig(), {
+    rootDir: process.env.MFG_ROOT,
+  });
   return globalForPlatform.__mfgPlatform;
 }
 

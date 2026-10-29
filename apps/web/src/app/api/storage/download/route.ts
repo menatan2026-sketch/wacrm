@@ -3,7 +3,16 @@ import { deps } from "@/lib/platform";
 
 export const runtime = "nodejs";
 
-const TYPES: Record<string, string> = { glb: "model/gltf-binary", stl: "model/stl", "3mf": "model/3mf", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", heic: "image/heic" };
+const TYPES: Record<string, string> = {
+  glb: "model/gltf-binary",
+  stl: "model/stl",
+  "3mf": "model/3mf",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  heic: "image/heic",
+};
 
 /** Local-storage equivalent of an S3 presigned GET: short-lived signed token, private caching only. */
 export async function GET(request: Request) {

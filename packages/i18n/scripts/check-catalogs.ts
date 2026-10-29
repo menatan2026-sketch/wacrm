@@ -24,12 +24,18 @@ function flatten(tree: MessageTree, prefix = ""): Map<string, string> {
 
 function inspect(ast: MessageFormatElement[], args = new Set<string>(), plurals: string[][] = []) {
   for (const el of ast) {
-    if (el.type === TYPE.argument || el.type === TYPE.number || el.type === TYPE.date || el.type === TYPE.time) {
+    if (
+      el.type === TYPE.argument ||
+      el.type === TYPE.number ||
+      el.type === TYPE.date ||
+      el.type === TYPE.time
+    ) {
       args.add(el.value);
     }
     if (el.type === TYPE.plural || el.type === TYPE.select) {
       args.add(el.value);
-      if (el.type === TYPE.plural) plurals.push(Object.keys(el.options).filter((o) => !o.startsWith("=")));
+      if (el.type === TYPE.plural)
+        plurals.push(Object.keys(el.options).filter((o) => !o.startsWith("=")));
       for (const opt of Object.values(el.options)) inspect(opt.value, args, plurals);
     }
     if (el.type === TYPE.tag) {
@@ -42,15 +48,16 @@ function inspect(ast: MessageFormatElement[], args = new Set<string>(), plurals:
 
 export function checkCatalogs(): string[] {
   const problems: string[] = [];
-  const flat = Object.fromEntries(locales.map((l) => [l, flatten(messages[l] as MessageTree)])) as Record<
-    string,
-    Map<string, string>
-  >;
+  const flat = Object.fromEntries(
+    locales.map((l) => [l, flatten(messages[l] as MessageTree)]),
+  ) as Record<string, Map<string, string>>;
   const reference = flat.en!;
   for (const locale of locales) {
     const current = flat[locale]!;
-    for (const key of reference.keys()) if (!current.has(key)) problems.push(`${locale}: missing ${key}`);
-    for (const key of current.keys()) if (!reference.has(key)) problems.push(`${locale}: extra key ${key}`);
+    for (const key of reference.keys())
+      if (!current.has(key)) problems.push(`${locale}: missing ${key}`);
+    for (const key of current.keys())
+      if (!reference.has(key)) problems.push(`${locale}: extra key ${key}`);
     for (const [key, text] of current) {
       let info;
       try {
@@ -65,7 +72,9 @@ export function checkCatalogs(): string[] {
         const missing = [...refArgs].filter((a) => !info.args.has(a));
         const extra = [...info.args].filter((a) => !refArgs.has(a));
         if (missing.length || extra.length) {
-          problems.push(`${locale}: ${key} placeholders differ (missing [${missing}], extra [${extra}])`);
+          problems.push(
+            `${locale}: ${key} placeholders differ (missing [${missing}], extra [${extra}])`,
+          );
         }
       }
       for (const cats of info.plurals) {

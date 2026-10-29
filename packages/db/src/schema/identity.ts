@@ -31,7 +31,9 @@ export const sessions = pgTable(
   "sessions",
   {
     id: id(),
-    userId: uuid("user_id").notNull().references(() => users.id),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
     tokenHash: text("token_hash").notNull(),
     surface: text("surface").notNull(),
     mfaVerifiedAt: ts("mfa_verified_at"),
@@ -67,7 +69,9 @@ export const roleAssignments = pgTable(
   "role_assignments",
   {
     id: id(),
-    userId: uuid("user_id").notNull().references(() => users.id),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
     role: text("role").notNull(),
     scopeType: text("scope_type").notNull().default("platform"),
     scopeId: uuid("scope_id"),

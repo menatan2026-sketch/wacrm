@@ -22,12 +22,17 @@ export const NAMESPACES = [
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];
 
-export const isLocale = (value: unknown): value is AppLocale => typeof value === "string" && (locales as readonly string[]).includes(value);
+export const isLocale = (value: unknown): value is AppLocale =>
+  typeof value === "string" && (locales as readonly string[]).includes(value);
 
 export const directionOf = (locale: AppLocale): "rtl" | "ltr" => (locale === "he" ? "rtl" : "ltr");
 
 /** Language names shown in the switcher, each in its own language. */
-export const LOCALE_NAMES: Record<AppLocale, string> = { he: "עברית", en: "English", ru: "Русский" };
+export const LOCALE_NAMES: Record<AppLocale, string> = {
+  he: "עברית",
+  en: "English",
+  ru: "Русский",
+};
 
 /** Pick the best supported locale from an Accept-Language header. */
 export function negotiateLocale(acceptLanguage: string | null | undefined): AppLocale {

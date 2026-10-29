@@ -1,6 +1,13 @@
 import { Queue, Worker } from "bullmq";
 import { serverConfig } from "@mfg/config";
-import { createPlatform, dispatchEvent, relayOutbox, SCHEDULED_TASKS, systemCtx, type DomainEvent } from "@mfg/core";
+import {
+  createPlatform,
+  dispatchEvent,
+  relayOutbox,
+  SCHEDULED_TASKS,
+  systemCtx,
+  type DomainEvent,
+} from "@mfg/core";
 import { sql } from "@mfg/db";
 import { logger, withLogContext } from "@mfg/logging";
 
@@ -13,7 +20,12 @@ const QUEUE = "events";
 
 const queue = new Queue<DomainEvent>(QUEUE, {
   connection,
-  defaultJobOptions: { attempts: 8, backoff: { type: "exponential", delay: 2000 }, removeOnComplete: 1000, removeOnFail: 5000 },
+  defaultJobOptions: {
+    attempts: 8,
+    backoff: { type: "exponential", delay: 2000 },
+    removeOnComplete: 1000,
+    removeOnFail: 5000,
+  },
 });
 
 /** Outbox relay: committed events → BullMQ (jobId = event id, so re-delivery is de-duplicated). */
@@ -35,17 +47,26 @@ const worker = new Worker<DomainEvent>(
   QUEUE,
   async (job) => {
     const event = { ...job.data, createdAt: new Date(job.data.createdAt) };
-    await withLogContext({ request_id: event.requestId ?? undefined }, () => dispatchEvent(deps, event));
+    await withLogContext({ request_id: event.requestId ?? undefined }, () =>
+      dispatchEvent(deps, event),
+    );
   },
   { connection, concurrency: 4 },
 );
-worker.on("failed", (job, err) => log.error({ err, eventType: job?.name, eventId: job?.id, attempts: job?.attemptsMade }, "event handler failed"));
+worker.on("failed", (job, err) =>
+  log.error(
+    { err, eventType: job?.name, eventId: job?.id, attempts: job?.attemptsMade },
+    "event handler failed",
+  ),
+);
 
 /** Each scheduled task runs on one worker at a time (Postgres advisory lock keyed by task name). */
 function schedule(signal: AbortSignal) {
   for (const task of SCHEDULED_TASKS) {
     const tick = async () => {
-      const lock = await deps.db.execute(sql`SELECT pg_try_advisory_lock(hashtext(${task.name})) AS ok`);
+      const lock = await deps.db.execute(
+        sql`SELECT pg_try_advisory_lock(hashtext(${task.name})) AS ok`,
+      );
       if (!(lock.rows[0] as { ok: boolean }).ok) return;
       try {
         const result = await task.run(deps, systemCtx(deps));

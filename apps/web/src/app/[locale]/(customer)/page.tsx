@@ -3,15 +3,18 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { drafts } from "@mfg/core";
 import { buttonClasses } from "@mfg/ui";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { ctxFor, guestOrUser } from "@/lib/session";
 import { StartFlowButton } from "./StartFlowButton";
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
-  const locale = await useLocaleParam(params);
+  const locale = await resolveLocale(params);
   const t = await getTranslations("customer.home");
   const actor = await guestOrUser();
-  const open = actor.kind === "user" || (actor.kind === "guest" && actor.anonKey) ? await drafts.latestOpenDrafts(await ctxFor(actor)).catch(() => []) : [];
+  const open =
+    actor.kind === "user" || (actor.kind === "guest" && actor.anonKey)
+      ? await drafts.latestOpenDrafts(await ctxFor(actor)).catch(() => [])
+      : [];
   const flows = [
     { flow: "file", Icon: FileBox },
     { flow: "object", Icon: Wrench },
@@ -23,10 +26,15 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <div aria-hidden className="tech-grid absolute inset-0 opacity-60" />
         <div className="relative mx-auto flex max-w-[1200px] flex-col gap-6 px-4 py-14 md:px-8 md:py-20">
           <p className="text-sm font-semibold text-signature">{t("eyebrow")}</p>
-          <h1 className="max-w-3xl text-[clamp(2rem,5vw,3.5rem)] leading-[1.08] font-semibold text-balance">{t("title")}</h1>
+          <h1 className="max-w-3xl text-[clamp(2rem,5vw,3.5rem)] leading-[1.08] font-semibold text-balance">
+            {t("title")}
+          </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-text-secondary">{t("subtitle")}</p>
           {open[0] && (
-            <Link href={`/${locale}/new/${open[0].id}`} className={buttonClasses("secondary", "md", "self-start")}>
+            <Link
+              href={`/${locale}/new/${open[0].id}`}
+              className={buttonClasses("secondary", "md", "self-start")}
+            >
               {t("continueDraft")}
             </Link>
           )}
@@ -38,13 +46,21 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </h2>
         <ul className="grid gap-4 md:grid-cols-3">
           {flows.map(({ flow, Icon }) => (
-            <li key={flow} className="flex flex-col gap-4 rounded-l border border-border-subtle bg-surface-raised p-6 shadow-raised">
+            <li
+              key={flow}
+              className="flex flex-col gap-4 rounded-l border border-border-subtle bg-surface-raised p-6 shadow-raised"
+            >
               <span className="flex size-12 items-center justify-center rounded-m bg-primary-subtle text-primary">
                 <Icon aria-hidden className="size-6" strokeWidth={1.5} />
               </span>
               <h3 className="text-lg font-semibold">{t(`${flow}.title`)}</h3>
               <p className="flex-1 text-text-secondary">{t(`${flow}.body`)}</p>
-              <StartFlowButton flow={flow} locale={locale} label={t(`${flow}.cta`)} primary={flow === "file"} />
+              <StartFlowButton
+                flow={flow}
+                locale={locale}
+                label={t(`${flow}.cta`)}
+                primary={flow === "file"}
+              />
             </li>
           ))}
         </ul>
@@ -58,7 +74,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <ol className="flex flex-col gap-4">
               {(["s1", "s2", "s3", "s4"] as const).map((s, i) => (
                 <li key={s} className="flex items-center gap-4">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border-strong font-mono text-sm">{i + 1}</span>
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border-strong font-mono text-sm">
+                    {i + 1}
+                  </span>
                   <span>{t(`steps.${s}`)}</span>
                 </li>
               ))}
@@ -70,7 +88,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               { k: "private", Icon: ShieldCheck },
               { k: "price", Icon: Receipt },
             ].map(({ k, Icon }) => (
-              <li key={k} className="flex items-center gap-3 rounded-m border border-border-subtle p-4">
+              <li
+                key={k}
+                className="flex items-center gap-3 rounded-m border border-border-subtle p-4"
+              >
                 <Icon aria-hidden className="size-5 text-success" />
                 <span className="font-medium">{t(`trust.${k}`)}</span>
               </li>

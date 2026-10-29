@@ -2,11 +2,14 @@ import type { AppLocale } from "./config";
 
 export const DEFAULT_TIME_ZONE = "Asia/Jerusalem";
 
-const intlLocale = (locale: AppLocale) => (locale === "he" ? "he-IL" : locale === "ru" ? "ru-RU" : "en-IL");
+const intlLocale = (locale: AppLocale) =>
+  locale === "he" ? "he-IL" : locale === "ru" ? "ru-RU" : "en-IL";
 
 /** Format integer minor units as currency. The currency comes from the data, never the locale. */
 export function formatMoney(amountMinor: number, currency: string, locale: AppLocale): string {
-  return new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency }).format(amountMinor / 100);
+  return new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency }).format(
+    amountMinor / 100,
+  );
 }
 
 export function formatNumber(value: number, locale: AppLocale, maximumFractionDigits = 2): string {
@@ -14,15 +17,32 @@ export function formatNumber(value: number, locale: AppLocale, maximumFractionDi
 }
 
 export function formatPercent(ratio: number, locale: AppLocale): string {
-  return new Intl.NumberFormat(intlLocale(locale), { style: "percent", maximumFractionDigits: 1 }).format(ratio);
+  return new Intl.NumberFormat(intlLocale(locale), {
+    style: "percent",
+    maximumFractionDigits: 1,
+  }).format(ratio);
 }
 
-export function formatDate(date: Date | string, locale: AppLocale, timeZone = DEFAULT_TIME_ZONE): string {
-  return new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: "medium", timeZone }).format(new Date(date));
+export function formatDate(
+  date: Date | string,
+  locale: AppLocale,
+  timeZone = DEFAULT_TIME_ZONE,
+): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: "medium", timeZone }).format(
+    new Date(date),
+  );
 }
 
-export function formatDateTime(date: Date | string, locale: AppLocale, timeZone = DEFAULT_TIME_ZONE): string {
-  return new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: "medium", timeStyle: "short", timeZone }).format(new Date(date));
+export function formatDateTime(
+  date: Date | string,
+  locale: AppLocale,
+  timeZone = DEFAULT_TIME_ZONE,
+): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone,
+  }).format(new Date(date));
 }
 
 export type LengthUnit = "mm" | "cm" | "in";
@@ -41,7 +61,7 @@ export function formatLength(valueMm: number, unit: LengthUnit, locale: AppLocal
  * type commas) and ignores spaces used as thousands separators. Returns null for invalid input.
  */
 export function parseDecimal(input: string): number | null {
-  const cleaned = input.trim().replace(/[\s  ]/g, "");
+  const cleaned = input.trim().replace(/[\s\u00A0\u202F]/g, "");
   if (!/^-?\d+([.,]\d+)?$/.test(cleaned)) return null;
   const value = Number(cleaned.replace(",", "."));
   return Number.isFinite(value) ? value : null;

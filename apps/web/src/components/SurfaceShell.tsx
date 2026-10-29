@@ -34,7 +34,10 @@ export async function SurfaceShell({
       <header className="sticky top-0 z-30 border-b border-border-subtle bg-surface-raised/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1320px] flex-col gap-2 px-4 py-2 md:px-8">
           <div className="flex h-12 items-center gap-3">
-            <Link href={base} className="flex items-center gap-3 rounded-s focus-visible:outline-2 focus-visible:outline-focus">
+            <Link
+              href={base}
+              className="flex items-center gap-3 rounded-s focus-visible:outline-2 focus-visible:outline-focus"
+            >
               <BrandMark name={c("brand")} />
               <span className="hidden sm:inline-flex">
                 <Badge tone={surface === "admin" ? "signature" : "info"}>{title}</Badge>

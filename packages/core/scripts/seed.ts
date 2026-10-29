@@ -7,7 +7,8 @@ const pool = createPool(url, 1);
 const db = createDb(pool);
 await seedReference(db);
 if (process.argv.includes("--dev")) {
-  if (process.env.NODE_ENV === "production") throw new Error("refusing to seed development accounts in production");
+  if (process.env.NODE_ENV === "production")
+    throw new Error("refusing to seed development accounts in production");
   await seedDevelopment(db);
 }
 await pool.end();

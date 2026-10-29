@@ -13,10 +13,13 @@ export class DomainError extends Error {
   }
 }
 
-export const forbidden = (details?: Record<string, unknown>) => new DomainError("auth.forbidden", 403, details);
+export const forbidden = (details?: Record<string, unknown>) =>
+  new DomainError("auth.forbidden", 403, details);
 export const notFound = (what: string) => new DomainError("common.not_found", 404, { what });
-export const invalid = (code: string, details?: Record<string, unknown>) => new DomainError(code, 422, details);
-export const conflict = (code: string, details?: Record<string, unknown>) => new DomainError(code, 409, details);
+export const invalid = (code: string, details?: Record<string, unknown>) =>
+  new DomainError(code, 422, details);
+export const conflict = (code: string, details?: Record<string, unknown>) =>
+  new DomainError(code, 409, details);
 
 /** Every error code the domain may raise. Checked against the `errors` catalog in CI. */
 export const ERROR_CODES = [

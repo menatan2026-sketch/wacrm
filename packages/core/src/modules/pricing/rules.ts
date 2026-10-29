@@ -10,10 +10,17 @@ const minor = z.number().int().min(0);
 export const pricingRulesSchema = z.object({
   currency: z.string().length(3),
   setupMinutes: z.number().min(0),
-  extrusionRateGPerMin: z.object({ default: z.number().positive() }).catchall(z.number().positive()),
+  extrusionRateGPerMin: z
+    .object({ default: z.number().positive() })
+    .catchall(z.number().positive()),
   profiles: z.record(
     z.string(),
-    z.object({ wallThicknessMm: z.number().positive(), infill: z.number().min(0).max(1), speedFactor: z.number().positive(), supportFactorMm: z.number().min(0) }),
+    z.object({
+      wallThicknessMm: z.number().positive(),
+      infill: z.number().min(0).max(1),
+      speedFactor: z.number().positive(),
+      supportFactorMm: z.number().min(0),
+    }),
   ),
   heightMinutesPerMm: z.number().min(0),
   payout: z.object({
@@ -30,10 +37,19 @@ export const pricingRulesSchema = z.object({
   minOrderNetMinor: minor,
   quantityBreaks: z.array(z.object({ minQty: z.number().int().min(1), multiplierBps: bps })).min(1),
   urgency: z.object({ standard: bps, fast: bps, urgent: bps }),
-  urgencyLeadDays: z.object({ standard: z.number().int().min(1), fast: z.number().int().min(1), urgent: z.number().int().min(1) }),
+  urgencyLeadDays: z.object({
+    standard: z.number().int().min(1),
+    fast: z.number().int().min(1),
+    urgent: z.number().int().min(1),
+  }),
   shipping: z.object({ priceNetMinor: minor, costMinor: minor }),
   grossRoundingMinor: z.number().int().positive(),
-  autoQuote: z.object({ maxTotalMinor: minor, maxQuantity: z.number().int().positive(), minMarginBps: bps, maxDimensionMm: z.number().positive() }),
+  autoQuote: z.object({
+    maxTotalMinor: minor,
+    maxQuantity: z.number().int().positive(),
+    minMarginBps: bps,
+    maxDimensionMm: z.number().positive(),
+  }),
   quoteValidityDays: z.number().int().positive(),
 });
 export type PricingRules = z.infer<typeof pricingRulesSchema>;
@@ -49,7 +65,12 @@ export const DEFAULT_FDM_RULES: PricingRules = {
     fine: { wallThicknessMm: 1.6, infill: 0.25, speedFactor: 0.6, supportFactorMm: 2.0 },
   },
   heightMinutesPerMm: 0.4,
-  payout: { perGramMinor: { default: 30, TPU_95A: 60, PA_CF: 120, ASA: 40, ABS: 35 }, perPrintMinuteMinor: 8, setupMinor: 1500, minimumMinor: 3000 },
+  payout: {
+    perGramMinor: { default: 30, TPU_95A: 60, PA_CF: 120, ASA: 40, ABS: 35 },
+    perPrintMinuteMinor: 8,
+    setupMinor: 1500,
+    minimumMinor: 3000,
+  },
   packagingMinor: 600,
   paymentFeeBps: 150,
   failureAllowanceBps: 800,

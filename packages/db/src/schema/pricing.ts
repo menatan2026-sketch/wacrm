@@ -19,7 +19,9 @@ export const pricingRuleSets = pgTable(
   },
   (t) => [
     uniqueIndex("pricing_rule_sets_version_uq").on(t.processCode, t.version),
-    uniqueIndex("pricing_rule_sets_active_uq").on(t.processCode).where(sql`${t.status} = 'active'`),
+    uniqueIndex("pricing_rule_sets_active_uq")
+      .on(t.processCode)
+      .where(sql`${t.status} = 'active'`),
     oneOf("pricing_rule_sets_status_ck", "status", ["draft", "active", "retired"]),
   ],
 );
@@ -37,7 +39,9 @@ export const quotes = pgTable(
   "quotes",
   {
     id: id(),
-    orderId: uuid("order_id").notNull().references(() => orders.id),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id),
     status: text("status").notNull().default("ready"),
     mode: text("mode").notNull(),
     ruleSetId: uuid("rule_set_id").references(() => pricingRuleSets.id),

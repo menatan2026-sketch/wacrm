@@ -32,27 +32,49 @@ export function workspaceRoot(from = process.cwd()): string {
 }
 
 /** Composition root: wire real or development adapters from validated configuration. */
-export function createPlatform(config: ServerConfig, opts: { rootDir?: string; poolSize?: number } = {}): Platform {
+export function createPlatform(
+  config: ServerConfig,
+  opts: { rootDir?: string; poolSize?: number } = {},
+): Platform {
   const pool = createPool(config.DATABASE_URL, opts.poolSize ?? 10);
   const db = createDb(pool);
   const redis = new Redis(config.REDIS_URL, { maxRetriesPerRequest: null, lazyConnect: false });
   const storage =
     config.STORAGE_DRIVER === "s3"
-      ? new S3Storage(config.S3_BUCKET!, { region: config.S3_REGION, endpoint: config.S3_ENDPOINT, accessKeyId: config.S3_ACCESS_KEY_ID!, secretAccessKey: config.S3_SECRET_ACCESS_KEY!, forcePathStyle: config.S3_FORCE_PATH_STYLE })
-      : new LocalStorage(path.resolve(opts.rootDir ?? workspaceRoot(), config.STORAGE_LOCAL_DIR), config.APP_URL, config.APP_SECRET);
+      ? new S3Storage(config.S3_BUCKET!, {
+          region: config.S3_REGION,
+          endpoint: config.S3_ENDPOINT,
+          accessKeyId: config.S3_ACCESS_KEY_ID!,
+          secretAccessKey: config.S3_SECRET_ACCESS_KEY!,
+          forcePathStyle: config.S3_FORCE_PATH_STYLE,
+        })
+      : new LocalStorage(
+          path.resolve(opts.rootDir ?? workspaceRoot(), config.STORAGE_LOCAL_DIR),
+          config.APP_URL,
+          config.APP_SECRET,
+        );
   const deps: Deps = {
     db,
     secret: config.APP_SECRET,
     appUrl: config.APP_URL,
-    email: config.EMAIL_DRIVER === "smtp" ? new SmtpEmailSender(config.SMTP_URL!, config.EMAIL_FROM, db) : new LogEmailSender(db),
+    email:
+      config.EMAIL_DRIVER === "smtp"
+        ? new SmtpEmailSender(config.SMTP_URL!, config.EMAIL_FROM, db)
+        : new LogEmailSender(db),
     storage,
     geometry: new HttpGeometryClient(config.GEOMETRY_URL, config.GEOMETRY_SHARED_SECRET),
     payments: new FakePaymentProvider(config.APP_URL, config.PAYMENT_WEBHOOK_SECRET),
-    shipping: config.SHIPPING_PROVIDER === "fake" ? new FakeShippingProvider() : new ManualShippingProvider(),
+    shipping:
+      config.SHIPPING_PROVIDER === "fake"
+        ? new FakeShippingProvider()
+        : new ManualShippingProvider(),
     invoices: new InternalInvoiceProvider(),
     rateLimiter: new RedisRateLimiter(redis),
     clock: systemClock,
-    limits: { maxModelBytes: config.UPLOAD_MAX_MODEL_BYTES, maxPhotoBytes: config.UPLOAD_MAX_PHOTO_BYTES },
+    limits: {
+      maxModelBytes: config.UPLOAD_MAX_MODEL_BYTES,
+      maxPhotoBytes: config.UPLOAD_MAX_PHOTO_BYTES,
+    },
   };
   return {
     deps,

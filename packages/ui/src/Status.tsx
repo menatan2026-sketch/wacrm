@@ -1,11 +1,26 @@
-import { AlertTriangle, Ban, CheckCircle2, CircleDashed, Clock, Info, Layers, XOctagon } from "lucide-react";
+import {
+  AlertTriangle,
+  Ban,
+  CheckCircle2,
+  CircleDashed,
+  Clock,
+  Info,
+  Layers,
+  XOctagon,
+} from "lucide-react";
 import type { ComponentType } from "react";
 import { cn } from "./cn";
 
 export type Tone = "neutral" | "info" | "primary" | "signature" | "success" | "warning" | "danger";
 
-const TONES: Record<Tone, { cls: string; Icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }> }> = {
-  neutral: { cls: "bg-surface-sunken text-text-secondary border-border-default", Icon: CircleDashed },
+const TONES: Record<
+  Tone,
+  { cls: string; Icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }> }
+> = {
+  neutral: {
+    cls: "bg-surface-sunken text-text-secondary border-border-default",
+    Icon: CircleDashed,
+  },
   info: { cls: "bg-info-subtle text-info border-info/30", Icon: Info },
   primary: { cls: "bg-primary-subtle text-primary border-primary/30", Icon: Clock },
   signature: { cls: "bg-signature-subtle text-signature border-signature/40", Icon: Layers },
@@ -53,10 +68,27 @@ export const JOB_TONE: Record<string, Tone> = {
 };
 
 /** Status = icon + label + color + tooltip. Never color alone. */
-export function StatusChip({ tone, label, description, size = "md" }: { tone: Tone; label: string; description?: string; size?: "sm" | "md" }) {
+export function StatusChip({
+  tone,
+  label,
+  description,
+  size = "md",
+}: {
+  tone: Tone;
+  label: string;
+  description?: string;
+  size?: "sm" | "md";
+}) {
   const { cls, Icon } = TONES[tone];
   return (
-    <span title={description} className={cn("inline-flex items-center gap-1.5 rounded-full border font-medium whitespace-nowrap", size === "sm" ? "px-2 py-0.5 text-xs" : "px-2.5 py-1 text-sm", cls)}>
+    <span
+      title={description}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border font-medium whitespace-nowrap",
+        size === "sm" ? "px-2 py-0.5 text-xs" : "px-2.5 py-1 text-sm",
+        cls,
+      )}
+    >
       <Icon aria-hidden className={size === "sm" ? "size-3.5" : "size-4"} />
       {label}
     </span>
@@ -64,7 +96,16 @@ export function StatusChip({ tone, label, description, size = "md" }: { tone: To
 }
 
 export function Badge({ tone = "neutral", children }: { tone?: Tone; children: React.ReactNode }) {
-  return <span className={cn("inline-flex items-center rounded-xs border px-1.5 py-0.5 text-xs font-medium", TONES[tone].cls)}>{children}</span>;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-xs border px-1.5 py-0.5 text-xs font-medium",
+        TONES[tone].cls,
+      )}
+    >
+      {children}
+    </span>
+  );
 }
 
 export const OnHoldIcon = Ban;

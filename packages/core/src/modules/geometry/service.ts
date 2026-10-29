@@ -9,11 +9,20 @@ import { logger } from "@mfg/logging";
  * customer sees a plain-language reason and can continue to manual review.
  */
 export async function analyzeFile(d: Deps, ctx: Ctx, fileId: string): Promise<void> {
-  const [file] = await ctx.db.select().from(schema.fileObjects).where(eq(schema.fileObjects.id, fileId));
+  const [file] = await ctx.db
+    .select()
+    .from(schema.fileObjects)
+    .where(eq(schema.fileObjects.id, fileId));
   if (!file || file.kind !== "model") return;
-  const [analysis] = await ctx.db.select().from(schema.geometryAnalyses).where(eq(schema.geometryAnalyses.fileId, fileId));
+  const [analysis] = await ctx.db
+    .select()
+    .from(schema.geometryAnalyses)
+    .where(eq(schema.geometryAnalyses.fileId, fileId));
   if (analysis && (analysis.status === "succeeded" || analysis.status === "failed")) return;
-  await ctx.db.update(schema.geometryAnalyses).set({ status: "running" }).where(eq(schema.geometryAnalyses.fileId, fileId));
+  await ctx.db
+    .update(schema.geometryAnalyses)
+    .set({ status: "running" })
+    .where(eq(schema.geometryAnalyses.fileId, fileId));
 
   let result;
   try {
@@ -21,7 +30,10 @@ export async function analyzeFile(d: Deps, ctx: Ctx, fileId: string): Promise<vo
   } catch (err) {
     logger().error({ err, fileId }, "geometry analysis call failed");
     // Leave it retryable by the queue; mark as queued again so the UI keeps showing "analyzing".
-    await ctx.db.update(schema.geometryAnalyses).set({ status: "queued" }).where(eq(schema.geometryAnalyses.fileId, fileId));
+    await ctx.db
+      .update(schema.geometryAnalyses)
+      .set({ status: "queued" })
+      .where(eq(schema.geometryAnalyses.fileId, fileId));
     throw err;
   }
 
@@ -30,7 +42,13 @@ export async function analyzeFile(d: Deps, ctx: Ctx, fileId: string): Promise<vo
   if (!result.ok) {
     await ctx.db
       .update(schema.geometryAnalyses)
-      .set({ status: "failed", failureCode: result.failure_code, stages, analyzerVersion: result.analyzer_version, durationMs: result.duration_ms })
+      .set({
+        status: "failed",
+        failureCode: result.failure_code,
+        stages,
+        analyzerVersion: result.analyzer_version,
+        durationMs: result.duration_ms,
+      })
       .where(eq(schema.geometryAnalyses.fileId, fileId));
     return;
   }
@@ -81,12 +99,19 @@ export async function analyzeFile(d: Deps, ctx: Ctx, fileId: string): Promise<vo
 }
 
 export async function getAnalysis(ctx: Ctx, fileId: string) {
-  const [row] = await ctx.db.select().from(schema.geometryAnalyses).where(eq(schema.geometryAnalyses.fileId, fileId));
+  const [row] = await ctx.db
+    .select()
+    .from(schema.geometryAnalyses)
+    .where(eq(schema.geometryAnalyses.fileId, fileId));
   return row ?? null;
 }
 
 /** Dimensions after the customer's unit confirmation and optional scaling. */
-export function scaledGeometry(a: NonNullable<Awaited<ReturnType<typeof getAnalysis>>>, units: "mm" | "in", scale: number) {
+export function scaledGeometry(
+  a: NonNullable<Awaited<ReturnType<typeof getAnalysis>>>,
+  units: "mm" | "in",
+  scale: number,
+) {
   const f = (units === "in" ? 25.4 : 1) * scale;
   return {
     bboxMm: [a.bboxXMm! * f, a.bboxYMm! * f, a.bboxZMm! * f] as [number, number, number],

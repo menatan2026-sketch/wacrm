@@ -4,10 +4,17 @@ import { directionOf, isLocale, translate, type AppLocale } from "@mfg/i18n";
 import type { EmailMessage, EmailSender } from "../../ports";
 
 const escapeHtml = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+  s.replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
+  );
 
 /** Render a notification template from the `notifications` catalog in the recipient's language. */
-export function renderEmail(template: string, locale: string, vars: Record<string, string | number>): Omit<EmailMessage, "to"> {
+export function renderEmail(
+  template: string,
+  locale: string,
+  vars: Record<string, string | number>,
+): Omit<EmailMessage, "to"> {
   const loc: AppLocale = isLocale(locale) ? locale : "he";
   const subject = translate(loc, `notifications.${template}.subject`, vars);
   const body = translate(loc, `notifications.${template}.body`, vars);
@@ -24,7 +31,9 @@ export function renderEmail(template: string, locale: string, vars: Record<strin
 export class LogEmailSender implements EmailSender {
   constructor(private readonly db: Db) {}
   async send(m: EmailMessage): Promise<void> {
-    await this.db.insert(schema.emailMessages).values({ id: uuidv7(), toAddress: m.to, ...m, status: "logged" });
+    await this.db
+      .insert(schema.emailMessages)
+      .values({ id: uuidv7(), toAddress: m.to, ...m, status: "logged" });
   }
 }
 
@@ -38,8 +47,16 @@ export class SmtpEmailSender implements EmailSender {
     this.transport = nodemailer.createTransport(smtpUrl);
   }
   async send(m: EmailMessage): Promise<void> {
-    await this.transport.sendMail({ from: this.from, to: m.to, subject: m.subject, text: m.text, html: m.html });
-    await this.db.insert(schema.emailMessages).values({ id: uuidv7(), toAddress: m.to, ...m, status: "sent" });
+    await this.transport.sendMail({
+      from: this.from,
+      to: m.to,
+      subject: m.subject,
+      text: m.text,
+      html: m.html,
+    });
+    await this.db
+      .insert(schema.emailMessages)
+      .values({ id: uuidv7(), toAddress: m.to, ...m, status: "sent" });
   }
 }
 

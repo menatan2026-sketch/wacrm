@@ -27,9 +27,9 @@ describe("parseServerConfig", () => {
   });
 
   it("refuses dev tools in production", () => {
-    expect(() => parseServerConfig({ ...base, NODE_ENV: "production", DEV_TOOLS_ENABLED: "true" })).toThrow(
-      /DEV_TOOLS_ENABLED/,
-    );
+    expect(() =>
+      parseServerConfig({ ...base, NODE_ENV: "production", DEV_TOOLS_ENABLED: "true" }),
+    ).toThrow(/DEV_TOOLS_ENABLED/);
   });
 
   it("requires S3 credentials for the s3 driver", () => {

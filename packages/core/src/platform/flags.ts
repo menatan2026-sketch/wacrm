@@ -55,13 +55,28 @@ export async function listFlags(ctx: Ctx) {
   return ctx.db.select().from(schema.featureFlags).orderBy(schema.featureFlags.key);
 }
 
-export async function setFlag(ctx: Ctx, key: FlagKey, enabled: boolean, reason: string): Promise<void> {
+export async function setFlag(
+  ctx: Ctx,
+  key: FlagKey,
+  enabled: boolean,
+  reason: string,
+): Promise<void> {
   if (ctx.actor.kind !== "system") authorize(ctx.actor, "flags.manage");
-  const [before] = await ctx.db.select().from(schema.featureFlags).where(eq(schema.featureFlags.key, key));
+  const [before] = await ctx.db
+    .select()
+    .from(schema.featureFlags)
+    .where(eq(schema.featureFlags.key, key));
   await ctx.db
     .update(schema.featureFlags)
     .set({ enabled, updatedBy: ctx.actor.kind === "user" ? ctx.actor.userId : null })
     .where(eq(schema.featureFlags.key, key));
-  await audit(ctx, { action: "flag.update", resourceType: "feature_flag", resourceId: key, before, after: { enabled }, reason });
+  await audit(ctx, {
+    action: "flag.update",
+    resourceType: "feature_flag",
+    resourceId: key,
+    before,
+    after: { enabled },
+    reason,
+  });
   invalidateFlagCache();
 }

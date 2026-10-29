@@ -4,11 +4,11 @@ import { formatDateTime } from "@mfg/i18n";
 import { Badge, Banner, Card, SectionTitle } from "@mfg/ui";
 import { activateRuleAction, ruleDraftAction } from "@/app/actions/ops";
 import { ActionForm } from "@/components/ActionForm";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { opsContext } from "@/lib/ops";
 
 export default async function OpsPricing({ params }: { params: Promise<{ locale: string }> }) {
-  const locale = await useLocaleParam(params);
+  const locale = await resolveLocale(params);
   const { actor, ctx } = await opsContext(locale, `/${locale}/ops/pricing`);
   const t = await getTranslations("admin.pricing");
   const od = await getTranslations("admin.order");
@@ -22,7 +22,20 @@ export default async function OpsPricing({ params }: { params: Promise<{ locale:
         <Banner tone="info">{t("intro")}</Banner>
         <Card className="flex flex-col gap-4">
           <SectionTitle>{t("newDraft")}</SectionTitle>
-          <ActionForm action={ruleDraftAction.bind(null, locale)} submitLabel={t("newDraft")} fields={[{ name: "rules", label: t("rules"), kind: "textarea", ltr: true, required: true, defaultValue: base }]} />
+          <ActionForm
+            action={ruleDraftAction.bind(null, locale)}
+            submitLabel={t("newDraft")}
+            fields={[
+              {
+                name: "rules",
+                label: t("rules"),
+                kind: "textarea",
+                ltr: true,
+                required: true,
+                defaultValue: base,
+              },
+            ]}
+          />
         </Card>
       </div>
       <aside className="flex flex-col gap-3">
@@ -30,13 +43,29 @@ export default async function OpsPricing({ params }: { params: Promise<{ locale:
           <Card key={s.id} className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-2">
               <span className="font-medium">{t("version", { n: s.version })}</span>
-              <Badge tone={s.status === "active" ? "success" : s.status === "draft" ? "warning" : "neutral"}>{t(`status.${s.status as "draft"}`)}</Badge>
+              <Badge
+                tone={
+                  s.status === "active" ? "success" : s.status === "draft" ? "warning" : "neutral"
+                }
+              >
+                {t(`status.${s.status as "draft"}`)}
+              </Badge>
             </div>
-            <span className="text-sm text-text-secondary">{formatDateTime(s.activatedAt ?? s.createdAt, locale)}</span>
+            <span className="text-sm text-text-secondary">
+              {formatDateTime(s.activatedAt ?? s.createdAt, locale)}
+            </span>
             {s.status === "draft" && s.createdBy !== actor.userId && (
-              <ActionForm action={activateRuleAction.bind(null, locale, s.id)} submitLabel={t("activate")} size="sm" dialogTitle={t("activate")} fields={[{ name: "reason", label: od("reason"), kind: "textarea", required: true }]} />
+              <ActionForm
+                action={activateRuleAction.bind(null, locale, s.id)}
+                submitLabel={t("activate")}
+                size="sm"
+                dialogTitle={t("activate")}
+                fields={[{ name: "reason", label: od("reason"), kind: "textarea", required: true }]}
+              />
             )}
-            {s.status === "draft" && s.createdBy === actor.userId && <p className="text-xs text-text-secondary">{t("secondPerson")}</p>}
+            {s.status === "draft" && s.createdBy === actor.userId && (
+              <p className="text-xs text-text-secondary">{t("secondPerson")}</p>
+            )}
           </Card>
         ))}
       </aside>

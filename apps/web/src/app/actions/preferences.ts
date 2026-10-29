@@ -12,7 +12,11 @@ export async function setLocaleAction(locale: string, surface: "customer" | "sup
   if (!isLocale(locale)) return;
   (await cookies()).set("NEXT_LOCALE", locale, { path: "/", maxAge: YEAR, sameSite: "lax" });
   const actor = await getActor(surface);
-  if (actor) await deps().db.update(schema.users).set({ preferredLocale: locale }).where(eq(schema.users.id, actor.userId));
+  if (actor)
+    await deps()
+      .db.update(schema.users)
+      .set({ preferredLocale: locale })
+      .where(eq(schema.users.id, actor.userId));
 }
 
 export async function setMotionAction(preference: "system" | "reduced" | "full") {
@@ -20,5 +24,9 @@ export async function setMotionAction(preference: "system" | "reduced" | "full")
   if (preference === "system") jar.delete("mfg_motion");
   else jar.set("mfg_motion", preference, { path: "/", maxAge: YEAR, sameSite: "lax" });
   const actor = await getActor("customer");
-  if (actor) await deps().db.update(schema.users).set({ reducedMotion: preference }).where(eq(schema.users.id, actor.userId));
+  if (actor)
+    await deps()
+      .db.update(schema.users)
+      .set({ reducedMotion: preference })
+      .where(eq(schema.users.id, actor.userId));
 }

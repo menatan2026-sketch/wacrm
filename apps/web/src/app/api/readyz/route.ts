@@ -20,11 +20,16 @@ export async function GET() {
     checks.redis = false;
   }
   try {
-    const res = await fetch(`${process.env.GEOMETRY_URL ?? "http://127.0.0.1:8001"}/healthz`, { signal: AbortSignal.timeout(1500) });
+    const res = await fetch(`${process.env.GEOMETRY_URL ?? "http://127.0.0.1:8001"}/healthz`, {
+      signal: AbortSignal.timeout(1500),
+    });
     checks.geometry = res.ok;
   } catch {
     checks.geometry = false;
   }
   const ready = checks.database && checks.redis;
-  return Response.json({ status: ready ? "ready" : "not_ready", checks }, { status: ready ? 200 : 503 });
+  return Response.json(
+    { status: ready ? "ready" : "not_ready", checks },
+    { status: ready ? 200 : 503 },
+  );
 }

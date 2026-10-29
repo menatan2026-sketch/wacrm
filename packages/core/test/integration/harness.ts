@@ -37,7 +37,11 @@ export interface Harness {
   payments: FakePaymentProvider;
   storage: LocalStorage;
   ctx(actor: Actor): Ctx;
-  signIn(email: string, surface?: Surface, opts?: { inviteToken?: string; anonKey?: string }): Promise<UserActor>;
+  signIn(
+    email: string,
+    surface?: Surface,
+    opts?: { inviteToken?: string; anonKey?: string },
+  ): Promise<UserActor>;
   uploadModel(actor: Actor, name?: string, bytes?: Buffer): Promise<string>;
   uploadPhoto(actor: Actor, kind?: "photo" | "qc_photo"): Promise<string>;
   drain(): Promise<number>;
@@ -50,7 +54,10 @@ export async function createHarness(): Promise<Harness> {
   pool ??= createPool(TEST_DATABASE_URL, 5);
   const db = createDb(pool);
   const tables = Object.values(schema)
-    .filter((t): t is typeof schema.users => typeof t === "object" && t !== null && Symbol.for("drizzle:Name") in t)
+    .filter(
+      (t): t is typeof schema.users =>
+        typeof t === "object" && t !== null && Symbol.for("drizzle:Name") in t,
+    )
     .map((t) => `"${(t as unknown as Record<symbol, string>)[Symbol.for("drizzle:Name")]}"`);
   // TRUNCATE bypasses row triggers, so insert-only tables can be reset between tests.
   await db.execute(sql.raw(`TRUNCATE ${tables.join(", ")} RESTART IDENTITY CASCADE`));
@@ -63,7 +70,11 @@ export async function createHarness(): Promise<Harness> {
   const geometry = new FakeGeometryClient();
   const secret = "test-secret-".padEnd(40, "x");
   const payments = new FakePaymentProvider("http://test.local", "webhook-secret-1234");
-  const storage = new LocalStorage(mkdtempSync(path.join(tmpdir(), "mfg-storage-")), "http://test.local", secret);
+  const storage = new LocalStorage(
+    mkdtempSync(path.join(tmpdir(), "mfg-storage-")),
+    "http://test.local",
+    secret,
+  );
   const d: Deps = {
     db,
     secret,
@@ -80,10 +91,24 @@ export async function createHarness(): Promise<Harness> {
   };
   const ctx = (actor: Actor): Ctx => ({ db, actor, clock, requestId: "test" });
 
-  async function signIn(address: string, surface: Surface = "customer", opts: { inviteToken?: string } = {}): Promise<UserActor> {
+  async function signIn(
+    address: string,
+    surface: Surface = "customer",
+    opts: { inviteToken?: string } = {},
+  ): Promise<UserActor> {
     await auth.requestLoginCode(d, { email: address, locale: "en", ip: "127.0.0.1" });
-    const code = email.sent.filter((m) => m.to === address.toLowerCase()).at(-1)!.subject.match(/\d{6}/)![0];
-    const result = await auth.verifyLoginCode(d, { email: address, code, surface, locale: "en", ip: "127.0.0.1", inviteToken: opts.inviteToken });
+    const code = email.sent
+      .filter((m) => m.to === address.toLowerCase())
+      .at(-1)!
+      .subject.match(/\d{6}/)![0];
+    const result = await auth.verifyLoginCode(d, {
+      email: address,
+      code,
+      surface,
+      locale: "en",
+      ip: "127.0.0.1",
+      inviteToken: opts.inviteToken,
+    });
     let actor = await auth.resolveSession(d, result.sessionToken, surface);
     if (surface === "admin") {
       if (result.mfa === "enroll") await auth.startMfaEnrollment(d, actor!);
@@ -94,8 +119,17 @@ export async function createHarness(): Promise<Harness> {
     return actor!;
   }
 
-  async function putThroughSession(actor: Actor, name: string, bytes: Buffer, kind: "model" | "photo" | "qc_photo") {
-    const session = await files.createUploadSession(d, ctx(actor), { fileName: name, size: bytes.length, kind });
+  async function putThroughSession(
+    actor: Actor,
+    name: string,
+    bytes: Buffer,
+    kind: "model" | "photo" | "qc_photo",
+  ) {
+    const session = await files.createUploadSession(d, ctx(actor), {
+      fileName: name,
+      size: bytes.length,
+      kind,
+    });
     const token = new URL(session.upload.url).searchParams.get("token")!;
     const claim = storage.verifyUpload(token)!;
     await storage.put(claim.k, bytes);
@@ -113,8 +147,18 @@ export async function createHarness(): Promise<Harness> {
     storage,
     ctx,
     signIn,
-    uploadModel: (actor, name = "bracket.stl", bytes = Buffer.from("solid fake\nendsolid fake\n")) => putThroughSession(actor, name, bytes, "model"),
-    uploadPhoto: (actor, kind = "photo") => putThroughSession(actor, `photo-${Math.random().toString(36).slice(2)}.jpg`, Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]), kind),
+    uploadModel: (
+      actor,
+      name = "bracket.stl",
+      bytes = Buffer.from("solid fake\nendsolid fake\n"),
+    ) => putThroughSession(actor, name, bytes, "model"),
+    uploadPhoto: (actor, kind = "photo") =>
+      putThroughSession(
+        actor,
+        `photo-${Math.random().toString(36).slice(2)}.jpg`,
+        Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]),
+        kind,
+      ),
     drain: () => drainOutbox(d),
     async close() {},
   };

@@ -6,11 +6,30 @@ import { useState, useTransition, type ReactNode } from "react";
 import type { AppLocale } from "@mfg/i18n/config";
 import { formatNumber, parseDecimal } from "@mfg/i18n/format";
 import { Banner, Button, Card, Field, Input, Ltr, SectionTitle } from "@mfg/ui";
-import { acceptAgreementAction, saveMachineAction, savePayoutDetailsAction, saveProfileAction } from "@/app/actions/partner";
+import {
+  acceptAgreementAction,
+  saveMachineAction,
+  savePayoutDetailsAction,
+  saveProfileAction,
+} from "@/app/actions/partner";
 import { useErrorMessage } from "@/lib/errors";
 
-type Profile = { name: string; legalName: string; taxId: string; phone: string; city: string; addressLine: string; leadTimeDays: number };
-type Machine = { id: string; name: string; build: number[]; dailyCapacityMinutes: number; materialVariantIds: string[] };
+type Profile = {
+  name: string;
+  legalName: string;
+  taxId: string;
+  phone: string;
+  city: string;
+  addressLine: string;
+  leadTimeDays: number;
+};
+type Machine = {
+  id: string;
+  name: string;
+  build: number[];
+  dailyCapacityMinutes: number;
+  materialVariantIds: string[];
+};
 type Variant = { id: string; label: string; colorHex: string };
 
 /** Small helper: one section = its own save button, pending state and result banner. */
@@ -37,7 +56,15 @@ function Status({ error, saved }: { error?: string; saved?: boolean }) {
   return null;
 }
 
-function Section({ title, children, done }: { title: string; children: ReactNode; done?: boolean }) {
+function Section({
+  title,
+  children,
+  done,
+}: {
+  title: string;
+  children: ReactNode;
+  done?: boolean;
+}) {
   return (
     <Card className="flex flex-col gap-5">
       <SectionTitle className="flex items-center gap-2">
@@ -49,7 +76,21 @@ function Section({ title, children, done }: { title: string; children: ReactNode
   );
 }
 
-export function ProfileClient({ locale, profile, machines, variants, hasPayout, agreementAccepted }: { locale: string; profile: Profile; machines: Machine[]; variants: Variant[]; hasPayout: boolean; agreementAccepted: boolean }) {
+export function ProfileClient({
+  locale,
+  profile,
+  machines,
+  variants,
+  hasPayout,
+  agreementAccepted,
+}: {
+  locale: string;
+  profile: Profile;
+  machines: Machine[];
+  variants: Variant[];
+  hasPayout: boolean;
+  agreementAccepted: boolean;
+}) {
   const t = useTranslations("supplier.profile");
   const v = useTranslations("validation");
   const u = useTranslations("common.units");
@@ -57,13 +98,32 @@ export function ProfileClient({ locale, profile, machines, variants, hasPayout, 
 
   const [p, setP] = useState(profile);
   const company = useSection();
-  const text = (key: keyof Profile, label: string, opts: { ltr?: boolean; autoComplete?: string } = {}) => (
+  const text = (
+    key: keyof Profile,
+    label: string,
+    opts: { ltr?: boolean; autoComplete?: string } = {},
+  ) => (
     <Field label={label}>
-      {({ id }) => <Input id={id} dir={opts.ltr ? "ltr" : undefined} autoComplete={opts.autoComplete} value={String(p[key])} onChange={(e) => setP({ ...p, [key]: e.target.value })} />}
+      {({ id }) => (
+        <Input
+          id={id}
+          dir={opts.ltr ? "ltr" : undefined}
+          autoComplete={opts.autoComplete}
+          value={String(p[key])}
+          onChange={(e) => setP({ ...p, [key]: e.target.value })}
+        />
+      )}
     </Field>
   );
 
-  const [m, setM] = useState({ name: "", x: "", y: "", z: "", capacity: "1200", variants: [] as string[] });
+  const [m, setM] = useState({
+    name: "",
+    x: "",
+    y: "",
+    z: "",
+    capacity: "1200",
+    variants: [] as string[],
+  });
   const machine = useSection();
 
   const [bank, setBank] = useState({ accountName: "", bank: "", branch: "", account: "" });
@@ -81,7 +141,17 @@ export function ProfileClient({ locale, profile, machines, variants, hasPayout, 
           {text("city", t("city"), { autoComplete: "address-level2" })}
           {text("addressLine", t("address"), { autoComplete: "street-address" })}
           <Field label={t("leadTime")}>
-            {({ id }) => <Input id={id} inputMode="numeric" dir="ltr" value={String(p.leadTimeDays)} onChange={(e) => setP({ ...p, leadTimeDays: Number(e.target.value.replace(/\D/g, "")) || 0 })} />}
+            {({ id }) => (
+              <Input
+                id={id}
+                inputMode="numeric"
+                dir="ltr"
+                value={String(p.leadTimeDays)}
+                onChange={(e) =>
+                  setP({ ...p, leadTimeDays: Number(e.target.value.replace(/\D/g, "")) || 0 })
+                }
+              />
+            )}
           </Field>
         </div>
         <Status error={company.error} saved={company.saved} />
@@ -116,7 +186,11 @@ export function ProfileClient({ locale, profile, machines, variants, hasPayout, 
                   <Ltr mono>
                     {mc.build.map((n) => formatNumber(n, appLocale, 0)).join(" × ")} {u("mm")}
                   </Ltr>{" "}
-                  · {variants.filter((vr) => mc.materialVariantIds.includes(vr.id)).map((vr) => vr.label).join(", ")}
+                  ·{" "}
+                  {variants
+                    .filter((vr) => mc.materialVariantIds.includes(vr.id))
+                    .map((vr) => vr.label)
+                    .join(", ")}
                 </span>
               </li>
             ))}
@@ -124,28 +198,67 @@ export function ProfileClient({ locale, profile, machines, variants, hasPayout, 
         )}
         <fieldset className="flex flex-col gap-4 rounded-m border border-dashed border-border-default p-4">
           <legend className="px-1 text-sm font-medium">{t("addMachine")}</legend>
-          <Field label={t("machineName")}>{({ id }) => <Input id={id} value={m.name} onChange={(e) => setM({ ...m, name: e.target.value })} />}</Field>
+          <Field label={t("machineName")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                value={m.name}
+                onChange={(e) => setM({ ...m, name: e.target.value })}
+              />
+            )}
+          </Field>
           <div className="flex flex-col gap-1.5">
             <span className="text-sm font-medium">{t("buildVolume")}</span>
             <div className="grid grid-cols-3 gap-2" dir="ltr">
               {(["x", "y", "z"] as const).map((axis) => (
-                <Input key={axis} aria-label={`${t("buildVolume")} ${axis.toUpperCase()}`} inputMode="decimal" placeholder={axis.toUpperCase()} value={m[axis]} onChange={(e) => setM({ ...m, [axis]: e.target.value })} />
+                <Input
+                  key={axis}
+                  aria-label={`${t("buildVolume")} ${axis.toUpperCase()}`}
+                  inputMode="decimal"
+                  placeholder={axis.toUpperCase()}
+                  value={m[axis]}
+                  onChange={(e) => setM({ ...m, [axis]: e.target.value })}
+                />
               ))}
             </div>
           </div>
-          <Field label={t("capacity")}>{({ id }) => <Input id={id} inputMode="numeric" dir="ltr" value={m.capacity} onChange={(e) => setM({ ...m, capacity: e.target.value.replace(/\D/g, "") })} />}</Field>
+          <Field label={t("capacity")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                inputMode="numeric"
+                dir="ltr"
+                value={m.capacity}
+                onChange={(e) => setM({ ...m, capacity: e.target.value.replace(/\D/g, "") })}
+              />
+            )}
+          </Field>
           <fieldset className="flex flex-col gap-2">
             <legend className="mb-1 text-sm font-medium">{t("materials")}</legend>
             <div className="grid gap-2 sm:grid-cols-2">
               {variants.map((vr) => (
-                <label key={vr.id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-s border border-border-subtle px-3 text-sm hover:bg-surface-base">
+                <label
+                  key={vr.id}
+                  className="flex min-h-11 cursor-pointer items-center gap-3 rounded-s border border-border-subtle px-3 text-sm hover:bg-surface-base"
+                >
                   <input
                     type="checkbox"
                     className="size-5 accent-primary"
                     checked={m.variants.includes(vr.id)}
-                    onChange={(e) => setM({ ...m, variants: e.target.checked ? [...m.variants, vr.id] : m.variants.filter((x) => x !== vr.id) })}
+                    onChange={(e) =>
+                      setM({
+                        ...m,
+                        variants: e.target.checked
+                          ? [...m.variants, vr.id]
+                          : m.variants.filter((x) => x !== vr.id),
+                      })
+                    }
                   />
-                  <span aria-hidden className="size-3 rounded-full border border-border-default" style={{ backgroundColor: vr.colorHex }} />
+                  <span
+                    aria-hidden
+                    className="size-3 rounded-full border border-border-default"
+                    style={{ backgroundColor: vr.colorHex }}
+                  />
                   {vr.label}
                 </label>
               ))}
@@ -159,9 +272,17 @@ export function ProfileClient({ locale, profile, machines, variants, hasPayout, 
             loading={machine.pending}
             onClick={() => {
               const dims = [m.x, m.y, m.z].map(parseDecimal);
-              if (!m.name.trim() || dims.some((d) => d === null || d <= 0) || !m.variants.length) return machine.setError(v("summary"));
+              if (!m.name.trim() || dims.some((d) => d === null || d <= 0) || !m.variants.length)
+                return machine.setError(v("summary"));
               machine.save(async () => {
-                const r = await saveMachineAction(locale, { name: m.name, buildXMm: dims[0], buildYMm: dims[1], buildZMm: dims[2], dailyCapacityMinutes: Number(m.capacity), materialVariantIds: m.variants });
+                const r = await saveMachineAction(locale, {
+                  name: m.name,
+                  buildXMm: dims[0],
+                  buildYMm: dims[1],
+                  buildZMm: dims[2],
+                  dailyCapacityMinutes: Number(m.capacity),
+                  materialVariantIds: m.variants,
+                });
                 if (r.ok) setM({ name: "", x: "", y: "", z: "", capacity: "1200", variants: [] });
                 return r.ok ? { ok: true } : r;
               });
@@ -175,10 +296,49 @@ export function ProfileClient({ locale, profile, machines, variants, hasPayout, 
       <Section title={t("payoutTitle")} done={hasPayout}>
         <p className="text-sm text-text-secondary">{t("payoutHint")}</p>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={t("accountName")}>{({ id }) => <Input id={id} value={bank.accountName} onChange={(e) => setBank({ ...bank, accountName: e.target.value })} />}</Field>
-          <Field label={t("bank")}>{({ id }) => <Input id={id} inputMode="numeric" dir="ltr" value={bank.bank} onChange={(e) => setBank({ ...bank, bank: e.target.value })} />}</Field>
-          <Field label={t("branch")}>{({ id }) => <Input id={id} inputMode="numeric" dir="ltr" value={bank.branch} onChange={(e) => setBank({ ...bank, branch: e.target.value })} />}</Field>
-          <Field label={t("account")}>{({ id }) => <Input id={id} inputMode="numeric" dir="ltr" autoComplete="off" value={bank.account} onChange={(e) => setBank({ ...bank, account: e.target.value })} />}</Field>
+          <Field label={t("accountName")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                value={bank.accountName}
+                onChange={(e) => setBank({ ...bank, accountName: e.target.value })}
+              />
+            )}
+          </Field>
+          <Field label={t("bank")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                inputMode="numeric"
+                dir="ltr"
+                value={bank.bank}
+                onChange={(e) => setBank({ ...bank, bank: e.target.value })}
+              />
+            )}
+          </Field>
+          <Field label={t("branch")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                inputMode="numeric"
+                dir="ltr"
+                value={bank.branch}
+                onChange={(e) => setBank({ ...bank, branch: e.target.value })}
+              />
+            )}
+          </Field>
+          <Field label={t("account")}>
+            {({ id }) => (
+              <Input
+                id={id}
+                inputMode="numeric"
+                dir="ltr"
+                autoComplete="off"
+                value={bank.account}
+                onChange={(e) => setBank({ ...bank, account: e.target.value })}
+              />
+            )}
+          </Field>
         </div>
         <Status error={payout.error} saved={payout.saved} />
         <Button
@@ -206,7 +366,11 @@ export function ProfileClient({ locale, profile, machines, variants, hasPayout, 
             {t("accepted")}
           </p>
         ) : (
-          <Button className="w-fit" loading={agreement.pending} onClick={() => agreement.save(() => acceptAgreementAction(locale))}>
+          <Button
+            className="w-fit"
+            loading={agreement.pending}
+            onClick={() => agreement.save(() => acceptAgreementAction(locale))}
+          >
             {t("accept")}
           </Button>
         )}

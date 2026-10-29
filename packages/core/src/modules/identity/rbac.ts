@@ -40,10 +40,23 @@ export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
   CUSTOMER: ["order.create", "order.read.own", "order.message"],
   ENTERPRISE_ADMIN: ["order.create", "order.read.own", "order.message"],
   SUPPLIER_OPERATOR: ["job.read.own", "job.respond", "job.update"],
-  SUPPLIER_MANAGER: ["job.read.own", "job.respond", "job.update", "supplier.self.manage", "payout.read.own"],
+  SUPPLIER_MANAGER: [
+    "job.read.own",
+    "job.respond",
+    "job.update",
+    "supplier.self.manage",
+    "payout.read.own",
+  ],
   CAD_DESIGNER: [...STAFF_BASE, "order.message"],
   QUALITY_REVIEWER: [...STAFF_BASE, "qc.verdict"],
-  SUPPORT_AGENT: [...STAFF_BASE, "order.manage", "order.message", "refund.request", "shipment.manage", "payment.read.any"],
+  SUPPORT_AGENT: [
+    ...STAFF_BASE,
+    "order.manage",
+    "order.message",
+    "refund.request",
+    "shipment.manage",
+    "payment.read.any",
+  ],
   ADMIN: [
     ...STAFF_BASE,
     "order.manage",
@@ -99,7 +112,8 @@ export function can(actor: Actor, permission: Permission, scope: Scope = {}): bo
   return actor.roles.some((grant) => {
     if (!ROLE_PERMISSIONS[grant.role].includes(permission)) return false;
     if (grant.scopeType === "platform") return true;
-    if (grant.scopeType === "supplier") return scope.supplierId !== undefined && scope.supplierId === grant.scopeId;
+    if (grant.scopeType === "supplier")
+      return scope.supplierId !== undefined && scope.supplierId === grant.scopeId;
     return false;
   });
 }
@@ -117,7 +131,8 @@ export function requireUser(actor: Actor): UserActor {
 /** The supplier ids a user acts for (via supplier-scoped roles). */
 export function supplierScopes(actor: Actor): string[] {
   if (actor.kind !== "user") return [];
-  return actor.roles.filter((g) => g.scopeType === "supplier" && g.scopeId).map((g) => g.scopeId!) ;
+  return actor.roles.filter((g) => g.scopeType === "supplier" && g.scopeId).map((g) => g.scopeId!);
 }
 
-export const isStaff = (actor: Actor): boolean => actor.kind === "user" && actor.roles.some((g) => STAFF_ROLES.includes(g.role));
+export const isStaff = (actor: Actor): boolean =>
+  actor.kind === "user" && actor.roles.some((g) => STAFF_ROLES.includes(g.role));

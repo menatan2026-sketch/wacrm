@@ -7,7 +7,7 @@
     "dev": "tsx watch --env-file-if-exists=../../.env src/main.ts",
     "start": "tsx --env-file-if-exists=../../.env src/main.ts",
     "typecheck": "tsc -p .",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@mfg/config": "workspace:*",

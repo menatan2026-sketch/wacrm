@@ -1,10 +1,16 @@
 import { getTranslations } from "next-intl/server";
 import { Card } from "@mfg/ui";
 import { SignInForm } from "@/components/SignInForm";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 
-export default async function SignIn({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ next?: string }> }) {
-  const locale = await useLocaleParam(params);
+export default async function SignIn({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const locale = await resolveLocale(params);
   const { next } = await searchParams;
   const t = await getTranslations("auth.signIn");
   return (

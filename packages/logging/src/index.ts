@@ -54,12 +54,12 @@ export function createLogger(
 ): Logger {
   return pino(
     {
-    name: options.name,
-    level: options.level ?? process.env.LOG_LEVEL ?? "info",
-    redact: { paths: REDACT_PATHS, censor: "[redacted]" },
-    mixin: () => ({ ...currentLogContext() }),
-    base: undefined,
-    timestamp: pino.stdTimeFunctions.isoTime,
+      name: options.name,
+      level: options.level ?? process.env.LOG_LEVEL ?? "info",
+      redact: { paths: REDACT_PATHS, censor: "[redacted]" },
+      mixin: () => ({ ...currentLogContext() }),
+      base: undefined,
+      timestamp: pino.stdTimeFunctions.isoTime,
     },
     options.destination,
   );

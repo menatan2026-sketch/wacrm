@@ -1,13 +1,17 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Banner } from "@mfg/ui";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 
 const SLUGS = ["terms", "privacy", "accessibility", "restricted", "shipping"] as const;
 
 /** Policy pages: scaffolds clearly marked as drafts until legal provides content (KNOWN_ISSUES KI-005). */
-export default async function LegalPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
-  await useLocaleParam(params);
+export default async function LegalPage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}) {
+  await resolveLocale(params);
   const { slug } = await params;
   if (!SLUGS.includes(slug as (typeof SLUGS)[number])) notFound();
   const t = await getTranslations("common");

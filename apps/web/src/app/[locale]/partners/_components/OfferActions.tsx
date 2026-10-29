@@ -29,7 +29,12 @@ export function OfferActions({ offerId, locale }: { offerId: string; locale: str
     <div className="flex flex-col gap-3">
       {error && !open && <Banner tone="danger">{error}</Banner>}
       <div className="flex flex-wrap gap-3">
-        <Button size="lg" loading={pending && !open} onClick={() => respond(true)} className="flex-1 sm:flex-none">
+        <Button
+          size="lg"
+          loading={pending && !open}
+          onClick={() => respond(true)}
+          className="flex-1 sm:flex-none"
+        >
           {t("accept")}
         </Button>
         <Button size="lg" variant="secondary" onClick={() => setOpen(true)} disabled={pending}>
@@ -53,7 +58,13 @@ export function OfferActions({ offerId, locale }: { offerId: string; locale: str
         }
       >
         {error && <Banner tone="danger">{error}</Banner>}
-        <RadioCards name={`decline-${offerId}`} legend={t("declineTitle")} options={REASONS.map((r) => ({ value: r, title: t(`reasons.${r}`) }))} value={reason} onChange={setReason} />
+        <RadioCards
+          name={`decline-${offerId}`}
+          legend={t("declineTitle")}
+          options={REASONS.map((r) => ({ value: r, title: t(`reasons.${r}`) }))}
+          value={reason}
+          onChange={setReason}
+        />
       </Dialog>
     </div>
   );

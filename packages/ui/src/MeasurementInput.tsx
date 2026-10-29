@@ -28,7 +28,12 @@ export function MeasurementInput({
       <label htmlFor={id} className="text-sm font-medium text-text-primary">
         {label}
       </label>
-      <div className={cn("flex h-12 items-stretch overflow-hidden rounded-s border bg-surface-raised sm:h-10", error ? "border-danger" : focused ? "border-primary" : "border-border-default")}>
+      <div
+        className={cn(
+          "flex h-12 items-stretch overflow-hidden rounded-s border bg-surface-raised sm:h-10",
+          error ? "border-danger" : focused ? "border-primary" : "border-border-default",
+        )}
+      >
         <input
           id={id}
           dir="ltr"
@@ -42,7 +47,9 @@ export function MeasurementInput({
           onChange={(e) => onChange(e.target.value)}
           className="min-w-0 flex-1 bg-transparent px-3 font-mono text-base text-text-primary outline-none sm:text-sm"
         />
-        <span className="flex items-center border-s border-border-subtle bg-surface-sunken px-3 text-sm text-text-secondary">{unitLabel}</span>
+        <span className="flex items-center border-s border-border-subtle bg-surface-sunken px-3 text-sm text-text-secondary">
+          {unitLabel}
+        </span>
       </div>
       {error ? (
         <p id={`${id}-e`} role="alert" className="text-xs font-medium text-danger">

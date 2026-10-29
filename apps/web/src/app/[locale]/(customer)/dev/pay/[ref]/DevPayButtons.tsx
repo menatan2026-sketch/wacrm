@@ -4,7 +4,17 @@ import { useTransition } from "react";
 import { Button } from "@mfg/ui";
 import { devPayAction } from "@/app/actions/dev";
 
-export function DevPayButtons({ providerRef, locale, orderId, status }: { providerRef: string; locale: string; orderId: string; status: string }) {
+export function DevPayButtons({
+  providerRef,
+  locale,
+  orderId,
+  status,
+}: {
+  providerRef: string;
+  locale: string;
+  orderId: string;
+  status: string;
+}) {
   const t = useTranslations("payments.devPay");
   const [pending, start] = useTransition();
   if (status !== "PENDING") {
@@ -16,10 +26,18 @@ export function DevPayButtons({ providerRef, locale, orderId, status }: { provid
   }
   return (
     <div className="flex flex-col gap-2">
-      <Button size="lg" loading={pending} onClick={() => start(() => devPayAction(providerRef, "approve", locale))}>
+      <Button
+        size="lg"
+        loading={pending}
+        onClick={() => start(() => devPayAction(providerRef, "approve", locale))}
+      >
         {t("approve")}
       </Button>
-      <Button variant="secondary" disabled={pending} onClick={() => start(() => devPayAction(providerRef, "decline", locale))}>
+      <Button
+        variant="secondary"
+        disabled={pending}
+        onClick={() => start(() => devPayAction(providerRef, "decline", locale))}
+      >
         {t("decline")}
       </Button>
     </div>

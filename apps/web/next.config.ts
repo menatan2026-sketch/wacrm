@@ -16,13 +16,25 @@ const SECURITY_HEADERS = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   // Camera is allowed for same-origin photo capture in Flow B and supplier QC evidence.
-  { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(), usb=()" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(self), microphone=(), geolocation=(), payment=(), usb=()",
+  },
 ];
 
 const config: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
-  transpilePackages: ["@mfg/core", "@mfg/db", "@mfg/config", "@mfg/i18n", "@mfg/logging", "@mfg/tokens", "@mfg/ui", "@mfg/motion"],
+  transpilePackages: [
+    "@mfg/core",
+    "@mfg/db",
+    "@mfg/config",
+    "@mfg/i18n",
+    "@mfg/logging",
+    "@mfg/tokens",
+    "@mfg/ui",
+    "@mfg/motion",
+  ],
   serverExternalPackages: ["pg", "pino", "ioredis", "bullmq", "@aws-sdk/client-s3", "nodemailer"],
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];

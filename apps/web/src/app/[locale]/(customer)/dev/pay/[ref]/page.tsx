@@ -3,13 +3,17 @@ import { getTranslations } from "next-intl/server";
 import { isFakePaymentProvider, payments } from "@mfg/core";
 import { formatMoney } from "@mfg/i18n";
 import { Banner, Card } from "@mfg/ui";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { deps } from "@/lib/platform";
 import { DevPayButtons } from "./DevPayButtons";
 
 /** Hosted-payment-page simulator for the fake PSP (never available with a real provider). */
-export default async function DevPayPage({ params }: { params: Promise<{ locale: string; ref: string }> }) {
-  const locale = await useLocaleParam(params);
+export default async function DevPayPage({
+  params,
+}: {
+  params: Promise<{ locale: string; ref: string }>;
+}) {
+  const locale = await resolveLocale(params);
   const { ref } = await params;
   const d = deps();
   if (!isFakePaymentProvider(d.payments)) notFound();
@@ -23,9 +27,16 @@ export default async function DevPayPage({ params }: { params: Promise<{ locale:
       <Card className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
           <span className="text-text-secondary">{t("amount")}</span>
-          <span className="text-3xl font-medium tabular-nums">{formatMoney(payment.amountMinor, payment.currency, locale)}</span>
+          <span className="text-3xl font-medium tabular-nums">
+            {formatMoney(payment.amountMinor, payment.currency, locale)}
+          </span>
         </div>
-        <DevPayButtons providerRef={ref} locale={locale} orderId={payment.orderId} status={payment.status} />
+        <DevPayButtons
+          providerRef={ref}
+          locale={locale}
+          orderId={payment.orderId}
+          status={payment.status}
+        />
       </Card>
     </div>
   );

@@ -31,8 +31,16 @@ export class FakeShippingProvider implements ShippingProvider {
   }
 
   async trackShipment(trackingNumber: string) {
-    const step = Math.min((this.progress.get(trackingNumber) ?? 0) + 1, FakeShippingProvider.FLOW.length);
+    const step = Math.min(
+      (this.progress.get(trackingNumber) ?? 0) + 1,
+      FakeShippingProvider.FLOW.length,
+    );
     this.progress.set(trackingNumber, step);
-    return FakeShippingProvider.FLOW.slice(0, step).map((status, i) => ({ status, providerEventId: `${trackingNumber}-${i}`, description: status, at: new Date() }));
+    return FakeShippingProvider.FLOW.slice(0, step).map((status, i) => ({
+      status,
+      providerEventId: `${trackingNumber}-${i}`,
+      description: status,
+      at: new Date(),
+    }));
   }
 }

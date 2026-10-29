@@ -15,7 +15,9 @@ export class FakePaymentProvider implements PaymentProvider {
     private readonly webhookSecret: string,
   ) {}
 
-  async createPayment(input: CreatePaymentInput): Promise<{ providerRef: string; checkoutUrl: string }> {
+  async createPayment(
+    input: CreatePaymentInput,
+  ): Promise<{ providerRef: string; checkoutUrl: string }> {
     const providerRef = `fk_${randomToken(12)}`;
     this.status.set(providerRef, "pending");
     return { providerRef, checkoutUrl: `${this.appUrl}/${input.locale}/dev/pay/${providerRef}` };
@@ -25,7 +27,10 @@ export class FakePaymentProvider implements PaymentProvider {
     return this.status.get(providerRef) ?? "pending";
   }
 
-  async refundPayment(input: { providerRef: string; amountMinor: number }): Promise<{ refundRef: string }> {
+  async refundPayment(input: {
+    providerRef: string;
+    amountMinor: number;
+  }): Promise<{ refundRef: string }> {
     return { refundRef: `fkr_${randomToken(10)}_${input.amountMinor}` };
   }
 
@@ -39,7 +44,10 @@ export class FakePaymentProvider implements PaymentProvider {
     return { body, headers: { "x-fake-signature": this.sign(body) } };
   }
 
-  parseWebhook(rawBody: string, headers: Record<string, string | undefined>): PaymentWebhookEvent | null {
+  parseWebhook(
+    rawBody: string,
+    headers: Record<string, string | undefined>,
+  ): PaymentWebhookEvent | null {
     const sig = headers["x-fake-signature"];
     if (!sig || !safeEqual(sig, this.sign(rawBody))) return null;
     try {
@@ -54,5 +62,7 @@ export class FakePaymentProvider implements PaymentProvider {
 }
 
 export function isFakePaymentProvider(p: PaymentProvider): p is FakePaymentProvider {
-  return p.name === "fake" && typeof (p as Partial<FakePaymentProvider>).buildWebhook === "function";
+  return (
+    p.name === "fake" && typeof (p as Partial<FakePaymentProvider>).buildWebhook === "function"
+  );
 }

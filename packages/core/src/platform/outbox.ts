@@ -10,7 +10,12 @@ export interface DomainEvent<T = Record<string, unknown>> {
 }
 
 /** Write an event in the caller's transaction. It is published only if the transaction commits. */
-export async function publish(ctx: Ctx, type: string, payload: Record<string, unknown>, delayMs = 0): Promise<string> {
+export async function publish(
+  ctx: Ctx,
+  type: string,
+  payload: Record<string, unknown>,
+  delayMs = 0,
+): Promise<string> {
   const id = uuidv7();
   await ctx.db.insert(schema.outboxEvents).values({
     id,
@@ -42,7 +47,13 @@ export async function relayOutbox(
       .for("update", { skipLocked: true });
     for (const row of rows) {
       try {
-        await deliver({ id: row.id, type: row.type, payload: row.payload, requestId: row.requestId, createdAt: row.createdAt });
+        await deliver({
+          id: row.id,
+          type: row.type,
+          payload: row.payload,
+          requestId: row.requestId,
+          createdAt: row.createdAt,
+        });
         await tx.update(t).set({ publishedAt: new Date() }).where(eq(t.id, row.id));
       } catch (err) {
         await tx
@@ -63,7 +74,12 @@ export async function relayOutbox(
  * Run a handler at most once per (handler, event). The marker and the handler's writes share
  * one transaction, so a crash mid-handler simply retries.
  */
-export async function onceForEvent(db: Db, handler: string, eventId: string, fn: (tx: Ctx["db"]) => Promise<void>): Promise<boolean> {
+export async function onceForEvent(
+  db: Db,
+  handler: string,
+  eventId: string,
+  fn: (tx: Ctx["db"]) => Promise<void>,
+): Promise<boolean> {
   return db.transaction(async (tx) => {
     const inserted = await tx
       .insert(schema.processedEvents)

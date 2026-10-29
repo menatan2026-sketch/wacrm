@@ -5,8 +5,22 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
 import type { AppLocale } from "@mfg/i18n/config";
 import { formatNumber, parseDecimal } from "@mfg/i18n/format";
-import { Banner, Button, Card, Field, MeasurementInput, Progress, SectionTitle, Textarea } from "@mfg/ui";
-import { completeQcUploadAction, createQcUploadAction, startProductionAction, submitEvidenceAction } from "@/app/actions/partner";
+import {
+  Banner,
+  Button,
+  Card,
+  Field,
+  MeasurementInput,
+  Progress,
+  SectionTitle,
+  Textarea,
+} from "@mfg/ui";
+import {
+  completeQcUploadAction,
+  createQcUploadAction,
+  startProductionAction,
+  submitEvidenceAction,
+} from "@/app/actions/partner";
 import { useErrorMessage } from "@/lib/errors";
 import { putWithProgress } from "@/lib/upload";
 
@@ -38,7 +52,9 @@ export function JobClient({
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [upload, setUpload] = useState<{ n: number; total: number; p: number } | null>(null);
   const [values, setValues] = useState<Record<string, string>>({});
-  const [checks, setChecks] = useState<Record<string, boolean>>(Object.fromEntries(checklist.map((c) => [c, false])));
+  const [checks, setChecks] = useState<Record<string, boolean>>(
+    Object.fromEntries(checklist.map((c) => [c, false])),
+  );
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string>();
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -56,13 +72,18 @@ export function JobClient({
     setError(undefined);
     for (const [i, file] of list.entries()) {
       setUpload({ n: i + 1, total: list.length, p: 0 });
-      const session = await createQcUploadAction(locale, { fileName: file.name || "photo.jpg", size: file.size });
+      const session = await createQcUploadAction(locale, {
+        fileName: file.name || "photo.jpg",
+        size: file.size,
+      });
       if (!session.ok) {
         setUpload(null);
         return setError(errorText(session));
       }
       try {
-        await putWithProgress(session.data.upload.url, session.data.upload.headers, file, (p) => setUpload({ n: i + 1, total: list.length, p }));
+        await putWithProgress(session.data.upload.url, session.data.upload.headers, file, (p) =>
+          setUpload({ n: i + 1, total: list.length, p }),
+        );
       } catch {
         setUpload(null);
         return setError(errorText({ code: "files.size_mismatch" }));
@@ -142,9 +163,16 @@ export function JobClient({
         {photos.length > 0 && (
           <ul className="grid grid-cols-3 gap-2 sm:grid-cols-5">
             {photos.map((p, i) => (
-              <li key={p.id} className="relative aspect-square overflow-hidden rounded-s border border-border-subtle bg-surface-sunken">
+              <li
+                key={p.id}
+                className="relative aspect-square overflow-hidden rounded-s border border-border-subtle bg-surface-sunken"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element -- local object URL preview */}
-                <img src={p.preview} alt={t("photoAlt", { n: i + 1 })} className="size-full object-cover" />
+                <img
+                  src={p.preview}
+                  alt={t("photoAlt", { n: i + 1 })}
+                  className="size-full object-cover"
+                />
                 <button
                   type="button"
                   onClick={() => removePhoto(p)}
@@ -172,10 +200,19 @@ export function JobClient({
             if (list.length) void addPhotos(list.slice(0, 20 - photos.length));
           }}
         />
-        <Button variant="secondary" size="lg" icon={<Camera aria-hidden className="size-5" />} disabled={upload !== null || photos.length >= 20} onClick={() => fileInput.current?.click()} className="w-full sm:w-fit">
+        <Button
+          variant="secondary"
+          size="lg"
+          icon={<Camera aria-hidden className="size-5" />}
+          disabled={upload !== null || photos.length >= 20}
+          onClick={() => fileInput.current?.click()}
+          className="w-full sm:w-fit"
+        >
           {t("addPhoto")}
         </Button>
-        {upload && <Progress value={upload.p} label={t("uploading", { n: upload.n, total: upload.total })} />}
+        {upload && (
+          <Progress value={upload.p} label={t("uploading", { n: upload.n, total: upload.total })} />
+        )}
         {fieldErrors.photos && <p className="text-sm text-danger">{fieldErrors.photos}</p>}
       </fieldset>
 
@@ -184,7 +221,11 @@ export function JobClient({
           {measurements.map((m) => (
             <MeasurementInput
               key={m.name}
-              label={t("measurement", { axis: m.name.toUpperCase(), expected: formatNumber(m.expectedMm, appLocale, 1), tolerance: formatNumber(m.toleranceMm, appLocale, 2) })}
+              label={t("measurement", {
+                axis: m.name.toUpperCase(),
+                expected: formatNumber(m.expectedMm, appLocale, 1),
+                tolerance: formatNumber(m.toleranceMm, appLocale, 2),
+              })}
               value={values[m.name] ?? ""}
               onChange={(raw) => setValues((prev) => ({ ...prev, [m.name]: raw }))}
               unitLabel={u("mm")}
@@ -198,14 +239,32 @@ export function JobClient({
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-2 text-sm font-medium">{t("checklist")}</legend>
         {checklist.map((c) => (
-          <label key={c} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-s border border-border-subtle px-3 hover:bg-surface-base">
-            <input type="checkbox" className="size-5 accent-primary" checked={checks[c] ?? false} onChange={(e) => setChecks((prev) => ({ ...prev, [c]: e.target.checked }))} />
+          <label
+            key={c}
+            className="flex min-h-11 cursor-pointer items-center gap-3 rounded-s border border-border-subtle px-3 hover:bg-surface-base"
+          >
+            <input
+              type="checkbox"
+              className="size-5 accent-primary"
+              checked={checks[c] ?? false}
+              onChange={(e) => setChecks((prev) => ({ ...prev, [c]: e.target.checked }))}
+            />
             <span>{t(`check.${c as "no_warping"}`)}</span>
           </label>
         ))}
       </fieldset>
 
-      <Field label={t("notes")}>{({ id }) => <Textarea id={id} rows={3} maxLength={2000} value={notes} onChange={(e) => setNotes(e.target.value)} />}</Field>
+      <Field label={t("notes")}>
+        {({ id }) => (
+          <Textarea
+            id={id}
+            rows={3}
+            maxLength={2000}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
+        )}
+      </Field>
 
       <Button size="xl" loading={pending} disabled={upload !== null} onClick={submit}>
         {t("submitEvidence")}

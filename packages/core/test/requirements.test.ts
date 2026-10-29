@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { deriveRequirements, missingUsage, recommendMaterials, type MaterialCandidate } from "../src/modules/requirements/rules";
+import {
+  deriveRequirements,
+  missingUsage,
+  recommendMaterials,
+  type MaterialCandidate,
+} from "../src/modules/requirements/rules";
 
 const M = (code: string, o: Partial<MaterialCandidate>): MaterialCandidate => ({
   id: code,
@@ -16,18 +21,55 @@ const M = (code: string, o: Partial<MaterialCandidate>): MaterialCandidate => ({
 });
 const CATALOG = [
   M("PLA", { sort: 1 }),
-  M("PETG", { maxServiceTempC: 70, uvResistance: 2, moistureResistance: 3, flexibility: "slight", strengthIndex: 3, sort: 2 }),
+  M("PETG", {
+    maxServiceTempC: 70,
+    uvResistance: 2,
+    moistureResistance: 3,
+    flexibility: "slight",
+    strengthIndex: 3,
+    sort: 2,
+  }),
   M("ABS", { maxServiceTempC: 90, strengthIndex: 3, costTier: 2 }),
-  M("ASA", { maxServiceTempC: 90, uvResistance: 3, moistureResistance: 3, strengthIndex: 3, costTier: 2 }),
-  M("TPU_95A", { maxServiceTempC: 60, uvResistance: 2, moistureResistance: 3, flexibility: "rubber", costTier: 3 }),
-  M("PA_CF", { maxServiceTempC: 120, uvResistance: 2, moistureResistance: 1, strengthIndex: 5, costTier: 4 }),
+  M("ASA", {
+    maxServiceTempC: 90,
+    uvResistance: 3,
+    moistureResistance: 3,
+    strengthIndex: 3,
+    costTier: 2,
+  }),
+  M("TPU_95A", {
+    maxServiceTempC: 60,
+    uvResistance: 2,
+    moistureResistance: 3,
+    flexibility: "rubber",
+    costTier: 3,
+  }),
+  M("PA_CF", {
+    maxServiceTempC: 120,
+    uvResistance: 2,
+    moistureResistance: 1,
+    strengthIndex: 5,
+    costTier: 4,
+  }),
 ];
-const base = { environment: "indoor", heat: "none", load: "none", flexibility: "rigid", appearance: "clean" } as const;
-const codes = (u: Parameters<typeof deriveRequirements>[0]) => recommendMaterials(CATALOG, deriveRequirements(u)).map((m) => m.code);
+const base = {
+  environment: "indoor",
+  heat: "none",
+  load: "none",
+  flexibility: "rigid",
+  appearance: "clean",
+} as const;
+const codes = (u: Parameters<typeof deriveRequirements>[0]) =>
+  recommendMaterials(CATALOG, deriveRequirements(u)).map((m) => m.code);
 
 describe("requirements → recommendation", () => {
   it("reports missing usage answers", () => {
-    expect(missingUsage({ heat: "none" })).toEqual(["environment", "load", "flexibility", "appearance"]);
+    expect(missingUsage({ heat: "none" })).toEqual([
+      "environment",
+      "load",
+      "flexibility",
+      "appearance",
+    ]);
   });
   it("indoor, no load → cheapest first (PLA)", () => {
     expect(codes(base)[0]).toBe("PLA");

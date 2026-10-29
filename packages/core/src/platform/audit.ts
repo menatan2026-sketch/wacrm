@@ -11,14 +11,18 @@ export interface AuditEntry {
   reason?: string | null;
 }
 
-const SENSITIVE = /^(password|token|code|mfaSecret|mfa_secret|payoutDetails|payout_details|secret)$/i;
+const SENSITIVE =
+  /^(password|token|code|mfaSecret|mfa_secret|payoutDetails|payout_details|secret)$/i;
 
 /** Strip secrets from audit payloads; audit rows are long-lived and widely readable by staff. */
 export function redact(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(redact);
   if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, SENSITIVE.test(k) ? "[redacted]" : redact(v)]),
+      Object.entries(value as Record<string, unknown>).map(([k, v]) => [
+        k,
+        SENSITIVE.test(k) ? "[redacted]" : redact(v),
+      ]),
     );
   }
   return value;

@@ -13,11 +13,14 @@ export async function PUT(request: Request) {
   const token = new URL(request.url).searchParams.get("token") ?? "";
   const claim = storage.verifyUpload(token);
   if (!claim) return Response.json({ code: "files.upload_expired" }, { status: 403 });
-  if (request.headers.get("content-type") !== claim.ct) return Response.json({ code: "files.type_not_allowed" }, { status: 415 });
+  if (request.headers.get("content-type") !== claim.ct)
+    return Response.json({ code: "files.type_not_allowed" }, { status: 415 });
   const declared = Number(request.headers.get("content-length") ?? NaN);
-  if (Number.isFinite(declared) && declared !== claim.n) return Response.json({ code: "files.size_mismatch" }, { status: 400 });
+  if (Number.isFinite(declared) && declared !== claim.n)
+    return Response.json({ code: "files.size_mismatch" }, { status: 400 });
   const body = Buffer.from(await request.arrayBuffer());
-  if (body.length !== claim.n) return Response.json({ code: "files.size_mismatch" }, { status: 400 });
+  if (body.length !== claim.n)
+    return Response.json({ code: "files.size_mismatch" }, { status: 400 });
   await storage.put(claim.k, body);
   return new Response(null, { status: 200 });
 }

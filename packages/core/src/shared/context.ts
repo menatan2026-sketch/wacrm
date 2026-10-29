@@ -38,7 +38,8 @@ export interface Ctx {
   inTransaction?: boolean;
 }
 
-export const actorId = (actor: Actor): string | null => (actor.kind === "user" ? actor.userId : null);
+export const actorId = (actor: Actor): string | null =>
+  actor.kind === "user" ? actor.userId : null;
 export const actorType = (actor: Actor): "user" | "system" | "guest" => actor.kind;
 
 export const SYSTEM: Actor = { kind: "system", name: "system" };

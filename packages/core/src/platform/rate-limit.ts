@@ -30,6 +30,12 @@ export class MemoryRateLimiter implements RateLimiter {
   }
 }
 
-export async function enforce(limiter: RateLimiter, key: string, limit: number, windowSeconds: number): Promise<void> {
-  if (!(await limiter.hit(key, limit, windowSeconds))) throw new DomainError("auth.rate_limited", 429);
+export async function enforce(
+  limiter: RateLimiter,
+  key: string,
+  limit: number,
+  windowSeconds: number,
+): Promise<void> {
+  if (!(await limiter.hit(key, limit, windowSeconds)))
+    throw new DomainError("auth.rate_limited", 429);
 }

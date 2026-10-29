@@ -3,7 +3,10 @@ import { fileURLToPath } from "node:url";
 import { elevation, fontStacks, motion, radius, themes } from "../src/index";
 
 export function buildCss(): string {
-  const vars = (t: Record<string, string>) => Object.entries(t).map(([k, v]) => `  --mfg-${k}: ${v};`).join("\n");
+  const vars = (t: Record<string, string>) =>
+    Object.entries(t)
+      .map(([k, v]) => `  --mfg-${k}: ${v};`)
+      .join("\n");
   const shared = [
     ...Object.entries(radius).map(([k, v]) => `  --mfg-radius-${k}: ${v};`),
     ...Object.entries(elevation).map(([k, v]) => `  --mfg-elevation-${k}: ${v};`),
@@ -35,11 +38,15 @@ ${vars(themes.dark).replace(/^ {2}/gm, "    ")}
 /* Reduced motion: every duration collapses; information stays (MOTION_SYSTEM.md §6). */
 @media (prefers-reduced-motion: reduce) {
   :root:not([data-motion="full"]) {
-${Object.keys(motion.duration).map((k) => `    --mfg-duration-${k}: 0ms;`).join("\n")}
+${Object.keys(motion.duration)
+  .map((k) => `    --mfg-duration-${k}: 0ms;`)
+  .join("\n")}
   }
 }
 :root[data-motion="reduced"] {
-${Object.keys(motion.duration).map((k) => `  --mfg-duration-${k}: 0ms;`).join("\n")}
+${Object.keys(motion.duration)
+  .map((k) => `  --mfg-duration-${k}: 0ms;`)
+  .join("\n")}
 }
 `;
 }

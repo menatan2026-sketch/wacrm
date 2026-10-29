@@ -8,7 +8,11 @@ import { deps } from "@/lib/platform";
  * Fake PSP: produce a correctly signed webhook and deliver it to the real webhook handler, exactly
  * as an external provider would. Disabled unless the fake provider is configured.
  */
-export async function devPayAction(providerRef: string, outcome: "approve" | "decline", locale: string) {
+export async function devPayAction(
+  providerRef: string,
+  outcome: "approve" | "decline",
+  locale: string,
+) {
   const d = deps();
   if (!isFakePaymentProvider(d.payments)) throw new Error("fake payments disabled");
   const payment = await payments.findPaymentByRef(d, providerRef);

@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-const bool = z
-  .enum(["true", "false", "1", "0"])
-  .transform((v) => v === "true" || v === "1");
+const bool = z.enum(["true", "false", "1", "0"]).transform((v) => v === "true" || v === "1");
 
 const serverSchema = z
   .object({
@@ -29,20 +27,37 @@ const serverSchema = z
     PAYMENT_WEBHOOK_SECRET: z.string().min(16),
     SHIPPING_PROVIDER: z.enum(["manual", "fake"]).default("manual"),
     DEV_TOOLS_ENABLED: bool.default(false),
-    UPLOAD_MAX_MODEL_BYTES: z.coerce.number().int().positive().default(100 * 1024 * 1024),
-    UPLOAD_MAX_PHOTO_BYTES: z.coerce.number().int().positive().default(15 * 1024 * 1024),
+    UPLOAD_MAX_MODEL_BYTES: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(100 * 1024 * 1024),
+    UPLOAD_MAX_PHOTO_BYTES: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(15 * 1024 * 1024),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === "production" && env.DEV_TOOLS_ENABLED) {
-      ctx.addIssue({ code: "custom", path: ["DEV_TOOLS_ENABLED"], message: "must be false in production" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["DEV_TOOLS_ENABLED"],
+        message: "must be false in production",
+      });
     }
     if (env.STORAGE_DRIVER === "s3") {
       for (const key of ["S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"] as const) {
-        if (!env[key]) ctx.addIssue({ code: "custom", path: [key], message: "required when STORAGE_DRIVER=s3" });
+        if (!env[key])
+          ctx.addIssue({ code: "custom", path: [key], message: "required when STORAGE_DRIVER=s3" });
       }
     }
     if (env.EMAIL_DRIVER === "smtp" && !env.SMTP_URL) {
-      ctx.addIssue({ code: "custom", path: ["SMTP_URL"], message: "required when EMAIL_DRIVER=smtp" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["SMTP_URL"],
+        message: "required when EMAIL_DRIVER=smtp",
+      });
     }
   });
 

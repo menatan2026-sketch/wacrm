@@ -35,16 +35,37 @@ export class LocalStorage implements StorageProvider {
     return path.join(this.root, key);
   }
 
-  async presignUpload(key: string, contentType: string, contentLength: number, expiresInSeconds: number): Promise<PresignedUpload> {
+  async presignUpload(
+    key: string,
+    contentType: string,
+    contentLength: number,
+    expiresInSeconds: number,
+  ): Promise<PresignedUpload> {
     this.resolve(key);
     const exp = Date.now() + expiresInSeconds * 1000;
-    const token = signPayload(this.secret, { k: key, ct: contentType, n: contentLength, exp, op: "put" } satisfies UploadClaim);
-    return { url: `${this.appUrl}/api/storage/upload?token=${encodeURIComponent(token)}`, method: "PUT", headers: { "content-type": contentType }, expiresAt: new Date(exp) };
+    const token = signPayload(this.secret, {
+      k: key,
+      ct: contentType,
+      n: contentLength,
+      exp,
+      op: "put",
+    } satisfies UploadClaim);
+    return {
+      url: `${this.appUrl}/api/storage/upload?token=${encodeURIComponent(token)}`,
+      method: "PUT",
+      headers: { "content-type": contentType },
+      expiresAt: new Date(exp),
+    };
   }
 
   async presignDownload(key: string, fileName: string, expiresInSeconds: number): Promise<string> {
     this.resolve(key);
-    const token = signPayload(this.secret, { k: key, fn: fileName, exp: Date.now() + expiresInSeconds * 1000, op: "get" } satisfies DownloadClaim);
+    const token = signPayload(this.secret, {
+      k: key,
+      fn: fileName,
+      exp: Date.now() + expiresInSeconds * 1000,
+      op: "get",
+    } satisfies DownloadClaim);
     return `${this.appUrl}/api/storage/download?token=${encodeURIComponent(token)}`;
   }
 
@@ -83,5 +104,8 @@ export class LocalStorage implements StorageProvider {
 
 /** Structural check (class identity can differ across bundles, so `instanceof` is unreliable). */
 export function isLocalStorage(s: StorageProvider): s is LocalStorage {
-  return typeof (s as Partial<LocalStorage>).verifyUpload === "function" && typeof (s as Partial<LocalStorage>).verifyDownload === "function";
+  return (
+    typeof (s as Partial<LocalStorage>).verifyUpload === "function" &&
+    typeof (s as Partial<LocalStorage>).verifyDownload === "function"
+  );
 }

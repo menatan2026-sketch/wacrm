@@ -15,7 +15,13 @@ export interface Requirements {
   rationale: string[];
 }
 
-export const REQUIRED_USAGE_FIELDS = ["environment", "heat", "load", "flexibility", "appearance"] as const;
+export const REQUIRED_USAGE_FIELDS = [
+  "environment",
+  "heat",
+  "load",
+  "flexibility",
+  "appearance",
+] as const;
 
 export function missingUsage(u: UsageAnswers): string[] {
   return REQUIRED_USAGE_FIELDS.filter((f) => u[f] === undefined);
@@ -120,7 +126,10 @@ export function materialFits(m: MaterialCandidate, r: Requirements): boolean {
  * Deterministic recommendation: every material that satisfies the requirements, cheapest first,
  * then by catalog priority. Empty means a person must review the request.
  */
-export function recommendMaterials<M extends MaterialCandidate>(materials: M[], r: Requirements): M[] {
+export function recommendMaterials<M extends MaterialCandidate>(
+  materials: M[],
+  r: Requirements,
+): M[] {
   return materials
     .filter((m) => materialFits(m, r))
     .sort((a, b) => a.costTier - b.costTier || a.sort - b.sort || a.code.localeCompare(b.code));

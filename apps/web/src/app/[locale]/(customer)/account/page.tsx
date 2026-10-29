@@ -3,12 +3,12 @@ import { getTranslations } from "next-intl/server";
 import { notifications } from "@mfg/core";
 import { formatDate } from "@mfg/i18n";
 import { Card, Ltr } from "@mfg/ui";
-import { useLocaleParam } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { ctxFor, requireActor } from "@/lib/session";
 import { AccountPreferences, SignOutButton } from "./AccountClient";
 
 export default async function AccountPage({ params }: { params: Promise<{ locale: string }> }) {
-  const locale = await useLocaleParam(params);
+  const locale = await resolveLocale(params);
   const actor = await requireActor("customer", locale, `/${locale}/account`);
   const t = await getTranslations("customer.account");
   const tn = await getTranslations("notifications");
@@ -30,7 +30,16 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           <ul className="flex flex-col divide-y divide-border-subtle">
             {list.map((n) => (
               <li key={n.id} className="flex flex-col gap-0.5 py-2 text-sm">
-                <span className="font-medium">{tn.has(`${n.kind}.subject`) ? tn(`${n.kind}.subject`, Object.fromEntries(Object.entries(n.payload).map(([k, v]) => [k, String(v ?? "")]))) : n.kind}</span>
+                <span className="font-medium">
+                  {tn.has(`${n.kind}.subject`)
+                    ? tn(
+                        `${n.kind}.subject`,
+                        Object.fromEntries(
+                          Object.entries(n.payload).map(([k, v]) => [k, String(v ?? "")]),
+                        ),
+                      )
+                    : n.kind}
+                </span>
                 <span className="text-text-secondary">{formatDate(n.createdAt, locale)}</span>
               </li>
             ))}

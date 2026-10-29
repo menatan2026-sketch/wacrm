@@ -1,5 +1,16 @@
 import { sql } from "drizzle-orm";
-import { boolean, date, index, integer, jsonb, numeric, pgTable, text, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  date,
+  index,
+  integer,
+  jsonb,
+  numeric,
+  pgTable,
+  text,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { createdAt, id, oneOf, ts, updatedAt } from "./_shared";
 import { ORDER_FLOWS, ORDER_STATUSES, URGENCY_TIERS } from "./enums";
 import { fileObjects } from "./files";
@@ -29,7 +40,9 @@ export const wizardDrafts = pgTable(
 
 export const addresses = pgTable("addresses", {
   id: id(),
-  userId: uuid("user_id").notNull().references(() => users.id),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
   recipientName: text("recipient_name").notNull(),
   phone: text("phone").notNull(),
   line1: text("line1").notNull(),
@@ -54,7 +67,9 @@ export const orders = pgTable(
   {
     id: id(),
     orderNumber: text("order_number").notNull(),
-    customerUserId: uuid("customer_user_id").notNull().references(() => users.id),
+    customerUserId: uuid("customer_user_id")
+      .notNull()
+      .references(() => users.id),
     flow: text("flow").notNull(),
     status: text("status").notNull().default("DRAFT"),
     onHold: boolean("on_hold").notNull().default(false),
@@ -85,7 +100,9 @@ export const orders = pgTable(
     index("orders_customer_idx").on(t.customerUserId, t.createdAt),
     index("orders_attention_idx")
       .on(t.status, t.statusChangedAt)
-      .where(sql`${t.onHold} OR ${t.status} IN ('REVIEW_REQUIRED','QC_PENDING','QC_FAILED','DISPUTED','ROUTING')`),
+      .where(
+        sql`${t.onHold} OR ${t.status} IN ('REVIEW_REQUIRED','QC_PENDING','QC_FAILED','DISPUTED','ROUTING')`,
+      ),
     oneOf("orders_status_ck", "status", ORDER_STATUSES),
     oneOf("orders_flow_ck", "flow", ORDER_FLOWS),
     oneOf("orders_urgency_ck", "urgency_tier", URGENCY_TIERS),
@@ -107,7 +124,9 @@ export const orderItems = pgTable(
   "order_items",
   {
     id: id(),
-    orderId: uuid("order_id").notNull().references(() => orders.id),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id),
     position: integer("position").notNull().default(0),
     title: text("title").notNull(),
     fileId: uuid("file_id").references(() => fileObjects.id),
@@ -128,7 +147,9 @@ export const orderStatusHistory = pgTable(
   "order_status_history",
   {
     id: id(),
-    orderId: uuid("order_id").notNull().references(() => orders.id),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id),
     fromStatus: text("from_status"),
     toStatus: text("to_status").notNull(),
     event: text("event").notNull(),
@@ -144,7 +165,9 @@ export const orderMessages = pgTable(
   "order_messages",
   {
     id: id(),
-    orderId: uuid("order_id").notNull().references(() => orders.id),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id),
     authorId: uuid("author_id"),
     authorType: text("author_type").notNull(),
     visibility: text("visibility").notNull(),

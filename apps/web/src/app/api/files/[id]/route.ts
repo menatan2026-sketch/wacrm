@@ -17,7 +17,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const url = await files.getDownloadUrl(deps(), await ctxFor(actor), id, purpose.slice(0, 40));
     return Response.redirect(url, 302);
   } catch (err) {
-    if (err instanceof DomainError) return new Response(null, { status: err.status === 403 ? 403 : 404 });
+    if (err instanceof DomainError)
+      return new Response(null, { status: err.status === 403 ? 403 : 404 });
     throw err;
   }
 }

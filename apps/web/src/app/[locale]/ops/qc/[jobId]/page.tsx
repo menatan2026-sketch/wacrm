@@ -7,11 +7,15 @@ import { formatNumber } from "@mfg/i18n";
 import { Badge, Banner, Card, JOB_TONE, Ltr, SectionTitle, StatusChip } from "@mfg/ui";
 import { qcVerdictAction, reprintAction } from "@/app/actions/ops";
 import { ActionForm } from "@/components/ActionForm";
-import { catalogName, useLocaleParam } from "@/lib/i18n";
+import { catalogName, resolveLocale } from "@/lib/i18n";
 import { opsContext } from "@/lib/ops";
 
-export default async function QcReview({ params }: { params: Promise<{ locale: string; jobId: string }> }) {
-  const locale = await useLocaleParam(params);
+export default async function QcReview({
+  params,
+}: {
+  params: Promise<{ locale: string; jobId: string }>;
+}) {
+  const locale = await resolveLocale(params);
   const { jobId } = await params;
   const { ctx } = await opsContext(locale, `/${locale}/ops/qc/${jobId}`);
   const t = await getTranslations("admin.qc");
@@ -24,7 +28,10 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
   const { job, order, items, inspections } = card;
   const evidence = inspections.find((i) => i.stage === "supplier_evidence");
   const reviews = inspections.filter((i) => i.stage === "platform_review");
-  const defectOptions = production.DEFECT_CODES.map((c) => ({ value: c, label: q(`defects.${c}`) }));
+  const defectOptions = production.DEFECT_CODES.map((c) => ({
+    value: c,
+    label: q(`defects.${c}`),
+  }));
   const notes = { name: "notes", label: j("notes"), kind: "textarea" as const };
   const first = items[0];
   return (
@@ -36,12 +43,17 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
         <h1 className="text-2xl font-semibold">
           <Ltr mono>{order.orderNumber}</Ltr>
         </h1>
-        <StatusChip tone={JOB_TONE[job.status] ?? "neutral"} label={j(`status.${job.status as "QC_PENDING"}`)} />
+        <StatusChip
+          tone={JOB_TONE[job.status] ?? "neutral"}
+          label={j(`status.${job.status as "QC_PENDING"}`)}
+        />
         {job.attemptNo > 1 && <Badge tone="warning">{j("attempt", { n: job.attemptNo })}</Badge>}
         {first?.material && (
           <span className="ms-auto text-sm text-text-secondary">
             {catalogName(first.material.i18n, locale, first.material.code)}
-            {first.variant && ` · ${catalogName(first.variant.i18n, locale, first.variant.colorCode)}`} · ×{first.item.quantity}
+            {first.variant &&
+              ` · ${catalogName(first.variant.i18n, locale, first.variant.colorCode)}`}{" "}
+            · ×{first.item.quantity}
           </span>
         )}
       </div>
@@ -54,9 +66,18 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
           <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {evidence.photoFileIds.map((id, i) => (
               <li key={id}>
-                <a href={`/api/files/${id}?purpose=qc_review`} target="_blank" rel="noreferrer" className="block aspect-square overflow-hidden rounded-s border border-border-subtle bg-surface-sunken focus-visible:outline-2 focus-visible:outline-focus">
+                <a
+                  href={`/api/files/${id}?purpose=qc_review`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block aspect-square overflow-hidden rounded-s border border-border-subtle bg-surface-sunken focus-visible:outline-2 focus-visible:outline-focus"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL, not optimizable */}
-                  <img src={`/api/files/${id}?purpose=qc_review`} alt={j("photoAlt", { n: i + 1 })} className="size-full object-cover" />
+                  <img
+                    src={`/api/files/${id}?purpose=qc_review`}
+                    alt={j("photoAlt", { n: i + 1 })}
+                    className="size-full object-cover"
+                  />
                 </a>
               </li>
             ))}
@@ -79,7 +100,9 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
             </thead>
             <tbody>
               {evidence.measurements.map((m) => {
-                const ok = m.measuredMm !== undefined && Math.abs(m.measuredMm - m.expectedMm) <= m.toleranceMm;
+                const ok =
+                  m.measuredMm !== undefined &&
+                  Math.abs(m.measuredMm - m.expectedMm) <= m.toleranceMm;
                 return (
                   <tr key={m.name} className="border-t border-border-subtle">
                     <th scope="row" className="py-2 text-start font-medium">
@@ -87,12 +110,17 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
                     </th>
                     <td className="py-2 text-end tabular-nums">
                       <Ltr>
-                        {formatNumber(m.expectedMm, locale, 1)} ± {formatNumber(m.toleranceMm, locale, 2)}
+                        {formatNumber(m.expectedMm, locale, 1)} ±{" "}
+                        {formatNumber(m.toleranceMm, locale, 2)}
                       </Ltr>
                     </td>
-                    <td className="py-2 text-end tabular-nums">{m.measuredMm !== undefined ? formatNumber(m.measuredMm, locale, 2) : "—"}</td>
+                    <td className="py-2 text-end tabular-nums">
+                      {m.measuredMm !== undefined ? formatNumber(m.measuredMm, locale, 2) : "—"}
+                    </td>
                     <td className="py-2 text-end">
-                      <Badge tone={ok ? "success" : "danger"}>{ok ? t("within") : t("outside")}</Badge>
+                      <Badge tone={ok ? "success" : "danger"}>
+                        {ok ? t("within") : t("outside")}
+                      </Badge>
                     </td>
                   </tr>
                 );
@@ -102,7 +130,11 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
           <ul className="grid gap-2 sm:grid-cols-2">
             {Object.entries(evidence.checklist).map(([k, v]) => (
               <li key={k} className="flex items-center gap-2 text-sm">
-                {v ? <CheckCircle2 aria-hidden className="size-4 text-success" /> : <XCircle aria-hidden className="size-4 text-danger" />}
+                {v ? (
+                  <CheckCircle2 aria-hidden className="size-4 text-success" />
+                ) : (
+                  <XCircle aria-hidden className="size-4 text-danger" />
+                )}
                 {j(`check.${k as "no_warping"}`)}
                 <span className="sr-only">{v ? t("within") : t("outside")}</span>
               </li>
@@ -115,7 +147,11 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
           )}
           {job.status === "QC_PENDING" && (
             <div className="flex flex-wrap gap-3 border-t border-border-subtle pt-4">
-              <ActionForm action={qcVerdictAction.bind(null, locale, jobId, "pass")} submitLabel={t("pass")} size="lg" />
+              <ActionForm
+                action={qcVerdictAction.bind(null, locale, jobId, "pass")}
+                submitLabel={t("pass")}
+                size="lg"
+              />
               <ActionForm
                 action={qcVerdictAction.bind(null, locale, jobId, "fail")}
                 submitLabel={t("fail")}
@@ -124,11 +160,26 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
                 dialogTitle={t("fail")}
                 fields={[
                   { name: "defect", label: t("defect"), kind: "select", options: defectOptions },
-                  { name: "severity", label: t("severity"), kind: "select", options: (["major", "minor", "critical"] as const).map((v) => ({ value: v, label: q(`severity.${v}`) })) },
+                  {
+                    name: "severity",
+                    label: t("severity"),
+                    kind: "select",
+                    options: (["major", "minor", "critical"] as const).map((v) => ({
+                      value: v,
+                      label: q(`severity.${v}`),
+                    })),
+                  },
                   notes,
                 ]}
               />
-              <ActionForm action={qcVerdictAction.bind(null, locale, jobId, "needs_info")} submitLabel={t("needsInfo")} variant="ghost" size="lg" dialogTitle={t("needsInfo")} fields={[{ ...notes, required: true }]} />
+              <ActionForm
+                action={qcVerdictAction.bind(null, locale, jobId, "needs_info")}
+                submitLabel={t("needsInfo")}
+                variant="ghost"
+                size="lg"
+                dialogTitle={t("needsInfo")}
+                fields={[{ ...notes, required: true }]}
+              />
             </div>
           )}
         </Card>
@@ -142,7 +193,15 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
             submitLabel={t("reprint")}
             fields={[
               { name: "reasonCode", label: t("defect"), kind: "select", options: defectOptions },
-              { name: "costBearer", label: t("costBearer"), kind: "select", options: (["supplier", "platform", "customer"] as const).map((v) => ({ value: v, label: q(`costBearer.${v}`) })) },
+              {
+                name: "costBearer",
+                label: t("costBearer"),
+                kind: "select",
+                options: (["supplier", "platform", "customer"] as const).map((v) => ({
+                  value: v,
+                  label: q(`costBearer.${v}`),
+                })),
+              },
               { name: "rootCause", label: t("rootCause"), kind: "textarea" },
             ]}
           />
@@ -155,7 +214,17 @@ export default async function QcReview({ params }: { params: Promise<{ locale: s
           <ul className="flex flex-col gap-2 text-sm">
             {reviews.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center gap-2">
-                <Badge tone={r.verdict === "pass" ? "success" : r.verdict === "fail" ? "danger" : "warning"}>{r.verdict === "pass" ? t("pass") : r.verdict === "fail" ? t("fail") : t("needsInfo")}</Badge>
+                <Badge
+                  tone={
+                    r.verdict === "pass" ? "success" : r.verdict === "fail" ? "danger" : "warning"
+                  }
+                >
+                  {r.verdict === "pass"
+                    ? t("pass")
+                    : r.verdict === "fail"
+                      ? t("fail")
+                      : t("needsInfo")}
+                </Badge>
                 {(r.defects ?? []).map((d) => q(`defects.${d.code as "warping"}`)).join(", ")}
                 {r.notes && <span className="text-text-secondary">· {r.notes}</span>}
               </li>

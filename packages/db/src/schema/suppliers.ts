@@ -1,5 +1,15 @@
 import { sql } from "drizzle-orm";
-import { index, integer, jsonb, numeric, pgTable, primaryKey, text, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  jsonb,
+  numeric,
+  pgTable,
+  primaryKey,
+  text,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { createdAt, id, minor, oneOf, ts, updatedAt } from "./_shared";
 import { JOB_STATUSES, OFFER_STATUSES, QC_VERDICTS, SUPPLIER_STATUSES } from "./enums";
 import { materialVariants } from "./catalog";
@@ -42,15 +52,22 @@ export const suppliers = pgTable(
     payoutCard: jsonb("payout_card").$type<Record<string, unknown> | null>(),
     payoutDetails: jsonb("payout_details").$type<Record<string, unknown> | null>(),
     payoutDetailsChangedAt: ts("payout_details_changed_at"),
-    onboarding: jsonb("onboarding")
-      .$type<OnboardingChecklist>()
-      .notNull()
-      .default({ company: false, location: false, machines: false, payout: false, agreement: false }),
+    onboarding: jsonb("onboarding").$type<OnboardingChecklist>().notNull().default({
+      company: false,
+      location: false,
+      machines: false,
+      payout: false,
+      agreement: false,
+    }),
     agreementAcceptedAt: ts("agreement_accepted_at"),
-    stats: jsonb("stats")
-      .$type<SupplierStats>()
-      .notNull()
-      .default({ qualityScore: 0.8, onTimeRate: 0.9, acceptanceRate: 0.9, reprintRate: 0, cancellationRate: 0, completedJobs: 0 }),
+    stats: jsonb("stats").$type<SupplierStats>().notNull().default({
+      qualityScore: 0.8,
+      onTimeRate: 0.9,
+      acceptanceRate: 0.9,
+      reprintRate: 0,
+      cancellationRate: 0,
+      completedJobs: 0,
+    }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -61,7 +78,9 @@ export const machines = pgTable(
   "machines",
   {
     id: id(),
-    supplierId: uuid("supplier_id").notNull().references(() => suppliers.id),
+    supplierId: uuid("supplier_id")
+      .notNull()
+      .references(() => suppliers.id),
     processCode: text("process_code").notNull().default("FDM"),
     name: text("name").notNull(),
     buildXMm: numeric("build_x_mm", { precision: 8, scale: 1, mode: "number" }).notNull(),
@@ -71,14 +90,21 @@ export const machines = pgTable(
     status: text("status").notNull().default("active"),
     createdAt: createdAt(),
   },
-  (t) => [index("machines_supplier_idx").on(t.supplierId), oneOf("machines_status_ck", "status", ["active", "maintenance", "retired"])],
+  (t) => [
+    index("machines_supplier_idx").on(t.supplierId),
+    oneOf("machines_status_ck", "status", ["active", "maintenance", "retired"]),
+  ],
 );
 
 export const machineMaterials = pgTable(
   "machine_materials",
   {
-    machineId: uuid("machine_id").notNull().references(() => machines.id),
-    materialVariantId: uuid("material_variant_id").notNull().references(() => materialVariants.id),
+    machineId: uuid("machine_id")
+      .notNull()
+      .references(() => machines.id),
+    materialVariantId: uuid("material_variant_id")
+      .notNull()
+      .references(() => materialVariants.id),
   },
   (t) => [primaryKey({ columns: [t.machineId, t.materialVariantId] })],
 );
@@ -105,7 +131,9 @@ export const routingDecisions = pgTable(
   "routing_decisions",
   {
     id: id(),
-    orderId: uuid("order_id").notNull().references(() => orders.id),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id),
     ruleSetId: uuid("rule_set_id").references(() => routingRuleSets.id),
     candidates: jsonb("candidates").$type<RoutingCandidate[]>().notNull(),
     chosenSupplierId: uuid("chosen_supplier_id"),
@@ -114,14 +142,24 @@ export const routingDecisions = pgTable(
     reason: text("reason"),
     createdAt: createdAt(),
   },
-  (t) => [index("routing_decisions_order_idx").on(t.orderId), oneOf("routing_decisions_mode_ck", "mode", ["proposal", "auto", "manual_confirmed", "manual_override"])],
+  (t) => [
+    index("routing_decisions_order_idx").on(t.orderId),
+    oneOf("routing_decisions_mode_ck", "mode", [
+      "proposal",
+      "auto",
+      "manual_confirmed",
+      "manual_override",
+    ]),
+  ],
 );
 
 export const productionJobs = pgTable(
   "production_jobs",
   {
     id: id(),
-    orderId: uuid("order_id").notNull().references(() => orders.id),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id),
     supplierId: uuid("supplier_id").references(() => suppliers.id),
     status: text("status").notNull().default("OFFERED"),
     attemptNo: integer("attempt_no").notNull().default(1),
@@ -148,8 +186,12 @@ export const jobOffers = pgTable(
   "job_offers",
   {
     id: id(),
-    jobId: uuid("job_id").notNull().references(() => productionJobs.id),
-    supplierId: uuid("supplier_id").notNull().references(() => suppliers.id),
+    jobId: uuid("job_id")
+      .notNull()
+      .references(() => productionJobs.id),
+    supplierId: uuid("supplier_id")
+      .notNull()
+      .references(() => suppliers.id),
     status: text("status").notNull().default("pending"),
     payoutMinor: minor("payout_minor").notNull(),
     offeredAt: createdAt(),
@@ -160,7 +202,9 @@ export const jobOffers = pgTable(
   },
   (t) => [
     index("job_offers_supplier_idx").on(t.supplierId, t.status, t.expiresAt),
-    uniqueIndex("job_offers_one_accept_uq").on(t.jobId).where(sql`${t.status} = 'accepted'`),
+    uniqueIndex("job_offers_one_accept_uq")
+      .on(t.jobId)
+      .where(sql`${t.status} = 'accepted'`),
     oneOf("job_offers_status_ck", "status", OFFER_STATUSES),
   ],
 );
@@ -176,14 +220,19 @@ export const qcInspections = pgTable(
   "qc_inspections",
   {
     id: id(),
-    jobId: uuid("job_id").notNull().references(() => productionJobs.id),
+    jobId: uuid("job_id")
+      .notNull()
+      .references(() => productionJobs.id),
     stage: text("stage").notNull(),
     authorId: uuid("author_id"),
     verdict: text("verdict"),
     measurements: jsonb("measurements").$type<QcMeasurement[]>().notNull().default([]),
     checklist: jsonb("checklist").$type<Record<string, boolean>>().notNull().default({}),
     photoFileIds: jsonb("photo_file_ids").$type<string[]>().notNull().default([]),
-    defects: jsonb("defects").$type<{ code: string; severity: string; description?: string }[]>().notNull().default([]),
+    defects: jsonb("defects")
+      .$type<{ code: string; severity: string; description?: string }[]>()
+      .notNull()
+      .default([]),
     notes: text("notes"),
     createdAt: createdAt(),
   },
@@ -196,7 +245,9 @@ export const qcInspections = pgTable(
 
 export const reprintRequests = pgTable("reprint_requests", {
   id: id(),
-  jobId: uuid("job_id").notNull().references(() => productionJobs.id),
+  jobId: uuid("job_id")
+    .notNull()
+    .references(() => productionJobs.id),
   newJobId: uuid("new_job_id").references(() => productionJobs.id),
   reasonCode: text("reason_code").notNull(),
   rootCause: text("root_cause"),

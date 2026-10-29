@@ -1,6 +1,13 @@
 import { ORDER_STATUSES, type OrderStatus } from "@mfg/db";
 import { describe, expect, it } from "vitest";
-import { checkTransition, eventsFrom, ORDER_TRANSITIONS, TERMINAL, type OrderEvent, type Trigger } from "../src/modules/orders/state-machine";
+import {
+  checkTransition,
+  eventsFrom,
+  ORDER_TRANSITIONS,
+  TERMINAL,
+  type OrderEvent,
+  type Trigger,
+} from "../src/modules/orders/state-machine";
 
 const EVENTS = Object.keys(ORDER_TRANSITIONS) as OrderEvent[];
 const TRIGGERS: Trigger[] = ["customer", "staff", "system"];
@@ -12,7 +19,9 @@ describe("order state machine", () => {
       for (const event of EVENTS) {
         for (const trigger of TRIGGERS) {
           const t = ORDER_TRANSITIONS[event];
-          const declared = (t.from as readonly OrderStatus[]).includes(status) && (t.by as readonly Trigger[]).includes(trigger);
+          const declared =
+            (t.from as readonly OrderStatus[]).includes(status) &&
+            (t.by as readonly Trigger[]).includes(trigger);
           const result = checkTransition(status, event, trigger);
           expect(result.ok, `${status} --${event}/${trigger}-->`).toBe(declared);
           if (result.ok) {
@@ -26,12 +35,21 @@ describe("order state machine", () => {
   });
 
   it("distinguishes an invalid transition from a forbidden trigger", () => {
-    expect(checkTransition("DRAFT", "payment_succeeded", "system")).toEqual({ ok: false, reason: "invalid_transition" });
-    expect(checkTransition("PAYMENT_PENDING", "payment_succeeded", "customer")).toEqual({ ok: false, reason: "not_allowed" });
+    expect(checkTransition("DRAFT", "payment_succeeded", "system")).toEqual({
+      ok: false,
+      reason: "invalid_transition",
+    });
+    expect(checkTransition("PAYMENT_PENDING", "payment_succeeded", "customer")).toEqual({
+      ok: false,
+      reason: "not_allowed",
+    });
   });
 
   it("blocks system transitions while an order is on hold but lets staff act", () => {
-    expect(checkTransition("PAID", "routing_started", "system", { onHold: true })).toEqual({ ok: false, reason: "on_hold" });
+    expect(checkTransition("PAID", "routing_started", "system", { onHold: true })).toEqual({
+      ok: false,
+      reason: "on_hold",
+    });
     expect(checkTransition("PAID", "routing_started", "staff", { onHold: true }).ok).toBe(true);
   });
 
