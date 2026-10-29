@@ -1,0 +1,38 @@
+{
+  "checkout": {
+    "title": "Checkout",
+    "address": "Delivery address",
+    "name": "Full name",
+    "phone": "Phone",
+    "phoneHint": "The courier calls before delivery.",
+    "line1": "Street and number",
+    "line2": "Apartment, floor (optional)",
+    "city": "City",
+    "postalCode": "Postal code (optional)",
+    "notes": "Notes for the courier (optional)",
+    "pay": "Continue to secure payment",
+    "secure": "You'll pay on the payment provider's secure page. We never see your card details.",
+    "processing": "Confirming your payment…",
+    "processingBody": "This usually takes a few seconds. You can leave this page — we'll email you."
+  },
+  "status": {
+    "PENDING": "Pending",
+    "CAPTURED": "Paid",
+    "PARTIALLY_REFUNDED": "Partly refunded",
+    "REFUNDED": "Refunded",
+    "FAILED": "Failed",
+    "CANCELLED": "Cancelled"
+  },
+  "devPay": {
+    "title": "Test payment page",
+    "notice": "Development payment simulator — no real card is charged.",
+    "amount": "Amount",
+    "approve": "Approve payment",
+    "decline": "Decline payment",
+    "back": "Back to the order"
+  },
+  "documents": {
+    "receipt": "Receipt {number}",
+    "credit_note": "Credit note {number}"
+  }
+}

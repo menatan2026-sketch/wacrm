@@ -1,0 +1,167 @@
+{
+  "home": {
+    "eyebrow": "Custom parts, made for you",
+    "title": "Order a custom part as easily as anything else online",
+    "subtitle": "Tell us what it's for. We choose the material and method, make it with a vetted manufacturing partner, check its quality and deliver it.",
+    "choose": "What do you need?",
+    "file": {
+      "title": "I have a file",
+      "body": "Upload an STL or 3MF and get a price in minutes.",
+      "cta": "Upload a file"
+    },
+    "object": {
+      "title": "I have an object or a broken part",
+      "body": "Send photos and a few measurements. We'll recreate it.",
+      "cta": "Send photos"
+    },
+    "idea": {
+      "title": "I have an idea",
+      "body": "Describe what you need. We'll design and make it.",
+      "cta": "Describe it"
+    },
+    "how": "How it works",
+    "steps": {
+      "s1": "Upload or describe",
+      "s2": "Answer a few plain questions",
+      "s3": "Get a firm price and date",
+      "s4": "We make, check and ship it"
+    },
+    "trust": {
+      "qc": "Every part is quality-checked before it ships",
+      "private": "Your files stay private",
+      "price": "Clear price, VAT included"
+    },
+    "continueDraft": "Continue where you left off"
+  },
+  "wizard": {
+    "stepOf": "Step {current} of {total} · {name}",
+    "steps": {
+      "upload": "Upload",
+      "describe": "Describe",
+      "usage": "Usage",
+      "size": "Size",
+      "review": "Review",
+      "price": "Price",
+      "submit": "Send"
+    },
+    "saved": "Progress saved",
+    "upload": {
+      "title": "Upload your 3D file",
+      "drop": "Drag your file here",
+      "hint": "STL or 3MF, up to {max}. Your file stays private.",
+      "choose": "Choose a file",
+      "uploading": "Uploading · {pct}%",
+      "replace": "Replace file",
+      "noStep": "STEP files aren't supported yet. Export STL or 3MF from your CAD tool, or send photos instead."
+    },
+    "analysis": {
+      "title": "Checking your file",
+      "stages": {
+        "upload": "Uploaded",
+        "parse": "Reading the mesh",
+        "measure": "Measuring dimensions",
+        "check_geometry": "Checking geometry",
+        "printability": "Checking printability",
+        "volume": "Estimating volume"
+      },
+      "slow": "This file is large, so analysis takes a little longer. You can keep going — we'll update this automatically.",
+      "done": "Your part is {dims}",
+      "failed": {
+        "title": "We couldn't read this file",
+        "corrupt_file": "The file looks damaged or isn't a 3D model. Try exporting it again.",
+        "unsupported_format": "This format isn't supported. Use STL or 3MF.",
+        "too_large": "The file is too large to analyze.",
+        "too_complex": "The model has too many triangles. Simplify it and try again.",
+        "timeout": "Analysis took too long. Try a simpler version of the file.",
+        "degenerate_geometry": "The model has no measurable volume.",
+        "other": "Something about this file needs a person to look at it.",
+        "continue": "Continue — we'll check it manually"
+      },
+      "warnings": {
+        "not_watertight": "The model has gaps in its surface. We'll check it before printing.",
+        "multiple_shells": "The file contains several separate parts.",
+        "inconsistent_normals": "Some surfaces face the wrong way; we'll fix that.",
+        "large_overhangs": "Large overhangs need support material."
+      }
+    },
+    "usage": {
+      "title": "How will you use it?",
+      "intro": "Plain answers are enough — we translate them into the right material and settings."
+    },
+    "size": {
+      "title": "Confirm the size",
+      "intro": "3D files don't store units. Check that this is the real size of your part.",
+      "units": "The file is in",
+      "unitsHint": "Small numbers often mean the file is in inches.",
+      "scale": "Scale",
+      "scaleHint": "100% keeps the original size.",
+      "result": "Final size"
+    },
+    "review": {
+      "title": "Your part",
+      "viewerLabel": "Interactive 3D preview of your part, {dims}",
+      "noPreview": "A 3D preview isn't available for this file, but the measurements above are exact.",
+      "loadPreview": "Show 3D preview",
+      "dims": "Dimensions",
+      "checks": "Checks",
+      "allGood": "No problems found"
+    },
+    "price": {
+      "title": "Your price",
+      "recommended": "Recommended",
+      "material": "Material",
+      "color": "Color",
+      "quantity": "Quantity",
+      "urgency": "How soon do you need it?",
+      "total": "Total incl. VAT and delivery",
+      "shipBy": "Ships by {date}",
+      "estimate": "Estimate — confirmed when you sign in",
+      "continue": "Continue to checkout",
+      "review": "We'll check this one by hand",
+      "reviewBody": "Something about this part needs a person to look at it. Send it and we'll reply with a quote within one business day.",
+      "send": "Send for a quote",
+      "signInToContinue": "Sign in to continue — your progress is saved.",
+      "why": "Why this material?",
+      "breakdown": "Price breakdown"
+    },
+    "describe": {
+      "titleObject": "Show us the object",
+      "titleIdea": "Describe your idea",
+      "photos": "Photos",
+      "photosHint": "Add 2–5 photos from different angles. Put a coin or ruler next to it for scale.",
+      "addPhotos": "Add photos",
+      "takePhoto": "Take a photo",
+      "description": "What is it and what should we make?",
+      "descriptionHintObject": "For example: “The clip that holds the dishwasher rack broke in half.”",
+      "descriptionHintIdea": "For example: “A wall mount for my router, screwed into drywall, cables hidden.”",
+      "reference": "Brand and model, if you know them"
+    },
+    "dimensions": {
+      "title": "Key measurements",
+      "intro": "The measurements that must be right. Add as many as you know.",
+      "name": "What you measured",
+      "namePlaceholder": "e.g. Hole diameter",
+      "value": "Size",
+      "add": "Add a measurement"
+    },
+    "submit": {
+      "title": "Ready to send",
+      "body": "Our team will review your request and reply within one business day with a quote.",
+      "send": "Send request"
+    }
+  },
+  "account": {
+    "title": "Account",
+    "email": "Email",
+    "language": "Language for emails and the site",
+    "motion": "Animations",
+    "motionSystem": "Follow my device",
+    "motionReduced": "Reduce motion",
+    "motionFull": "Full motion",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications yet",
+    "privacy": "Privacy",
+    "privacyBody": "To export or delete your data, contact us and we'll handle it within 30 days.",
+    "saved": "Preferences saved"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "brand": "Platform",
+  "footer": "You're receiving this email about your account or order.",
+  "login_code": {
+    "subject": "Your sign-in code: {code}",
+    "body": "Your sign-in code is {code}. It expires in 10 minutes. If you didn't request it, you can ignore this email."
+  },
+  "supplier_invite": {
+    "subject": "You're invited to join {supplier} as a manufacturing partner",
+    "body": "Accept the invitation and set up your workshop: {link}"
+  },
+  "request_received": {
+    "subject": "We received your request {order}",
+    "body": "Thanks! Our team will review your request and reply within one business day. Track it here: {link}"
+  },
+  "quote_ready": {
+    "subject": "Your quote for {order} is ready",
+    "body": "Total {total}, valid until {expires}. Review and pay here: {link}"
+  },
+  "customer_message": {
+    "subject": "A new message about {order}",
+    "body": "Our team sent you a message: “{message}”. Reply here: {link}"
+  },
+  "payment_succeeded": {
+    "subject": "Payment received for {order}",
+    "body": "Thanks! We've received {total} and are preparing production. Track your order: {link}"
+  },
+  "production_started": {
+    "subject": "Your part {order} is in production",
+    "body": "Your part is being made now. We'll let you know once it passes our quality check. {link}"
+  },
+  "order_delayed": {
+    "subject": "An update on {order}",
+    "body": "We're re-making your part to meet our quality standard. The new estimated ship date is {date}. Sorry for the wait. {link}"
+  },
+  "shipped": {
+    "subject": "{order} is on its way",
+    "body": "Your part passed quality control and has shipped with {carrier}. Tracking number: {tracking}. {link}"
+  },
+  "delivered": {
+    "subject": "{order} was delivered",
+    "body": "Your part has been delivered. If anything isn't right, tell us within 7 days: {link}"
+  },
+  "refund_completed": {
+    "subject": "Refund issued for {order}",
+    "body": "We've refunded {amount}. It may take a few business days to appear on your statement."
+  },
+  "offer_received": {
+    "subject": "New job offer: {material}, due {due}",
+    "body": "Payout {payout}. Accept before {expires}: {link}"
+  },
+  "qc_failed_supplier": {
+    "subject": "Quality check failed for job {job}",
+    "body": "Reason: {reason}. A reprint is required. Details: {link}"
+  }
+}

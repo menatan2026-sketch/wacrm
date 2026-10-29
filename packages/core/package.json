@@ -1,0 +1,37 @@
+{
+  "name": "@mfg/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "test": "vitest run",
+    "seed": "tsx --env-file-if-exists=../../.env scripts/seed.ts"
+  },
+  "dependencies": {
+    "@mfg/config": "workspace:*",
+    "@mfg/db": "workspace:*",
+    "@mfg/logging": "workspace:*",
+    "@aws-sdk/client-s3": "^3.920.0",
+    "@aws-sdk/s3-request-presigner": "^3.920.0",
+    "bullmq": "^5.63.0",
+    "ioredis": "^5.8.2",
+    "nodemailer": "^7.0.10",
+    "otpauth": "^9.4.1",
+    "zod": "^4.1.12",
+    "@mfg/i18n": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^7.0.3",
+    "fast-check": "^4.3.0",
+    "vitest": "^4.0.8",
+    "@types/node": "^22.18.0",
+    "tsx": "^4.20.6",
+    "pg": "^8.16.3",
+    "@types/pg": "^8.15.6"
+  }
+}

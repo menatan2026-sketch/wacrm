@@ -2,52 +2,163 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
   push:
     branches: [main]
 
-# Cancel older CI runs for the same branch when a new commit arrives —
-# saves minutes when someone pushes a stack of fixes to one PR.
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
+# Non-secret settings for tests. Secrets are generated per run (see the "Generate test secrets" step).
+env:
+  NODE_ENV: test
+  APP_ENV: ci
+  APP_URL: http://localhost:3000
+  DATABASE_URL: postgres://mfg@127.0.0.1:5432/mfg
+  TEST_DATABASE_URL: postgres://mfg@127.0.0.1:5432/mfg_test
+  REDIS_URL: redis://127.0.0.1:6379
+  GEOMETRY_URL: http://127.0.0.1:8001
+  PAYMENT_PROVIDER: fake
+  SHIPPING_PROVIDER: fake
+  EMAIL_DRIVER: log
+  STORAGE_DRIVER: local
+  DEV_TOOLS_ENABLED: "true"
+  TURBO_TELEMETRY_DISABLED: "1"
+
 jobs:
-  check:
-    name: Lint, typecheck, test, build
+  checks:
+    name: Lint, types, catalogs, unit + integration
     runs-on: ubuntu-latest
-    # Dummy env vars so `next build` doesn't fail when it reads the
-    # public Supabase config at build time. These never leave CI and
-    # never hit a real service — they just satisfy the `!` non-null
-    # assertions in the client factories. ENCRYPTION_KEY and
-    # META_APP_SECRET are read at module-load by lib/whatsapp/*; the
-    # test suite asserts behaviour around these values, so any non-
-    # empty placeholder works as long as it stays consistent with
-    # vitest.config.ts.
-    env:
-      NEXT_PUBLIC_SUPABASE_URL: https://ci.example.supabase.co
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-dummy-anon-key
-      ENCRYPTION_KEY: '0000000000000000000000000000000000000000000000000000000000000000'
-      META_APP_SECRET: 'ci-dummy-meta-secret'
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: mfg
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: mfg_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U mfg" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - name: Generate test secrets
+        run: |
+          for k in APP_SECRET GEOMETRY_SHARED_SECRET PAYMENT_WEBHOOK_SECRET; do
+            echo "$k=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          done
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm i18n:check
+      - run: pnpm test
 
-      - name: Install dependencies
-        run: npm ci
+  geometry:
+    name: Geometry service
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: services/geometry
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate test secrets
+        run: |
+          for k in APP_SECRET GEOMETRY_SHARED_SECRET PAYMENT_WEBHOOK_SECRET; do
+            echo "$k=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          done
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run pytest -q
 
-      - name: Lint
-        run: npm run lint
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate test secrets
+        run: |
+          for k in APP_SECRET GEOMETRY_SHARED_SECRET PAYMENT_WEBHOOK_SECRET; do
+            echo "$k=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          done
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
 
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Test
-        run: npm test
-
-      - name: Build
-        run: npm run build
+  e2e:
+    name: E2E (he/en/ru × desktop/mobile)
+    needs: [checks, geometry]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: mfg
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: mfg
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U mfg" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      NODE_ENV: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate test secrets
+        run: |
+          for k in APP_SECRET GEOMETRY_SHARED_SECRET PAYMENT_WEBHOOK_SECRET; do
+            echo "$k=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          done
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: astral-sh/setup-uv@v6
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:migrate && pnpm db:seed
+      - run: pnpm --filter @mfg/web build
+      - name: Start geometry, worker and web
+        run: |
+          (cd services/geometry && uv sync --frozen && uv run uvicorn geometry.app:app --host 127.0.0.1 --port 8001 > /tmp/geometry.log 2>&1 &)
+          (cd apps/worker && npx tsx src/main.ts > /tmp/worker.log 2>&1 &)
+          (cd apps/web && npx next start --port 3000 > /tmp/web.log 2>&1 &)
+          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:3000/api/readyz && exit 0; sleep 2; done
+          echo "stack did not become ready"; exit 1
+      - run: pnpm --filter @mfg/e2e exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+        env:
+          CI: "true"
+      - if: failure()
+        run: tail -n 200 /tmp/web.log /tmp/worker.log /tmp/geometry.log
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            tests/e2e/playwright-report
+            tests/e2e/test-results
+          retention-days: 7

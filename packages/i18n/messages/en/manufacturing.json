@@ -1,0 +1,98 @@
+{
+  "usage": {
+    "environment": {
+      "q": "Where will it be used?",
+      "why": "Sun and water affect some plastics.",
+      "indoor": "Indoors",
+      "outdoor": "Outdoors",
+      "car": "In a car",
+      "wet": "Bathroom or kitchen"
+    },
+    "heat": {
+      "q": "Will it get hot?",
+      "why": "A car in summer can reach 70 °C — some plastics soften.",
+      "none": "No",
+      "warm": "Warm (up to 50 °C)",
+      "hot": "Hot (up to 80 °C)",
+      "very_hot": "Very hot (over 80 °C)"
+    },
+    "load": {
+      "q": "Does it carry weight or force?",
+      "why": "Load decides how strong the material and walls must be.",
+      "none": "No",
+      "light": "Light",
+      "moderate": "Moderate",
+      "heavy": "Heavy"
+    },
+    "flexibility": {
+      "q": "Should it bend?",
+      "why": "Rigid and rubber-like parts need different materials.",
+      "rigid": "No, rigid",
+      "slight": "A little",
+      "rubber": "Yes, rubber-like"
+    },
+    "appearance": {
+      "q": "How important is the look?",
+      "why": "Finer layers look smoother but take longer.",
+      "functional": "Just needs to work",
+      "clean": "Neat and clean",
+      "showpiece": "It's on display"
+    },
+    "food": {
+      "q": "Will it touch food or drink?",
+      "why": "Food contact needs certified materials, so we check it by hand.",
+      "no": "No",
+      "yes": "Yes"
+    },
+    "critical": "Which dimensions must be exact? (optional)",
+    "criticalHint": "For example: “The 8 mm hole has to fit a screw.”"
+  },
+  "reasons": {
+    "heat_warm": "Handles warm conditions",
+    "heat_hot": "Withstands up to 80 °C",
+    "heat_very_hot": "Rated for high temperatures",
+    "outdoor": "Resists sun and rain",
+    "car": "Survives a hot car and sunlight",
+    "wet": "Handles water and moisture",
+    "load_moderate": "Strong enough for everyday force",
+    "load_heavy": "Our strongest material",
+    "flex_rubber": "Flexible like rubber",
+    "default": "Reliable and affordable for this use"
+  },
+  "review": {
+    "food_contact": "Food contact needs certified materials",
+    "heavy_load": "Heavy loads need an engineering check",
+    "very_high_temperature": "Very high temperatures need an engineering check",
+    "no_material_fits": "No standard material fits all your answers",
+    "part_too_large": "The part is larger than our standard printers",
+    "quantity_above_auto_limit": "Large quantities get a custom quote",
+    "margin_below_floor": "This part needs a custom quote",
+    "total_above_auto_limit": "Large orders get a custom quote",
+    "mesh_not_watertight": "The model has gaps we need to check",
+    "geometry": "The file needs a manual check",
+    "flow": "Our team prepares a quote for requests like this",
+    "other": "Our team will take a look"
+  },
+  "urgency": {
+    "standard": "Standard",
+    "fast": "Fast",
+    "urgent": "Urgent",
+    "standardHint": "Best price",
+    "fastHint": "A few days sooner",
+    "urgentHint": "Fastest possible"
+  },
+  "process": {
+    "FDM": "3D printing (FDM)"
+  },
+  "quality": {
+    "draft": "Draft quality",
+    "standard": "Standard quality",
+    "fine": "Fine quality"
+  },
+  "props": {
+    "heat": "Heat",
+    "uv": "Sun",
+    "strength": "Strength",
+    "cost": "Price level"
+  }
+}

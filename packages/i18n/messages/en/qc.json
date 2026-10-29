@@ -1,0 +1,23 @@
+{
+  "defects": {
+    "warping": "Warping",
+    "layer_shift": "Layer shift",
+    "stringing": "Stringing",
+    "under_extrusion": "Under-extrusion",
+    "dimension_out_of_tolerance": "Dimension out of tolerance",
+    "surface": "Surface defect",
+    "color": "Wrong color",
+    "missing_feature": "Missing feature",
+    "other": "Other"
+  },
+  "severity": {
+    "minor": "Minor",
+    "major": "Major",
+    "critical": "Critical"
+  },
+  "costBearer": {
+    "supplier": "Supplier",
+    "platform": "Platform",
+    "customer": "Customer"
+  }
+}

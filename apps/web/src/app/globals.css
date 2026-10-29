@@ -1,0 +1,89 @@
+@import "tailwindcss";
+@import "@mfg/tokens/tokens.css";
+@import "@mfg/ui/styles.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-sans-hebrew/400.css";
+@import "@fontsource/ibm-plex-sans-hebrew/500.css";
+@import "@fontsource/ibm-plex-sans-hebrew/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+
+@source "../../../../packages/ui/src";
+@source "../../../../packages/motion/src";
+
+/* Tokens only: the default Tailwind palette is removed so no arbitrary colors can ship. */
+@theme {
+  --color-*: initial;
+  --breakpoint-xs: 0rem;
+  --breakpoint-sm: 30rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+}
+@theme inline {
+  --color-surface-base: var(--mfg-surface-base);
+  --color-surface-raised: var(--mfg-surface-raised);
+  --color-surface-sunken: var(--mfg-surface-sunken);
+  --color-surface-inverse: var(--mfg-surface-inverse);
+  --color-border-subtle: var(--mfg-border-subtle);
+  --color-border-default: var(--mfg-border-default);
+  --color-border-strong: var(--mfg-border-strong);
+  --color-text-primary: var(--mfg-text-primary);
+  --color-text-secondary: var(--mfg-text-secondary);
+  --color-text-tertiary: var(--mfg-text-tertiary);
+  --color-text-inverse: var(--mfg-text-inverse);
+  --color-primary: var(--mfg-primary);
+  --color-primary-hover: var(--mfg-primary-hover);
+  --color-primary-subtle: var(--mfg-primary-subtle);
+  --color-on-primary: var(--mfg-on-primary);
+  --color-signature: var(--mfg-signature);
+  --color-signature-subtle: var(--mfg-signature-subtle);
+  --color-success: var(--mfg-success);
+  --color-success-subtle: var(--mfg-success-subtle);
+  --color-warning: var(--mfg-warning);
+  --color-warning-subtle: var(--mfg-warning-subtle);
+  --color-danger: var(--mfg-danger);
+  --color-danger-subtle: var(--mfg-danger-subtle);
+  --color-info: var(--mfg-info);
+  --color-info-subtle: var(--mfg-info-subtle);
+  --color-focus: var(--mfg-focus);
+  --color-viewer-canvas: var(--mfg-viewer-canvas);
+  --color-viewer-text: var(--mfg-viewer-text);
+  --radius-xs: var(--mfg-radius-xs);
+  --radius-s: var(--mfg-radius-s);
+  --radius-m: var(--mfg-radius-m);
+  --radius-l: var(--mfg-radius-l);
+  --shadow-raised: var(--mfg-elevation-raised);
+  --shadow-floating: var(--mfg-elevation-floating);
+  --shadow-overlay: var(--mfg-elevation-overlay);
+  --shadow-modal: var(--mfg-elevation-modal);
+  --font-sans: var(--mfg-font-sans);
+  --font-mono: var(--mfg-font-mono);
+}
+
+@layer base {
+  html {
+    background: var(--mfg-surface-base);
+    color: var(--mfg-text-primary);
+    font-family: var(--mfg-font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    min-height: 100dvh;
+    font-feature-settings: "tnum" 0;
+  }
+  /* Hebrew: no letter-spacing, slightly taller lines (UI_DESIGN_SYSTEM §2.3). */
+  :lang(he) {
+    letter-spacing: 0;
+    line-height: 1.6;
+  }
+  :focus-visible {
+    outline-color: var(--mfg-focus);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+}

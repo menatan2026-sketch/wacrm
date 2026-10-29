@@ -1,0 +1,18 @@
+{
+  "lines": {
+    "manufacturing": "ייצור",
+    "urgency_fast": "ייצור מהיר",
+    "urgency_urgent": "ייצור דחוף",
+    "design_fee": "תכנון",
+    "shipping": "משלוח"
+  },
+  "subtotal": "סכום לפני מע״מ",
+  "vat": "מע״מ ({rate})",
+  "total": "סה״כ",
+  "validUntil": "בתוקף עד {date}",
+  "title": "הצעת המחיר שלכם",
+  "pay": "תשלום {total}",
+  "change": "שינוי כמות או מהירות",
+  "update": "עדכון המחיר",
+  "includes": "כולל ייצור, בקרת איכות, אריזה ומשלוח."
+}

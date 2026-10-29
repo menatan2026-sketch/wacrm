@@ -1,0 +1,24 @@
+{
+  "name": "@mfg/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/main.ts",
+    "start": "tsx --env-file-if-exists=../../.env src/main.ts",
+    "typecheck": "tsc -p .",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@mfg/config": "workspace:*",
+    "@mfg/core": "workspace:*",
+    "@mfg/logging": "workspace:*",
+    "tsx": "^4.20.6",
+    "bullmq": "^5.63.0",
+    "@mfg/db": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.8",
+    "@types/node": "^22.18.0"
+  }
+}

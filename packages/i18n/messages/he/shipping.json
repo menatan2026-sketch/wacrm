@@ -1,0 +1,13 @@
+{
+  "status": {
+    "LABEL_CREATED": "נוצרה תווית",
+    "PICKED_UP": "נאסף",
+    "IN_TRANSIT": "בדרך",
+    "OUT_FOR_DELIVERY": "יצא למסירה",
+    "DELIVERED": "נמסר",
+    "EXCEPTION": "בעיה במשלוח",
+    "RETURNED": "הוחזר",
+    "CANCELLED": "בוטל"
+  },
+  "carrier": "חברת שילוח"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "@mfg/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "typecheck": "tsc -p . --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@mfg/config": "workspace:*",
+    "@mfg/core": "workspace:*",
+    "@mfg/db": "workspace:*",
+    "@mfg/i18n": "workspace:*",
+    "@mfg/logging": "workspace:*",
+    "@mfg/motion": "workspace:*",
+    "@mfg/tokens": "workspace:*",
+    "@mfg/ui": "workspace:*",
+    "next": "16.2.6",
+    "next-intl": "^4.13.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zod": "^4.1.12",
+    "@fontsource/ibm-plex-sans": "^5.2.8",
+    "@fontsource/ibm-plex-sans-hebrew": "^5.2.8",
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "lucide-react": "^0.548.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4.1.16",
+    "vitest": "^4.0.8"
+  }
+}

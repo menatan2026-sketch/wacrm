@@ -1,0 +1,1 @@
+CREATE DATABASE mfg_test;
