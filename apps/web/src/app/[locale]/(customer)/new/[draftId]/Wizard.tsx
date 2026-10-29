@@ -8,6 +8,7 @@ import { StepTransition, ValueSwap } from "@mfg/motion";
 import { Badge, Banner, Button, Card, Dropzone, Field, Input, Ltr, MeasurementInput, Progress, RadioCards, StagedProgress, Stepper, Textarea, TechPanel, type StageItem } from "@mfg/ui";
 import { completeUploadAction, createUploadAction, evaluateDraftAction, saveDraftAction, submitDraftAction } from "@/app/actions/wizard";
 import { useErrorMessage } from "@/lib/errors";
+import { putWithProgress } from "@/lib/upload";
 import type { WizardView } from "@/lib/wizard-view";
 
 const ModelViewer = dynamic(() => import("@mfg/ui/viewer").then((m) => m.ModelViewer), { ssr: false, loading: () => <div className="aspect-[4/3] animate-pulse rounded-m bg-viewer-canvas" /> });
@@ -44,18 +45,6 @@ function addBusinessDays(days: number) {
     if (d.getDay() !== 5 && d.getDay() !== 6) added++;
   }
   return d;
-}
-
-function putWithProgress(url: string, headers: Record<string, string>, file: File, onProgress: (p: number) => void) {
-  return new Promise<void>((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", url);
-    for (const [k, v] of Object.entries(headers)) xhr.setRequestHeader(k, v);
-    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
-    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(String(xhr.status))));
-    xhr.onerror = () => reject(new Error("network"));
-    xhr.send(file);
-  });
 }
 
 export function Wizard({ draft, steps, initialView, signedIn, maxModelMb }: { draft: { id: string; flow: Flow; step: string; payload: Record<string, unknown> }; steps: string[]; initialView: WizardView; signedIn: boolean; maxModelMb: number }) {

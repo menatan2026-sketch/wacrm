@@ -56,14 +56,6 @@ export async function signOutAction(surface: Surface, locale: string) {
   redirect(`/${locale}${SURFACE_PATH[surface]}`);
 }
 
-export async function startMfaAction() {
-  return run(async () => {
-    const actor = await getActor("admin");
-    if (!actor) throw new Error("no session");
-    return auth.startMfaEnrollment(deps(), actor);
-  });
-}
-
 export async function verifyMfaAction(code: string, locale: string) {
   const result = await run(async () => {
     const actor = await getActor("admin");

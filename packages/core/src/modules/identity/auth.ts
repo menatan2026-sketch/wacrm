@@ -160,6 +160,12 @@ export async function revokeSession(d: Deps, token: string): Promise<void> {
 const totpFor = (email: string, secretBase32: string) =>
   new OTPAuth.TOTP({ issuer: "Platform Ops", label: email, algorithm: "SHA1", digits: 6, period: 30, secret: OTPAuth.Secret.fromBase32(secretBase32) });
 
+/** Whether the user has completed TOTP enrollment (decides enroll vs verify on the MFA screen). */
+export async function mfaEnrolled(d: Deps, actor: UserActor): Promise<boolean> {
+  const [user] = await d.db.select({ mfaEnabled: schema.users.mfaEnabled }).from(schema.users).where(eq(schema.users.id, actor.userId));
+  return Boolean(user?.mfaEnabled);
+}
+
 /** Begin (or restart) TOTP enrollment. The seed is stored sealed and enabled only after a valid code. */
 export async function startMfaEnrollment(d: Deps, actor: UserActor): Promise<{ secret: string; uri: string }> {
   const [user] = await d.db.select().from(schema.users).where(eq(schema.users.id, actor.userId));

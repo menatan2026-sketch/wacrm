@@ -9,6 +9,7 @@ import { inTx } from "../../shared/tx";
 import { authorize, can, requireUser } from "../identity/rbac";
 import { lockOrder, systemHold, transitionOrder } from "../orders/service";
 import { currentQuote } from "../quotes/service";
+import { partSummaries } from "./summary";
 
 export type JobRow = typeof schema.productionJobs.$inferSelect;
 
@@ -40,12 +41,14 @@ async function lockJobFor(ctx: Ctx, jobId: string, permission: "job.update" | "j
 /** Jobs for a supplier's floor view (no customer personal data — SECURITY §9). */
 export async function supplierJobs(ctx: Ctx, supplierId: string) {
   if (!can(ctx.actor, "job.read.own", { supplierId })) throw forbidden();
-  return ctx.db
+  const rows = await ctx.db
     .select({ job: schema.productionJobs, orderNumber: schema.orders.orderNumber, urgencyTier: schema.orders.urgencyTier })
     .from(schema.productionJobs)
     .innerJoin(schema.orders, eq(schema.orders.id, schema.productionJobs.orderId))
     .where(and(eq(schema.productionJobs.supplierId, supplierId), inArray(schema.productionJobs.status, ["ACCEPTED", "IN_PRODUCTION", "QC_PENDING", "QC_FAILED", "QC_PASSED", "HANDED_OFF"])))
     .orderBy(schema.productionJobs.dueAt);
+  const summaries = await partSummaries(ctx, rows.map((r) => r.job.orderId));
+  return rows.map((r) => ({ ...r, part: summaries.get(r.job.orderId)! }));
 }
 
 /** Everything the supplier needs on the job card: part, material, quantity, payout, deadline, QC. */

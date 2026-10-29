@@ -1,4 +1,5 @@
 import { schema, uuidv7, and, desc, eq, gte, lte, type SQL } from "@mfg/db";
+import { authorize } from "../modules/identity/rbac";
 import { actorId, actorType, type Ctx } from "../shared/context";
 
 export interface AuditEntry {
@@ -49,6 +50,7 @@ export interface AuditQuery {
 }
 
 export async function queryAudit(ctx: Ctx, q: AuditQuery) {
+  authorize(ctx.actor, "audit.read");
   const t = schema.auditEvents;
   const where: SQL[] = [];
   if (q.resourceType) where.push(eq(t.resourceType, q.resourceType));

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { schema, eq } from "@mfg/db";
 import type { Actor, Ctx } from "../shared/context";
+import { authorize } from "../modules/identity/rbac";
 import { audit } from "./audit";
 
 export const FLAG_KEYS = [
@@ -50,10 +51,12 @@ export function invalidateFlagCache(): void {
 }
 
 export async function listFlags(ctx: Ctx) {
+  authorize(ctx.actor, "flags.manage");
   return ctx.db.select().from(schema.featureFlags).orderBy(schema.featureFlags.key);
 }
 
 export async function setFlag(ctx: Ctx, key: FlagKey, enabled: boolean, reason: string): Promise<void> {
+  if (ctx.actor.kind !== "system") authorize(ctx.actor, "flags.manage");
   const [before] = await ctx.db.select().from(schema.featureFlags).where(eq(schema.featureFlags.key, key));
   await ctx.db
     .update(schema.featureFlags)

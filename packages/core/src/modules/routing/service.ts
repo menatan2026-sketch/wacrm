@@ -1,4 +1,4 @@
-import { schema, uuidv7, and, desc, eq, inArray, lt, sql } from "@mfg/db";
+import { schema, uuidv7, and, desc, eq, gt, inArray, lt, sql } from "@mfg/db";
 import type { Deps } from "../../deps";
 import { audit } from "../../platform/audit";
 import { isEnabled } from "../../platform/flags";
@@ -9,6 +9,7 @@ import { DomainError, forbidden, notFound } from "../../shared/errors";
 import { inTx } from "../../shared/tx";
 import { authorize, can, requireUser } from "../identity/rbac";
 import { lockOrder, systemHold, transitionOrder } from "../orders/service";
+import { partSummaries } from "../production/summary";
 import { currentQuote } from "../quotes/service";
 import { DEFAULT_ROUTING_WEIGHTS, rankSuppliers, type RoutingSupplier, type RoutingWeights } from "./engine";
 
@@ -182,13 +183,15 @@ export async function offerToSupplier(d: Deps, ctx: Ctx, orderId: string, suppli
 
 export async function supplierOffers(ctx: Ctx, supplierId: string) {
   if (!can(ctx.actor, "job.read.own", { supplierId })) throw forbidden();
-  return ctx.db
+  const rows = await ctx.db
     .select({ offer: schema.jobOffers, job: schema.productionJobs, order: { orderNumber: schema.orders.orderNumber, urgencyTier: schema.orders.urgencyTier } })
     .from(schema.jobOffers)
     .innerJoin(schema.productionJobs, eq(schema.productionJobs.id, schema.jobOffers.jobId))
     .innerJoin(schema.orders, eq(schema.orders.id, schema.productionJobs.orderId))
-    .where(and(eq(schema.jobOffers.supplierId, supplierId), eq(schema.jobOffers.status, "pending")))
+    .where(and(eq(schema.jobOffers.supplierId, supplierId), eq(schema.jobOffers.status, "pending"), gt(schema.jobOffers.expiresAt, ctx.clock.now())))
     .orderBy(schema.jobOffers.expiresAt);
+  const summaries = await partSummaries(ctx, rows.map((r) => r.job.orderId));
+  return rows.map((r) => ({ ...r, part: summaries.get(r.job.orderId)! }));
 }
 
 /** Supplier accepts or declines. Acceptance freezes the payout; a decline re-routes automatically. */

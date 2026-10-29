@@ -1,1 +1,23 @@
-{}
+{
+  "defects": {
+    "warping": "Коробление",
+    "layer_shift": "Смещение слоёв",
+    "stringing": "Паутина",
+    "under_extrusion": "Недоэкструзия",
+    "dimension_out_of_tolerance": "Размер вне допуска",
+    "surface": "Дефект поверхности",
+    "color": "Неверный цвет",
+    "missing_feature": "Отсутствует элемент",
+    "other": "Другое"
+  },
+  "severity": {
+    "minor": "Незначительный",
+    "major": "Существенный",
+    "critical": "Критический"
+  },
+  "costBearer": {
+    "supplier": "Поставщик",
+    "platform": "Платформа",
+    "customer": "Клиент"
+  }
+}

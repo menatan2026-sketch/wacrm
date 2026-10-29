@@ -1,1 +1,23 @@
-{}
+{
+  "defects": {
+    "warping": "עיוות",
+    "layer_shift": "הזזת שכבות",
+    "stringing": "חוטים",
+    "under_extrusion": "תת-אקסטרוזיה",
+    "dimension_out_of_tolerance": "מידה מחוץ לסבולת",
+    "surface": "פגם במשטח",
+    "color": "צבע שגוי",
+    "missing_feature": "פרט חסר",
+    "other": "אחר"
+  },
+  "severity": {
+    "minor": "קל",
+    "major": "משמעותי",
+    "critical": "קריטי"
+  },
+  "costBearer": {
+    "supplier": "ספק",
+    "platform": "הפלטפורמה",
+    "customer": "לקוח"
+  }
+}
