@@ -21,7 +21,13 @@ export async function GET(request: Request) {
   const claim = storage.verifyDownload(new URL(request.url).searchParams.get("token") ?? "");
   if (!claim) return new Response(null, { status: 403 });
   const ext = claim.k.split(".").pop() ?? "";
-  const body = await storage.get(claim.k);
+  let body: Buffer;
+  try {
+    body = await storage.get(claim.k);
+  } catch {
+    // Signed token for an object that no longer exists (purged or never written).
+    return new Response(null, { status: 404 });
+  }
   const inline = ext === "glb" || ["jpg", "jpeg", "png", "webp"].includes(ext);
   return new Response(new Uint8Array(body), {
     headers: {

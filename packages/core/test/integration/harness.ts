@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -68,8 +69,9 @@ export async function createHarness(): Promise<Harness> {
   const clock = new TestClock();
   const email = new MemoryEmailSender();
   const geometry = new FakeGeometryClient();
-  const secret = "test-secret-".padEnd(40, "x");
-  const payments = new FakePaymentProvider("http://test.local", "webhook-secret-1234");
+  // Fresh random keys per run: tests never depend on a fixed secret value.
+  const secret = randomBytes(32).toString("hex");
+  const payments = new FakePaymentProvider("http://test.local", randomBytes(16).toString("hex"));
   const storage = new LocalStorage(
     mkdtempSync(path.join(tmpdir(), "mfg-storage-")),
     "http://test.local",

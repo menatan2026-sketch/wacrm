@@ -1,4 +1,5 @@
 import { isLocalStorage } from "@mfg/core";
+import { logger } from "@mfg/logging";
 import { deps } from "@/lib/platform";
 
 export const runtime = "nodejs";
@@ -15,12 +16,18 @@ export async function PUT(request: Request) {
   if (!claim) return Response.json({ code: "files.upload_expired" }, { status: 403 });
   if (request.headers.get("content-type") !== claim.ct)
     return Response.json({ code: "files.type_not_allowed" }, { status: 415 });
+  // Require the exact signed length up front, so an oversized or chunked body is never buffered.
   const declared = Number(request.headers.get("content-length") ?? NaN);
-  if (Number.isFinite(declared) && declared !== claim.n)
-    return Response.json({ code: "files.size_mismatch" }, { status: 400 });
+  if (!Number.isFinite(declared)) return new Response(null, { status: 411 });
+  if (declared !== claim.n) return Response.json({ code: "files.size_mismatch" }, { status: 400 });
   const body = Buffer.from(await request.arrayBuffer());
   if (body.length !== claim.n)
     return Response.json({ code: "files.size_mismatch" }, { status: 400 });
-  await storage.put(claim.k, body);
+  try {
+    await storage.put(claim.k, body);
+  } catch (err) {
+    logger().error({ err }, "local storage write failed");
+    return Response.json({ code: "common.unexpected" }, { status: 500 });
+  }
   return new Response(null, { status: 200 });
 }
