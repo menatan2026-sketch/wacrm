@@ -26,7 +26,7 @@ export const materials = pgTable(
     maxServiceTempC: integer("max_service_temp_c").notNull(),
     uvResistance: integer("uv_resistance").notNull(),
     moistureResistance: integer("moisture_resistance").notNull(),
-    flexibility: text("flexibility").notNull(),
+    flexibility: text("flexibility").$type<"rigid" | "slight" | "rubber">().notNull(),
     strengthIndex: integer("strength_index").notNull(),
     foodContactCertifiable: boolean("food_contact_certifiable").notNull().default(false),
     costTier: integer("cost_tier").notNull().default(1),

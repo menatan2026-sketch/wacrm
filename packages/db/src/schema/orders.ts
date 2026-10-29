@@ -63,6 +63,8 @@ export const orders = pgTable(
     currency: text("currency").notNull().default("ILS"),
     locale: text("locale").notNull(),
     request: jsonb("request").$type<OrderRequest>().notNull().default({}),
+    /** Why automation handed this order to a person (pricing/requirements guards). */
+    reviewReasons: jsonb("review_reasons").$type<string[]>().notNull().default([]),
     shipToAddressId: uuid("ship_to_address_id").references(() => addresses.id),
     currentQuoteId: uuid("current_quote_id"),
     assignedSupplierId: uuid("assigned_supplier_id"),

@@ -9,7 +9,8 @@
   },
   "scripts": {
     "typecheck": "tsc -p .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@mfg/config": "workspace:*",
@@ -28,6 +29,9 @@
     "@types/nodemailer": "^7.0.3",
     "fast-check": "^4.3.0",
     "vitest": "^4.0.8",
-    "@types/node": "^22.18.0"
+    "@types/node": "^22.18.0",
+    "tsx": "^4.20.6",
+    "pg": "^8.16.3",
+    "@types/pg": "^8.15.6"
   }
 }

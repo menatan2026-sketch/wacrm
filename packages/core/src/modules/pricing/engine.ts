@@ -92,6 +92,8 @@ export function calculatePrice(input: PricingInput, rules: PricingRules): PriceB
     if (item.quantity > rules.autoQuote.maxQuantity) reviewReasons.push("quantity_above_auto_limit");
     if (Math.max(...item.bboxMm) > rules.autoQuote.maxDimensionMm) reviewReasons.push("part_too_large");
   }
+  // The per-order supplier setup payout is priced in at the target margin like any other cost.
+  manufacturingNet += Math.round(rules.payout.setupMinor / (1 - rules.targetMarginBps / 10000));
   manufacturingNet = Math.max(manufacturingNet, rules.minOrderNetMinor);
 
   const lines: QuoteLine[] = [{ kind: "manufacturing", labelKey: "quotes.lines.manufacturing", amountNetMinor: manufacturingNet }];

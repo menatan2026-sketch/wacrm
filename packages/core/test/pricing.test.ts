@@ -87,6 +87,15 @@ describe("pricing engine", () => {
     expect(p.marginBps).toBeGreaterThanOrEqual(rules.autoQuote.minMarginBps);
   });
 
+  it("keeps the margin above the floor for small parts in small quantities (setup cost priced in)", () => {
+    for (const side of [10, 20, 40]) {
+      for (const qty of [1, 2, 3]) {
+        const p = calculatePrice(input({ items: [cube(side, qty)] }), rules);
+        expect(p.reviewReasons, `${side}mm x${qty}`).not.toContain("margin_below_floor");
+      }
+    }
+  });
+
   it("rejects invalid quantities", () => {
     expect(() => calculatePrice(input({ items: [cube(20, 0)] }), rules)).toThrow();
     expect(() => calculatePrice(input({ items: [cube(20, 1.5)] }), rules)).toThrow();

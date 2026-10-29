@@ -3,7 +3,9 @@
   "private": true,
   "license": "UNLICENSED",
   "packageManager": "pnpm@10.28.0",
-  "engines": { "node": ">=22.0.0" },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
@@ -16,7 +18,7 @@
     "format:check": "prettier --check .",
     "i18n:check": "pnpm --filter @mfg/i18n check",
     "db:migrate": "pnpm --filter @mfg/db migrate",
-    "db:seed": "pnpm --filter @mfg/db seed",
+    "db:seed": "pnpm --filter @mfg/core seed -- --dev",
     "db:reset": "pnpm --filter @mfg/db reset",
     "dev:services": "bash infrastructure/local/services.sh start",
     "dev:services:stop": "bash infrastructure/local/services.sh stop"

@@ -127,6 +127,8 @@ export const productionJobs = pgTable(
     attemptNo: integer("attempt_no").notNull().default(1),
     payoutMinor: minor("payout_minor"),
     currency: text("currency").notNull().default("ILS"),
+    /** Estimated machine time, used for supplier capacity checks. */
+    estimatedMinutes: integer("estimated_minutes").notNull().default(0),
     dueAt: ts("due_at"),
     acceptedAt: ts("accepted_at"),
     startedAt: ts("started_at"),
