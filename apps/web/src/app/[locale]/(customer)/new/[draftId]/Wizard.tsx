@@ -142,7 +142,8 @@ export function Wizard({
     view.analysis && (view.analysis.status === "queued" || view.analysis.status === "running");
   useEffect(() => {
     if (!analyzing) return;
-    const id = setInterval(() => void refresh(), 1500);
+    // A dropped connection just means this tick is skipped; the next one retries.
+    const id = setInterval(() => refresh().catch(() => undefined), 1500);
     // After 10 s, say that big files take longer (never fake progress).
     const slow = setTimeout(() => setAnalysisSlow(true), 10_000);
     return () => {
