@@ -13,8 +13,12 @@ export async function one<T = Record<string, unknown>>(
   text: string,
   values: unknown[] = [],
 ): Promise<T> {
-  const r = await pool.query(text, values);
-  return r.rows[0] as T;
+  try {
+    const r = await pool.query(text, values);
+    return r.rows[0] as T;
+  } catch (err) {
+    throw new Error(`e2e database query failed (${text.slice(0, 60)}…): ${(err as Error).message}`);
+  }
 }
 
 export const localeOf = (info: TestInfo) =>
@@ -31,7 +35,9 @@ export async function latestCode(email: string, since: Date): Promise<string> {
     if (m) return m[0];
     await new Promise((r) => setTimeout(r, 250));
   }
-  throw new Error(`no sign-in code for ${email}`);
+  throw new Error(
+    `no sign-in code for ${email} within 10 s — is the web app running with EMAIL_DRIVER=log against ${process.env.DATABASE_URL ?? "the default dev database"}?`,
+  );
 }
 
 const REDIS_URL = process.env.REDIS_URL ?? "redis://127.0.0.1:6379";
@@ -44,12 +50,17 @@ async function resetLoginLimits() {
   if (!/\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(REDIS_URL))
     throw new Error("refusing to reset rate limits on a non-local Redis");
   const redis = new Redis(REDIS_URL, { lazyConnect: true, maxRetriesPerRequest: 1 });
-  await redis.connect();
-  for (const pattern of ["rl:login-*", "rl:mfa:*"]) {
-    const keys = await redis.keys(pattern);
-    if (keys.length) await redis.del(...keys);
+  try {
+    await redis.connect();
+    for (const pattern of ["rl:login-*", "rl:mfa:*"]) {
+      const keys = await redis.keys(pattern);
+      if (keys.length) await redis.del(...keys);
+    }
+  } catch (err) {
+    throw new Error(`could not reset login rate limits on ${REDIS_URL}: ${(err as Error).message}`);
+  } finally {
+    redis.disconnect();
   }
-  await redis.quit();
 }
 
 export async function signIn(page: Page, path: string, email: string) {
