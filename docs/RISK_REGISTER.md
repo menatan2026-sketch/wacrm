@@ -1,0 +1,32 @@
+# Risk Register
+
+> Status: **Draft v0.1** · Reviewed at every milestone REPORT and every quality audit.
+> Scale: Likelihood (L) and Impact (I) 1–5; Score = L × I. ≥ 15 = top risk.
+
+| ID | Risk | Category | L | I | Score | Mitigation | Trigger / early signal | Owner | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| R-001 | Not enough reliable, quality suppliers at launch (supply side cold start) | Business | 4 | 5 | 20 | Recruit 3–5 pilot print farms during M0–M2; generous early payouts; platform QC on every job; keep the option of a small owned print cell for overflow (only if economics justify it) | < 3 signed suppliers by end of M2 | Owner/Ops | Open |
+| R-002 | Automated pricing mis-estimates cost (losses or uncompetitive prices) | Business/Tech | 4 | 4 | 16 | Conservative margins + floors → manual review; the concierge pilot calibrates coefficients against real supplier slicer times; margin-variance dashboard; versioned rules for fast correction | Margin variance > 10 % on 20 % of orders | Product/Finance | Open |
+| R-003 | Geometry parsing fails on real-world files, or a malicious file exploits a parser | Tech/Security | 3 | 4 | 12 | Sandboxed service; fuzzing; limits; mesh repair suggestions; manual-review fallback ("continue anyway") | > 5 % of uploads fail analysis | Eng | Open |
+| R-004 | Inconsistent supplier quality damages trust | Business | 3 | 5 | 15 | Mandatory QC evidence + platform review on every MVP job; supplier scoring; reprint policy with the cost on the supplier when they're at fault; suspension rules | Reprint rate > 8 % | Ops/QC | Open |
+| R-005 | Customer expectations vs FDM reality (surface finish, tolerances, strength) | Product | 4 | 3 | 12 | Plain-language expectation-setting in the recommendation; preview of layer lines; tolerance notes; restricted-use policy | Disputes citing appearance > 3 % | Product | Open |
+| R-006 | Liability for parts used in safety-critical or regulated contexts | Legal | 2 | 5 | 10 | Restricted-use questions + policy; terms of service; manual review; insurance | Any restricted-use flag accepted without review | Legal/Owner | Open |
+| R-007 | PSP / invoicing / courier integration and contract delays gate the launch | Delivery | 4 | 4 | 16 | Start vendor selection now (D-4); provider ports + fakes decouple development; a manual fallback for shipping and payment links for the pilot | No signed PSP by M3 end | Owner | Open |
+| R-008 | CAD file IP leak (supplier, misconfiguration, URL leak) | Security | 2 | 5 | 10 | Private storage, ≤ 5 min signed URLs, audited downloads, access only while a job is active, a supplier NDA/agreement, periodic access review | Any access outside an active job | Eng/Security | Open |
+| R-009 | Payment fraud / chargebacks on custom goods | Financial | 3 | 3 | 9 | PSP 3DS, velocity limits, manual review for high-value first orders, evidence retention (approvals, QC photos, tracking) | Chargeback rate > 0.5 % | Finance | Open |
+| R-010 | The marketplace fund flow requires licensing, or creates tax complications | Legal | 2 | 5 | 10 | Merchant-of-record model (ADR-0012), legal opinion before M5, supplier invoicing | Legal opinion contradicts the model | Owner/Legal | Open |
+| R-011 | Consumer cancellation rights apply to custom-made goods differently than assumed | Legal | 3 | 3 | 9 | Legal review (D-6); stage-based policy shown before payment | — | Legal | Open |
+| R-012 | Poor Hebrew/Russian translation quality makes the product feel foreign | Product/UX | 3 | 4 | 12 | Native reviewers (D-10), glossary, gender-neutral Hebrew rules, pseudo-locale tests, a usability round per language | Usability round reports confusing terms | Product | Open |
+| R-013 | RTL regressions as features grow | Quality | 4 | 3 | 12 | Logical-CSS lint, RTL visual snapshots for every component and key page, the six-cell matrix in CI | Snapshot diffs ignored | Eng | Open |
+| R-014 | 3D viewer performance on low-end phones | Performance | 3 | 3 | 9 | Server-side decimated preview meshes, lazy loading, a static image first, an FPS budget in CI traces, fallback to image + dimensions | FPS < 30 on the reference device | Eng | Open |
+| R-015 | Scope creep from a very broad vision delays the MVP | Delivery | 4 | 4 | 16 | Strict MVP, milestone gates, deferred-scope list, owner sign-off for scope changes | MVP date slips > 3 weeks | Owner/PM | Open |
+| R-016 | Small-team bus factor / burnout | Delivery | 3 | 4 | 12 | Documentation-first, ADRs, pairing on critical modules, a realistic timeline | — | Owner | Open |
+| R-017 | AI hallucinations produce wrong requirements or status | AI | 3 | 4 | 12 | Advisory-only, schema validation, human review, grounded support with tools, eval gates, flags/kill switch | Eval accuracy below threshold | Eng/AI | Open (Phase 6) |
+| R-018 | AI costs grow unpredictably | Financial | 2 | 3 | 6 | Per-run cost logging, budgets, caching, model tiering | Cost per order > budget | Eng | Open (Phase 6) |
+| R-019 | Dependency on a fast-moving framework (Next.js 16 has breaking changes vs common knowledge) | Tech | 3 | 3 | 9 | Read the in-repo Next docs before implementing (AGENTS.md); pin versions; keep domain logic framework-free | Upgrade breaks build | Eng | Open |
+| R-020 | Wrong repository foundation (building on the unrelated CRM) creates long-term debt | Tech | 3 | 4 | 12 | ADR-0001 greenfield decision before M0R | Code merged into the CRM tree | Owner | **Needs decision** |
+| R-021 | Privacy law non-compliance (Amendment 13: database duties, security, notification) | Legal | 2 | 4 | 8 | Privacy-by-design, DPA with processors, retention jobs, a legal review of the privacy policy | — | Legal | Open |
+| R-022 | Accessibility non-compliance (Israeli regulations) leads to legal exposure | Legal | 2 | 4 | 8 | WCAG 2.2 AA in DoD, audit before launch, accessibility statement | axe serious violations in CI | Eng/Design | Open |
+| R-023 | Supplier payout fraud (bank detail change) | Financial/Security | 2 | 4 | 8 | MFA, a 48 h hold, out-of-band confirmation, finance verification, audit | Detail change + immediate payout request | Finance | Open |
+| R-024 | Slicer licence (AGPL) issues if a slicer CLI is integrated | Legal | 2 | 3 | 6 | Use as a separate process only, legal review before adoption; heuristic estimator in the MVP | — | Eng/Legal | Deferred |
+| R-025 | Vendor lock-in to hosting/providers | Tech | 2 | 2 | 4 | Ports & adapters, plain Postgres/S3/Redis, Terraform | — | Eng | Open |
