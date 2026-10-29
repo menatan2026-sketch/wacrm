@@ -17,7 +17,7 @@ export default async function OpsPricing({ params }: { params: Promise<{ locale:
   const base = JSON.stringify(active?.rules ?? pricingRules.DEFAULT_FDM_RULES, null, 2);
   return (
     <div className="mx-auto grid max-w-[1320px] gap-6 px-4 py-8 md:px-8 xl:grid-cols-[1fr_420px]">
-      <div className="flex flex-col gap-6">
+      <div className="flex min-w-0 flex-col gap-6">
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <Banner tone="info">{t("intro")}</Banner>
         <Card className="flex flex-col gap-4">

@@ -113,7 +113,7 @@ export default async function OpsOrder({
           label={o(`status.${order.status as "PAID"}`)}
         />
         {order.onHold && <Badge tone="warning">{t("onHoldBadge")}</Badge>}
-        <span className="ms-auto text-sm text-text-secondary">
+        <span className="ms-auto min-w-0 text-sm text-text-secondary [overflow-wrap:anywhere]">
           <Ltr>{d.email}</Ltr> · {o(`flow.${order.flow as "file"}`)}
           {order.promisedShipDate && (
             <> · {t("promisedShip", { date: formatDate(order.promisedShipDate, locale) })}</>
@@ -130,7 +130,8 @@ export default async function OpsOrder({
       )}
 
       <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
-        <div className="flex flex-col gap-6">
+        {/* min-w-0: let wide tables scroll inside their card instead of widening the page on phones. */}
+        <div className="flex min-w-0 flex-col gap-6">
           <Panel title={t("items")}>
             <ul className="flex flex-col divide-y divide-border-subtle">
               {d.items.map(({ item, geometry, material, variant }) => (
@@ -514,7 +515,7 @@ export default async function OpsOrder({
           )}
         </div>
 
-        <aside className="flex flex-col gap-6">
+        <aside className="flex min-w-0 flex-col gap-6">
           {can("order.manage") && (
             <Panel title={order.onHold ? t("unhold") : t("hold")}>
               <ActionForm

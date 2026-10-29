@@ -24,3 +24,5 @@ test-results
 playwright-report
 # tooling caches written by session hooks
 .cto-toolkit
+tests/e2e/.e2e-state
+playwright-report
