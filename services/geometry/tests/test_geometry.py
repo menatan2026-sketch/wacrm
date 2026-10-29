@@ -1,5 +1,6 @@
 import base64
 import io
+import secrets
 import zipfile
 
 import trimesh
@@ -95,10 +96,11 @@ def test_rejects_zip_bomb_and_path_traversal():
 def test_http_requires_shared_secret(monkeypatch):
     import geometry.app as appmod
 
-    monkeypatch.setattr(appmod, "SECRET", "s" * 20)
+    shared = secrets.token_hex(16)
+    monkeypatch.setattr(appmod, "SECRET", shared)
     client = TestClient(appmod.app)
     assert client.post("/analyze", content=stl(CUBE), headers={"x-file-name": "c.stl"}).status_code == 401
-    ok = client.post("/analyze", content=stl(CUBE), headers={"x-file-name": "c.stl", "x-shared-secret": "s" * 20})
+    ok = client.post("/analyze", content=stl(CUBE), headers={"x-file-name": "c.stl", "x-shared-secret": shared})
     assert ok.status_code == 200 and ok.json()["metrics"]["triangle_count"] == 12
-    bad = client.post("/analyze", content=b"junk", headers={"x-file-name": "c.stl", "x-shared-secret": "s" * 20})
+    bad = client.post("/analyze", content=b"junk", headers={"x-file-name": "c.stl", "x-shared-secret": shared})
     assert bad.status_code == 422 and bad.json()["failure_code"] == "corrupt_file"

@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { ROLES } from "@mfg/db";
 import { describe, expect, it } from "vitest";
 import { can, PERMISSIONS, ROLE_PERMISSIONS } from "../src/modules/identity/rbac";
@@ -48,15 +49,17 @@ describe("RBAC permission matrix", () => {
 
 describe("crypto helpers", () => {
   it("seals and unseals, and detects tampering", () => {
-    const s = seal("k".repeat(32), "p", "secret");
-    expect(unseal("k".repeat(32), "p", s)).toBe("secret");
-    expect(() => unseal("k".repeat(32), "other", s)).toThrow();
+    const key = randomBytes(32).toString("hex");
+    const s = seal(key, "p", "plaintext");
+    expect(unseal(key, "p", s)).toBe("plaintext");
+    expect(() => unseal(key, "other", s)).toThrow(); // keys are separated per purpose
   });
   it("signs payloads and rejects forged ones", () => {
-    const t = signPayload("x".repeat(32), { a: 1 });
-    expect(verifyPayload("x".repeat(32), t)).toEqual({ a: 1 });
-    expect(verifyPayload("y".repeat(32), t)).toBeNull();
-    expect(verifyPayload("x".repeat(32), t.replace(/^./, "Z"))).toBeNull();
+    const key = randomBytes(32).toString("hex");
+    const t = signPayload(key, { a: 1 });
+    expect(verifyPayload(key, t)).toEqual({ a: 1 });
+    expect(verifyPayload(randomBytes(32).toString("hex"), t)).toBeNull();
+    expect(verifyPayload(key, t.replace(/^./, "Z"))).toBeNull();
   });
   it("generates digits and stable HMACs", () => {
     expect(randomDigits(6)).toMatch(/^\d{6}$/);

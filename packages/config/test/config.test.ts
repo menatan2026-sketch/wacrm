@@ -1,11 +1,12 @@
+import { randomBytes } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { ConfigError, parseServerConfig } from "../src/index";
 
 const base = {
-  APP_SECRET: "x".repeat(32),
+  APP_SECRET: randomBytes(32).toString("hex"),
   DATABASE_URL: "postgres://localhost/db",
-  GEOMETRY_SHARED_SECRET: "g".repeat(16),
-  PAYMENT_WEBHOOK_SECRET: "p".repeat(16),
+  GEOMETRY_SHARED_SECRET: randomBytes(16).toString("hex"),
+  PAYMENT_WEBHOOK_SECRET: randomBytes(16).toString("hex"),
 };
 
 describe("parseServerConfig", () => {
