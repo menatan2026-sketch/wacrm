@@ -1,0 +1,62 @@
+{
+  "brand": "Platform",
+  "tagline": "חלקים בהתאמה אישית, בפשטות",
+  "actions": {
+    "continue": "המשך",
+    "back": "חזרה",
+    "save": "שמירה",
+    "cancel": "ביטול",
+    "confirm": "אישור",
+    "close": "סגירה",
+    "retry": "נסו שוב",
+    "remove": "הסרה",
+    "edit": "עריכה",
+    "send": "שליחה",
+    "search": "חיפוש",
+    "copy": "העתקה",
+    "copied": "הועתק",
+    "view": "צפייה",
+    "signOut": "התנתקות",
+    "apply": "החלה"
+  },
+  "states": {
+    "loading": "טוען…",
+    "saving": "שומר…",
+    "saved": "נשמר",
+    "offline": "אין חיבור לאינטרנט. ננסה שוב כשהחיבור יחזור.",
+    "empty": "אין כאן עדיין כלום"
+  },
+  "language": {
+    "label": "שפה"
+  },
+  "units": {
+    "mm": "מ״מ",
+    "cm": "ס״מ",
+    "in": "אינץ׳",
+    "g": "גר׳",
+    "min": "דק׳",
+    "hours": "{n, plural, one {שעה אחת} two {שעתיים} other {# שעות}}",
+    "days": "{n, plural, one {יום אחד} two {יומיים} other {# ימים}}"
+  },
+  "dimensions": "{x} × {y} × {z} {unit}",
+  "reference": "מספר אסמכתה",
+  "skipToContent": "דילוג לתוכן הראשי",
+  "errorPage": {
+    "title": "משהו השתבש",
+    "body": "קיבלנו התראה ואנחנו בודקים. אפשר לנסות שוב, או לפנות אלינו עם מספר האסמכתה שלמטה."
+  },
+  "notFound": {
+    "title": "הדף לא נמצא",
+    "body": "הדף שחיפשתם לא קיים או שהועבר.",
+    "home": "לדף הבית"
+  },
+  "footer": {
+    "terms": "תנאי שימוש",
+    "privacy": "פרטיות",
+    "accessibility": "הצהרת נגישות",
+    "restricted": "שימושים מוגבלים",
+    "shipping": "משלוחים והחזרות",
+    "rights": "© {year} Platform"
+  },
+  "draftNotice": "טיוטה — ממתין לבדיקה משפטית"
+}

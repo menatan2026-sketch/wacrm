@@ -1,0 +1,62 @@
+{
+  "brand": "Platform",
+  "tagline": "Custom parts, made simple",
+  "actions": {
+    "continue": "Continue",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "retry": "Try again",
+    "remove": "Remove",
+    "edit": "Edit",
+    "send": "Send",
+    "search": "Search",
+    "copy": "Copy",
+    "copied": "Copied",
+    "view": "View",
+    "signOut": "Sign out",
+    "apply": "Apply"
+  },
+  "states": {
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "offline": "You're offline. We'll retry when you're back online.",
+    "empty": "Nothing here yet"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "units": {
+    "mm": "mm",
+    "cm": "cm",
+    "in": "in",
+    "g": "g",
+    "min": "min",
+    "hours": "{n, plural, one {# hour} other {# hours}}",
+    "days": "{n, plural, one {# day} other {# days}}"
+  },
+  "dimensions": "{x} × {y} × {z} {unit}",
+  "reference": "Reference code",
+  "skipToContent": "Skip to main content",
+  "errorPage": {
+    "title": "Something went wrong",
+    "body": "We've been notified and are looking into it. You can try again, or contact us with the reference code below."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist or has moved.",
+    "home": "Go to the home page"
+  },
+  "footer": {
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "accessibility": "Accessibility statement",
+    "restricted": "Restricted uses",
+    "shipping": "Shipping & returns",
+    "rights": "© {year} Platform"
+  },
+  "draftNotice": "Draft — pending legal review"
+}

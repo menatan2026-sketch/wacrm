@@ -191,7 +191,7 @@ erDiagram
 | DELIVERED | `completion_window_elapsed` / `customer_confirmed` | COMPLETED | system / customer | window e.g. 7 days |
 | any pre-PAID | `cancel` | CANCELLED | customer / ops | — |
 | PAID…SUPPLIER_ACCEPTED | `cancel` | CANCELLED (+ refund) | ops (customer request) | refund flow |
-| PRODUCTION…COMPLETED | `dispute_opened` | DISPUTED | customer / support | — |
+| PRODUCTION…DELIVERED | `dispute_opened` | DISPUTED | customer / support | within the 7-day delivery window; COMPLETED is terminal |
 | DISPUTED | `dispute_resolved_*` | REFUNDED / COMPLETED / REPRINT_REQUIRED | ops / finance | — |
 | CANCELLED (paid) / DISPUTED | `refund_completed` | REFUNDED | system | full refund; partial refunds don't change status |
 

@@ -1,0 +1,67 @@
+{
+  "auth": {
+    "forbidden": "You don't have permission to do that.",
+    "unauthenticated": "Please sign in to continue.",
+    "code_invalid": "That code isn't right. Check the email and try again.",
+    "code_expired": "This code has expired. Request a new one.",
+    "too_many_attempts": "Too many attempts. Request a new code.",
+    "rate_limited": "Too many requests. Please wait a moment and try again.",
+    "mfa_required": "Enter the code from your authenticator app.",
+    "mfa_invalid": "That authenticator code isn't valid.",
+    "no_access_to_surface": "This account doesn't have access here.",
+    "invitation_invalid": "This invitation link is invalid or has expired."
+  },
+  "common": {
+    "not_found": "We couldn't find what you were looking for.",
+    "validation": "Some details need fixing. Check the highlighted fields.",
+    "conflict": "Something changed in the meantime. Refresh and try again.",
+    "idempotency_conflict": "This request was already sent with different details.",
+    "unexpected": "Something went wrong on our side. Reference: {ref}"
+  },
+  "files": {
+    "type_not_allowed": "This file type isn't supported. Use STL or 3MF for models, and JPG, PNG or HEIC for photos.",
+    "too_large": "The file is too large. The maximum is {max}.",
+    "upload_expired": "The upload link expired. Try uploading again.",
+    "size_mismatch": "The upload didn't complete. Try again.",
+    "not_uploaded": "The file hasn't finished uploading yet.",
+    "quota_exceeded": "You've reached today's upload limit. Try again tomorrow or contact us."
+  },
+  "orders": {
+    "invalid_transition": "This order can't move to that step right now.",
+    "on_hold": "This order is on hold. Our team is looking into it.",
+    "incomplete": "A few details are still missing.",
+    "not_cancellable": "This order can no longer be cancelled online. Contact us and we'll help."
+  },
+  "drafts": {
+    "expired": "This draft has expired. Start a new order."
+  },
+  "quotes": {
+    "not_payable": "This quote can't be paid. Refresh to see the latest quote.",
+    "expired": "This quote has expired. We'll prepare an updated one."
+  },
+  "pricing": {
+    "no_active_rules": "Pricing isn't configured for this process yet.",
+    "activation_requires_second_person": "A different person must activate the rules they didn't create.",
+    "invalid_rules": "The pricing rules aren't valid."
+  },
+  "routing": {
+    "no_candidates": "No manufacturing partner can take this order right now."
+  },
+  "jobs": {
+    "offer_not_pending": "This offer is no longer available.",
+    "invalid_transition": "This job can't move to that step.",
+    "evidence_incomplete": "Add the required photos and measurements first."
+  },
+  "payments": {
+    "amount_mismatch": "The payment amount doesn't match the quote.",
+    "webhook_invalid": "Invalid payment notification.",
+    "refund_exceeds_captured": "The refund is larger than the amount paid.",
+    "refund_requires_approval": "This refund needs a finance approval."
+  },
+  "shipping": {
+    "invalid_transition": "This shipment can't move to that status."
+  },
+  "suppliers": {
+    "onboarding_incomplete": "Finish the onboarding checklist first."
+  }
+}
