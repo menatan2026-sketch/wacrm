@@ -67,6 +67,7 @@ export default async function OpsOrder({
   const j = await getTranslations("supplier.job.status");
   const ship = await getTranslations("shipping.status");
   const u = await getTranslations("common.units");
+  const usage = await getTranslations("manufacturing.usage");
   const d = await admin.orderDetail(ctx, orderId).catch((e) => {
     if (e instanceof DomainError) notFound();
     throw e;
@@ -163,9 +164,12 @@ export default async function OpsOrder({
                     {Object.keys(item.usage ?? {}).length > 0 && (
                       <span className="text-text-secondary">
                         {t("request")}:{" "}
-                        {Object.values(item.usage)
-                          .filter((x) => typeof x === "string")
-                          .join(", ")}
+                        {Object.entries(item.usage)
+                          .filter(([, v]) => typeof v === "string")
+                          .map(([q, v]) =>
+                            usage.has(`${q}.${v}`) ? usage(`${q}.${v}`) : String(v),
+                          )
+                          .join(" · ")}
                       </span>
                     )}
                   </div>

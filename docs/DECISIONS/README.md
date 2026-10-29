@@ -14,7 +14,7 @@ Format: [MADR](https://adr.github.io/madr/)-style. Each ADR has a status: **Prop
 | [0007](./0007-i18n-next-intl-locale-routing.md) | next-intl, locale-prefixed routes, logical CSS for RTL | Accepted (planning) |
 | [0008](./0008-money-and-quote-snapshots.md) | Integer minor-unit money; immutable quote snapshots; versioned rules | Accepted (planning) |
 | [0009](./0009-order-lifecycle-state-machines.md) | Customer-facing order machine + domain sub-machines | Accepted (planning) |
-| [0010](./0010-authentication-and-rbac.md) | Authentication library (spike) and scoped RBAC | **Proposed — spike M0F-T02** |
+| [0010](./0010-authentication-and-rbac.md) | Authentication library (spike) and scoped RBAC | **Accepted** — in-house OTP + `otpauth` TOTP |
 | [0011](./0011-provider-ports-and-adapters.md) | Ports & adapters with fake implementations for every provider | Accepted (planning) |
 | [0012](./0012-merchant-of-record.md) | Platform as merchant of record; supplier payouts via invoices | **Proposed — legal review** |
 | [0013](./0013-design-system-foundations.md) | Tokens in OKLCH CSS variables, Tailwind v4, Base UI, IBM Plex | Accepted (planning) |

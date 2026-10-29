@@ -1,6 +1,6 @@
 # 0010 — Authentication library and scoped RBAC
 
-- **Status:** **Proposed** — library choice finalized by spike M0F-T02
+- **Status:** **Accepted** (M0F) — in-house OTP sessions + `otpauth` TOTP; see Decision
 - **Date:** 2026-10-29
 - **Related:** SECURITY §2–§3
 
@@ -18,3 +18,26 @@ Requirements: customer email OTP/magic link, supplier invitations, staff SSO/pas
 
 ## Consequences
 The auth library is isolated behind `packages/auth`, so the domain never imports it.
+
+## Decision (M0F)
+Built in-house on primitives instead of adopting a full auth library, because every option either
+lacked per-surface sessions or needed adapter work as large as the feature itself:
+
+- **Sign-in:** passwordless email OTP for all three surfaces. 6-digit codes are stored as HMAC (never
+  plaintext), expire after 10 minutes, allow 5 attempts (counted outside the verify transaction so a
+  failed guess is never rolled back), and are consumed atomically. Rate limits: 5 codes per email and
+  20 per IP per 15 minutes; 30 verifications per IP.
+- **Sessions:** random token in a host-only, HttpOnly, SameSite=Lax cookie (`__Host-` prefix on
+  HTTPS), stored as SHA-256. One cookie per surface (customer / supplier / admin), so an ops session
+  never authorizes the public site and vice versa. Revocable; idle-touch every 5 minutes.
+- **Staff MFA:** TOTP via the `otpauth` library (RFC 6238). The seed is sealed with AES-GCM under a
+  key derived (HKDF) from `APP_SECRET`. Enrollment starts on the server render; verification is rate
+  limited and marks the session `mfa_verified`. Every ops page requires it.
+- **Suppliers:** invitation tokens (hashed, 14-day expiry) bind the invited email to a
+  supplier-scoped role on first sign-in.
+- **Authorization:** `can(actor, permission, { supplierId })` with role → permission tables and scoped
+  grants, enforced in the domain services (not only in pages). Covered by unit tests and the
+  `staff-access` integration suite.
+
+Not yet built (tracked): SSO for staff, WebAuthn, step-up re-auth for refunds/payout changes.
+

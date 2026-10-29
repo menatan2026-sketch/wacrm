@@ -103,20 +103,20 @@ Tokens are defined in **OKLCH** in code (the hex values here are for reference),
 |---|---|---|
 | `brand-primary` "Calibration Blue" | `#1F4FE0` | Primary actions, links, focus ring base, selected states |
 | `brand-primary-hover` | `#1A43C2` | — |
-| `brand-signature` "Nozzle Amber" | `#F2780C` | **Making-related moments only:** the layer-buildup animation, the active production stage, the brand mark accent, the "printing now" indicator. Never for warnings, never for primary buttons |
+| `brand-signature` "Nozzle Amber" | `#D4630A` (was `#F2780C`; darkened to pass 3:1 for UI graphics on white — M0C-T03) | **Making-related moments only:** the layer-buildup animation, the active production stage, the brand mark accent, the "printing now" indicator. Never for warnings, never for primary buttons |
 | `brand-ink` "Graphite" | `#14171C` | Display text, dark surfaces |
 
 ### 5.2 Neutral palette (cool graphite, 12 steps)
 `neutral-0 #FFFFFF` · `25 #F8F9FA` · `50 #F1F3F5` · `100 #E6E9ED` · `200 #D3D8DE` · `300 #B6BDC6` · `400 #8E97A3` · `500 #6B7480` · `600 #535B66` · `700 #3D444D` · `800 #2A2F36` · `900 #1B1F24` · `950 #111418`
 
-Semantic aliases (light): `surface-base = neutral-25`, `surface-raised = neutral-0`, `surface-sunken = neutral-50`, `border-subtle = neutral-100`, `border-default = neutral-200`, `border-strong = neutral-400`, `text-primary = neutral-950`, `text-secondary = neutral-600`, `text-tertiary = neutral-500` (large text only), `text-inverse = neutral-0`.
+Semantic aliases (light): `surface-base = neutral-25`, `surface-raised = neutral-0`, `surface-sunken = neutral-50`, `border-subtle = neutral-100`, `border-default = neutral-200`, `border-strong = neutral-500` (was neutral-400; raised to meet 3:1 non-text contrast), `text-primary = neutral-950`, `text-secondary = neutral-600`, `text-tertiary = neutral-500` (large text only), `text-inverse = neutral-0`.
 
 ### 5.3 Semantic colors (each has `fg`, `bg-subtle`, `border`, `solid`)
 
 | Semantic | Solid | Meaning | Paired icon |
 |---|---|---|---|
-| `success` | `#16834A` | Completed, passed, paid | check-circle |
-| `warning` | `#B7791F` (ochre — deliberately distinct from Nozzle Amber) | Needs attention soon, at risk | alert-triangle |
+| `success` | `#127540` (was `#16834A`; 4.5:1 on its subtle background) | Completed, passed, paid | check-circle |
+| `warning` | `#8F5F0F` (ochre — deliberately distinct from Nozzle Amber; was `#B7791F`, darkened for 4.5:1) | Needs attention soon, at risk | alert-triangle |
 | `danger` | `#C8312B` | Failed, blocked, destructive | x-octagon |
 | `info` | `#2563A8` | Neutral information, in review | info |
 | `neutral-status` | `neutral-600` | Draft, inactive, cancelled | circle-dashed |
@@ -135,7 +135,7 @@ Every status renders as **icon + label + color + tooltip** (never color alone).
 | **Supplier availability** | available → success · busy (≥ 80 % capacity) → warning · paused → neutral · suspended → danger |
 
 ### 5.5 Dark theme
-Surfaces from `neutral-950/900/800`. Text `neutral-50/300`. Brand primary lifted to `#5B82FF`, signature to `#FF9A3D`. Semantic solids lifted ~15 % lightness. The same contrast thresholds apply.
+Surfaces from `neutral-950/900/800`. Dark mode tokens ship in `packages/tokens` (signature `#FF9A3D`, success `#4CC385`, warning `#E8B04B`). Text `neutral-50/300`. Brand primary lifted to `#5B82FF`, signature to `#FF9A3D`. Semantic solids lifted ~15 % lightness. The same contrast thresholds apply.
 
 ### 5.6 Contrast and data-viz
 - Text ≥ 4.5:1 (body) / 3:1 (≥ 24 px or 19 px bold). UI component boundaries and focus indicators ≥ 3:1.
@@ -181,7 +181,7 @@ Dark theme: elevation is expressed by a lighter surface step instead of shadows.
 | Drawer | Side panel from **inline-end** (mirrors in RTL), 480 / 640 px, `overlay` |
 | Technical panel | `surface-sunken`, `border-strong`, mono values, a small coordinate-grid background (5 % opacity) |
 | Data panel | Flat, hairline dividers, dense rows (admin) |
-| Viewer canvas | `neutral-950` with grid floor `neutral-800`, accent model highlight in `brand-primary`, issues in `danger`/`warning` overlays |
+| Viewer canvas | `neutral-950` with grid floor `neutral-800`, overlay text `viewer-text` (`neutral-50`, its own token so viewer labels never use raw colors), accent model highlight in `brand-primary`, issues in `danger`/`warning` overlays |
 
 ## 9. Iconography
 

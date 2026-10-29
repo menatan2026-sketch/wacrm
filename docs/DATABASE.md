@@ -217,3 +217,19 @@ Processes (FDM active, others inactive), the six base materials with colors, thr
 | Analytics events | 25 months, then aggregated |
 | AI runs (inputs/outputs) | 1 year, then redacted metadata only |
 | Logs | 30 days hot, 1 year archive (no PII payloads) |
+
+## 8. Implementation deviations (M0R–M5)
+
+The schema in `packages/db` follows this document except where noted. Each deviation keeps the
+invariant it replaces; revisit when the listed trigger occurs.
+
+| Planned | Implemented | Why | Revisit when |
+|---|---|---|---|
+| `material_translations`, `*_translations` tables | `i18n` JSONB column (`{ he, en, ru }: { name, description? }`) on `materials` and `material_variants` | Three locales, admin-managed, always read with the row; avoids a join on every catalog read | A fourth locale, or translation workflow tooling |
+| `requirement_sets` table (versioned, per item) | `order_items.usage` (answers) + `order_items.requirements` (derived) JSONB; review reasons on `orders.review_reasons` | One requirement version per item in the MVP; the quote snapshot freezes what was priced | AI intake (M6) needs multiple versions/sources per item |
+| Several production jobs per order (split fulfilment) | One active job per order; reprints create a new job with `attempt_no + 1`, the failed one is `CANCELLED` | AL-001: one supplier per order | Split orders (post-M5) |
+| `order_status_history`, `audit_events`, `quote_snapshots`, `payment_transactions`, `routing_decisions` "append-only" | Enforced by database triggers that reject UPDATE/DELETE (migration `0001_platform_guards.sql`) | Stronger than application discipline | — |
+| Payout ledger entries immutable | Insert-only, except a single NULL → value assignment of `statement_id` when a statement closes (trigger-guarded) | Statements group entries without rewriting amounts | — |
+| `invoices` from a certified provider | `invoices` rows from the internal register with `invoice_number_seq` | No provider selected (KNOWN_ISSUES KI-016) | Provider chosen (D-4) |
+
+Money stays integer minor units everywhere, and entity ids are UUIDv7.
