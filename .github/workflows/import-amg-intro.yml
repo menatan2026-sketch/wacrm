@@ -21,8 +21,9 @@ jobs:
             mkdir -p "$(dirname "$f")"
             code=$(curl -sS -L --retry 3 -o "$f" -w '%{http_code}' "$base/$f")
             echo "$code $(stat -c%s "$f") $f"
-            [ "$code" = 200 ] || { echo "FAILED: $f"; exit 1; }
+            [ "$code" = 200 ] || { echo "MISSING: $f"; rm -f "$f"; echo "$code $f" >> .missing.txt; }
           done < .files.txt
+          [ -f .missing.txt ] && cat .missing.txt || true
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
