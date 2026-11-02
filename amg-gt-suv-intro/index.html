@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="robots" content="noindex">
+  <title>AMG GT SUV — Intro prototype</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Scene: one canvas, all layers composited in js/intro.js -->
+  <main id="stage" aria-label="Mercedes-AMG GT SUV intro scene">
+    <canvas id="scene"></canvas>
+  </main>
+
+  <!-- Entry screen: key fob (config.fob). Tap the fob / unlock button: key chirp, audio unlocked, intro starts with sound. -->
+  <div id="fob" class="fob" hidden>
+    <span class="fob-ground" aria-hidden="true"></span>
+    <button class="fob-key" type="button" aria-label="Press to start">
+      <img class="fob-refl" alt="" draggable="false" aria-hidden="true">
+      <span class="fob-float">
+        <img class="fob-img" alt="" draggable="false">
+        <span class="fob-rim" aria-hidden="true"><span class="fob-band"></span></span>
+        <span class="fob-sheen" aria-hidden="true"></span>
+        <svg class="fob-bloom" aria-hidden="true" focusable="false"></svg>
+        <svg class="fob-glow" aria-hidden="true" focusable="false"></svg>
+      </span>
+    </button>
+    <p class="fob-cap"></p>
+    <p class="fob-ph" hidden>Placeholder key fob</p>
+  </div>
+  <p class="fineprint">Non-commercial fan prototype. Mercedes-AMG and the AMG / Affalterbach marks belong to Mercedes-Benz Group AG.</p>
+
+  <!-- HUD -->
+  <nav id="hud" class="hud" hidden>
+    <button id="mute" class="hud-btn" aria-pressed="false" aria-label="Mute sound">Sound</button>
+    <button id="replay" class="hud-btn" aria-label="Replay intro">Replay</button>
+  </nav>
+  <div id="scroll-cue" class="scroll-cue" aria-hidden="true"></div>
+  <div id="debug" class="debug" hidden></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/intro.js"></script>
+  <script src="js/t1loop.js"></script>
+  <script src="js/t1.js"></script>
+</body>
+</html>
