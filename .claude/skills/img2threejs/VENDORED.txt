@@ -1,1 +1,7 @@
 img2threejs v2.0.1 @ 0c0c49bc168e648dbaf9c8c080474de0b3a941b6 (https://github.com/img2threejs/img2threejs). Vendored copy; update by re-running the installer and re-copying.
+
+Known upstream issue (accepted, left unpatched by decision of the repo owner, 2026-11-05):
+many file/JSON I/O calls in the skill's Python scripts and in
+integrations/glb_character_pipeline/node/*.mjs have no error handling, so a missing or
+malformed input file aborts with a raw traceback. These scripts run only when the skill is
+invoked, never from the app. Keep this copy identical to upstream; do not patch it here.
