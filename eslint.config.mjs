@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Vendored minified opus-recorder encoder worker (served statically).
     "public/opus/**",
+    // Vendored Claude Code skills (third-party, not app code).
+    ".claude/**",
   ]),
 ]);
 

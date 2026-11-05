@@ -1,0 +1,1 @@
+img2threejs v2.0.1 @ 0c0c49bc168e648dbaf9c8c080474de0b3a941b6 (https://github.com/img2threejs/img2threejs). Vendored copy; update by re-running the installer and re-copying.
